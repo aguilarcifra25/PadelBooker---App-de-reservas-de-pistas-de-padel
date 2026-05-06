@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club DamPadel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-sm navbar-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="javascript:void(0)"><img src="img/logo.png" style="height:35px;"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse d-flex" id="mynavbar">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="javascript:void(0)">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="javascript:void(0)">Tienda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="javascript:void(0)">Contacto</a>
+                    </li>
+                </ul>
+                <form class="d-flex">
+
+                    <div class="d-flex align-items-center me-3 gap-2">
+
+                        <a href="#" class="text-dark">
+                            <i class="bi bi-person fs-5"></i>
+                        </a>
+
+                        <button type="button" class="btn btn-light btn btn-link text-dark" data-bs-toggle="modal"
+                            data-bs-target="#addUser">
+                            <i class="bi bi-person-add fs-5"></i>
+                        </button>
+
+                    </div>
+
+                    <button class="btn btn-primary" type="button">Acceder</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+</body>
+
+</html>
