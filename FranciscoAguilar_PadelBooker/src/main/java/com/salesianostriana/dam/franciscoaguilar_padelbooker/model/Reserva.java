@@ -1,0 +1,27 @@
+package com.salesianostriana.dam.franciscoaguilar_padelbooker.model;
+
+import java.time.Duration;
+import java.util.Date;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@NoArgsConstructor @AllArgsConstructor
+@Builder
+@Data
+public class Reserva {
+
+	@Id @GeneratedValue
+	private Long codigo;
+	
+	private Date fecha;
+	private Duration duracion; 
+	private double precioTotal;
+
+}
