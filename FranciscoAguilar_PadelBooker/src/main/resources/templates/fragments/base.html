@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+    <header th:fragment="header">
+
+        <nav class="navbar navbar-expand-sm navbar-dark sticky-top shadow-lg bg-white p-0">
+
+            <div class="container-fluid">
+
+                <a class="navbar-brand mx-4 p-0" href="home.html">
+                    <img src="../static/img/Logo.png" th:src="@{/img/Logo.png}" alt="Club de padel DamPadel"
+                        id="logo" />
+                </a>
+
+                <div class="justify-content-center" id="mynavbar">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="home.html"><i class="bi bi-house me-2"></i>Inicio</a>
+                        </li>
+                        <li class="nav-item mx-3">
+                            <a class="nav-link " href="javascript:void(0)"><i class="bi bi-people me-2"></i>Nosotros</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link " href="javascript:void(0)"><i class="bi bi-chat me-2"></i>Contacto</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="javascript:void(0)">Ver pistas</a>
+                    </li>
+                    <li class="nav-item mx-4">
+                        <button class="btn btn-primary" type="button">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Acceder
+                        </button>
+                    </li>
+                </ul>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+    <footer th:fragment="footer" class="bg-dark fixed-bottom">
+
+        <div class="container">
+
+            <div class="row g-4">
+
+                <div class="col-6 col-lg-3 col-md-3">
+                    <h4 class="my-4 text-light">DamPadel</h4>
+                    <p class="text-light">Tu club de pádel en Sevilla.</p>
+                    <p class="text-light">Reserva online las mejores pistas.</p>
+                </div>
+
+                <div class="col-6 col-lg-3 col-md-3">
+                    <h5 class="my-4 text-light">Navegación</h5>
+                    <a class="nav-link" href="home.html"><i class="bi bi-house me-2"></i>Inicio</a>
+                    <a class="nav-link my-3" href="javascript:void(0)"><i class="bi bi-people me-2"></i>Nosotros</a>
+                    <a class="nav-link mb-5" href="javascript:void(0)"><i class="bi bi-chat me-2"></i>Contacto</a>
+                </div>
+
+                <div class="col-6 col-lg-3 col-md-3">
+                    <h5 class="my-4 text-light">Contacto</h5>
+                    <p class="text-light">+34 987 654 321</p>
+                    <p class="my-4 text-light">info@dampadel.es</p>
+                </div>
+
+                <div class="col-6 col-lg-3 col-md-3">
+                    <h5 class="my-4 text-light">Legal</h5>
+                    <p class="text-light">Términos y condiciones</p>
+                    <p class="text-light">Política de privacidad</p>
+                    <p class="text-light">Política de cookies</p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+</body>
+
+</html>
