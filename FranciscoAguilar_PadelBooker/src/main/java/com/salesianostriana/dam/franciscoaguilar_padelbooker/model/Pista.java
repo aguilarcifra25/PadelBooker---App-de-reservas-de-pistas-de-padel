@@ -27,8 +27,8 @@ public class Pista {
 	private String imagen;
 	
 	@OneToMany(mappedBy = "pista")
-	@Builder.Default
-	@ToString.Exclude
-	private List<Reserva> reservas = new ArrayList<>();
+    @Builder.Default
+    @ToString.Exclude
+    private List<Asignacion> asignaciones = new ArrayList<>();
 	
 }
