@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @NoArgsConstructor@AllArgsConstructor
@@ -27,6 +28,7 @@ public class Pista {
 	
 	@OneToMany(mappedBy = "pista")
 	@Builder.Default
+	@ToString.Exclude
 	private List<Reserva> reservas = new ArrayList<>();
 	
 }

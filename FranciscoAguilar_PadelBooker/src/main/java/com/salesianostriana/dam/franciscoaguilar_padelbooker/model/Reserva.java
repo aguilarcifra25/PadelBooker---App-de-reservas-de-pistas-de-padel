@@ -31,4 +31,8 @@ public class Reserva {
 	@JoinColumn(foreignKey = @ForeignKey(name = "fk_reserva_pista"))
     private Pista pista;
 
+	@ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_reserva_usuario"))
+    private Usuario usuario;
+	
 }
