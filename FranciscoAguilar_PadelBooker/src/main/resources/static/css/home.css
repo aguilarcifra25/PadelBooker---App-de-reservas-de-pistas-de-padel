@@ -9,3 +9,14 @@
     transform: translateY(-7px);
 
 }
+
+#botonSeccionFinal {
+
+    transition: transform 0.3s ease;
+}
+
+#botonSeccionFinal:hover {
+
+    transform: scale(1.1);
+
+}
