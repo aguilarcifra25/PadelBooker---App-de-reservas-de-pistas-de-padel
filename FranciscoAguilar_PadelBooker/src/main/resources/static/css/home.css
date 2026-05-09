@@ -1,0 +1,11 @@
+.cajaReserva {
+
+    transition: transform 0.3s ease;
+
+}
+
+.cajaReserva:hover {
+
+    transform: translateY(-7px);
+
+}
