@@ -20,3 +20,18 @@
     transform: scale(1.1);
 
 }
+
+.card img {
+
+    transition: transform 0.7s ease;
+
+    object-fit: cover;
+
+
+}
+
+.card img:hover {
+
+    transform: scale(1.1);
+
+}
