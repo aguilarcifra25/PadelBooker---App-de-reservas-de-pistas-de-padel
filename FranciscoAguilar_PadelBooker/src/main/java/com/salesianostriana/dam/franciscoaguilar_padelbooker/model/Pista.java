@@ -23,6 +23,7 @@ public class Pista {
 	private Long numero;
 	
 	private String tipo;
+	private String suelo;
 	private double precioHora;
 	private String imagen;
 	
