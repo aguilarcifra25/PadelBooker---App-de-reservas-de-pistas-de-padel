@@ -1,0 +1,51 @@
+/*Header*/
+
+header #logo {
+
+    height: 100px;
+
+}
+
+header .nav-item .nav-link {
+
+    transition: scale 0.1s ease;
+    color: black;
+}
+
+header .nav-item:hover .nav-link {
+
+    scale: calc(1.1);
+    color: #e95420;
+
+}
+
+header .btn {
+
+    background: linear-gradient(90deg, #ec8d4d 0%, #e95420 100%);
+    border-color: #e95420;
+
+    transition: scale 0.1s ease;
+
+}
+
+header .btn:hover {
+
+
+
+    scale: calc(1.1);
+}
+
+
+/*Footer*/
+
+footer .nav-link {
+
+    color: white;
+    width: fit-content;
+}
+
+footer .nav-link:hover {
+
+    color: #e95420;
+
+}

@@ -1,57 +1,37 @@
-/*Header*/
+.cajaReserva {
 
-nav {
-
-    border-bottom: 2px solid #FF6600;
+    transition: transform 0.3s ease;
 
 }
 
-#logo {
+.cajaReserva:hover {
 
-    height: 100px;
-
-}
-
-.nav-item .nav-link {
-
-    transition: scale 0.1s ease;
-    color: black;
-}
-
-.nav-item:hover .nav-link {
-
-    scale: calc(1.1);
-    color: #FF6600;
+    transform: translateY(-7px);
 
 }
 
-.btn {
+#botonSeccionFinal {
 
-    background: linear-gradient(150deg, #ec8d4d 0%, #FF6600 100%);
-    border-color: #FF6600;
+    transition: transform 0.3s ease;
+}
 
-    transition: scale 0.1s ease;
+#botonSeccionFinal:hover {
+
+    transform: scale(1.1);
 
 }
 
-.btn:hover {
+.card img {
 
-    border-color: #FF6600;
+    transition: transform 0.7s ease;
 
-    scale: calc(1.1);
+    object-fit: cover;
+
+
 }
 
+.card img:hover {
 
-/*Footer*/
-
-footer .nav-link {
-
-    color: white;
-    width: fit-content;
-}
-
-footer .nav-link:hover {
-
-    color: #FF6600;
+    transform: scale(1.1);
 
 }
