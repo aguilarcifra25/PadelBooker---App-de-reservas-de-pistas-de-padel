@@ -1,3 +1,10 @@
+:root {
+
+    --bs-secondary: #1E1E26;
+    --bs-secondary-rgb: 30, 30, 38;
+
+}
+
 /*Header*/
 
 header #logo {
