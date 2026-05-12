@@ -2,25 +2,62 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 
 <head>
-    <title>Please Log In</title>
+    <title>Club DamPadel</title>
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
 
-<body>
-    <h1>Please Log In</h1>
-    <div th:if="${param.error}">
-        Invalid username and password.</div>
-    <div th:if="${param.logout}">
-        You have been logged out.</div>
-    <form th:action="@{/login}" method="post">
-        <div>
-            <input type="text" name="username" placeholder="Nombre de usuario" />
+<body class="d-flex flex-column min-vh-100">
+
+    <div class="container-fluid mb-5 mt-3">
+        <div class="row">
+
+            <div class="col-5 my-auto mx-auto">
+                <p class="text-center"><img src="../static/img/Logo.png" th:src="@{/img/Logo.png}" alt="Logo DamPadel"
+                        id="logo" /></p>
+                <h2 class="text-center fw-bold">Ven a jugar como más te gusta</h2>
+                <h5 class="text-center">Accede a tu cuenta y reserva tus pistas favoritas en minutos</h5>
+            </div>
+
+            <div class="vr p-0"></div>
+
+            <div class="col-6 my-auto mx-auto">
+
+                <h1 class="fw-bolder display-5 text-center">¡Bienvenido de nuevo!</h1>
+                <h5 class="mt-2 mb-5 text-center">Inicia sesión para acceder a tu cuenta</h5>
+
+                <div th:if="${param.error}">Nombre de usuario y contraseña incorrectos.</div>
+
+                <div th:if="${param.logout}">Has cerrado sesión.</div>
+
+                <form th:action="@{/login}" method="post" class="form-control border-0">
+                    <div class="mb-3 input-group-text rounded-4 border-3">
+                        <span class="input-group-text border-0">
+                            <i class="bi bi-person-circle"></i>
+                        </span>
+                        <input type="text" name="username" placeholder="Nombre de usuario"
+                            class="form-control p-2 border-0" />
+                    </div>
+                    <div class="mb-3 input-group-text rounded-4 border-3">
+                        <span class="input-group-text border-0">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        <input type="password" name="password" placeholder="Contraseña"
+                            class="form-control p-2 border-0" />
+                    </div>
+                    <div class="d-grid">
+                        <input type="submit" class="btn btn-primary rounded-pill p-2" value="Iniciar sesión" />
+                    </div>
+                </form>
+
+            </div>
+
         </div>
-        <div>
-            <input type="password" name="password" placeholder="Contraseña" />
-        </div>
-        <input type="submit" value="Log in" />
-    </form>
+    </div>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+
 </body>
 
 </html>
