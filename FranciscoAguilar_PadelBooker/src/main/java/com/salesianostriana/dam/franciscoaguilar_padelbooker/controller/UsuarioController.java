@@ -17,19 +17,16 @@ public class UsuarioController {
 	private final UsuarioService usuarioService;
 	
 	@GetMapping({"/","/home"})
-	public String paginaPrincipal (Model model, @AuthenticationPrincipal UserDetails usuario) {
-		
-		if (usuario != null) {
-
-	        model.addAttribute("username", usuario.getUsername());
-	        
-	    } else {
-	    	
-	        model.addAttribute("username", "sinLogear");
-	    }
-	    		
+	public String paginaPrincipal (Model model) {
+			    		
 		return "home";
 	}
 	
-	
+	@GetMapping("/perfil")
+	public String paginaMiPerfil (Model model, @AuthenticationPrincipal UserDetails usuario) {
+				
+	    model.addAttribute("nombreUsuario", usuario.getUsername());
+	    	
+		return "perfil";
+	}
 }
