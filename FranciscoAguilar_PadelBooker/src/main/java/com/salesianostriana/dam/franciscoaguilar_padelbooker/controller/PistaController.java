@@ -17,7 +17,7 @@ public class PistaController {
 	@GetMapping("/pistas")
 	public String paginaPrincipal (Model model) {
 		
-		model.addAttribute("listaPistas", pistaService.getPistas());	
+		model.addAttribute("listaPistas", pistaService.buscarTodos());	
 		
 		return "pistas";
 	}
