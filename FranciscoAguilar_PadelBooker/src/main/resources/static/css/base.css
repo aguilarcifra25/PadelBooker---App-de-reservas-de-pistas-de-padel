@@ -1,7 +1,10 @@
 :root {
 
-    --bs-secondary: #1E1E26;
-    --bs-secondary-rgb: 30, 30, 38;
+    --bs-dark: #1E1E26;
+    --bs-dark-rgb: 30, 30, 38;
+
+    --bs-secondary: #dde2e7;
+    --bs-secondary-rgb: 221, 226, 231;
 
 }
 

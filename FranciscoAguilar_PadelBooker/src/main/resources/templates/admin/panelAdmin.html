@@ -28,6 +28,7 @@
                         <th>Email</th>
                         <th>Teléfono</th>
                         <th>Rol</th>
+                        <th>Opciones</th>
                     </tr>
                 </thead>
 
@@ -38,11 +39,16 @@
                         <td th:text="${usuario.email}">Email</td>
                         <td th:text="${usuario.telefono}">Teléfono</td>
                         <td th:text="${usuario.rolUsuario}">Rol</td>
-
+                        <td>
+                            <a href="#" th:href="@{/editar/{id}(id=${usuario.id})}">Editar</a> |
+                            <a href="#" th:href="@{/borrar/{id}(id=${usuario.id})}">Borrar</a>
+                        </td>
                     </tr>
                 </tbody>
 
             </table>
+
+            <a href="crearUsuario" class="btn btn-primary">Crear nuevo usuario</a>
 
         </div>
 
