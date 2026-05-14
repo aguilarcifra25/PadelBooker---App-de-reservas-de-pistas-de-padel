@@ -29,4 +29,15 @@ public class UsuarioController {
 	    	
 		return "perfil";
 	}
+	
+	@GetMapping("/panelAdmin")
+	public String paginaAdmin (Model model, @AuthenticationPrincipal UserDetails usuario) {
+				
+	    model.addAttribute("nombreUsuario", usuario.getUsername());
+	    model.addAttribute("listaUsuarios", usuarioService.buscarTodos())	;
+	    
+	    
+		return "panelAdmin";
+	}
+	
 }
