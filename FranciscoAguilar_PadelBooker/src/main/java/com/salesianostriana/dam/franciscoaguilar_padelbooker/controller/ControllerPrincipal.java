@@ -52,11 +52,10 @@ public class ControllerPrincipal {
 		
 		return "redirect:/panelAdmin";		
 	}
-	
-	
+		
 	
 	@GetMapping("/editarUsuario/{id}")
-	public String mostrarFormularioEdicion(@PathVariable("id") long id, Model model) {
+	public String mostrarFormularioEdicionUsuario(@PathVariable("id") long id, Model model) {
 						 		
 		Optional<Usuario> uEditar = usuarioService.buscarPorId(id);
 		
@@ -95,6 +94,35 @@ public class ControllerPrincipal {
 		u.setPassword(encoder.encode(u.getPassword()));
 		
 		usuarioService.guardar(u);
+		
+		return "redirect:/panelAdmin";
+		
+	}
+	
+	
+	
+	@GetMapping("/editarPista/{numero}")
+	public String mostrarFormularioEdicionPista(@PathVariable("numero") long numero, Model model) {
+						 		
+		Optional<Pista> pEditar = pistaService.buscarPorId(numero);
+		
+		if (pEditar.isPresent()) {
+			
+			model.addAttribute("pista", pEditar.get());
+			
+			return "admin/editarPista";
+			
+		} else {
+			
+			return "redirect:/panelAdmin";
+			
+		}			
+	}
+	
+	@PostMapping("/editarPista/submit")
+	public String procesarEdicionPista(@ModelAttribute("pista") Pista p) {
+		
+		pistaService.editar(p);
 		
 		return "redirect:/panelAdmin";
 		

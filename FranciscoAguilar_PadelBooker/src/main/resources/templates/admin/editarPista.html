@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club DamPadel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <div th:replace="~{fragments/base :: header}"></div>
+
+    <main class="mt-5">
+
+        <form th:action="@{/editarPista/submit}" th:object="${pista}" method="post" class="form-control">
+            <input th:if="${pista.numero != 0}" type="hidden" name="id" th:numero="*{numero}" />
+
+            <label for="tipo" class="form-label">Tipo de pista</label>
+            <select name="tipo" id="tipo" class="form-select" th:field="*{tipo}">
+                <option value="indoor">Indoor</option>
+                <option value="outdoor">Outdoor</option>
+            </select>
+
+            <label for="suelo" class="form-label">Tipo de suelo</label>
+            <select name="suelo" id="suelo" class="form-select" th:field="*{suelo}">
+                <option value="cesped artificial">Césped artificial</option>
+                <option value="cemento poroso">Cemento poroso</option>
+            </select>
+
+            <input type="text" name="precioHora" th:field="*{precioHora}" placeholder="Ej: 4.5" />
+
+            <input type="submit" name="enviar" value="Enviar" />
+        </form>
+
+    </main>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+
+</body>
+
+</html>
