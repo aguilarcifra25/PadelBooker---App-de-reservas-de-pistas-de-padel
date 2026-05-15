@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -33,6 +34,7 @@ public class Reserva {
 	
 	@OneToMany(mappedBy = "reserva")
 	@Builder.Default
+	@EqualsAndHashCode.Exclude
     @ToString.Exclude
     private List<Asignacion> asignaciones = new ArrayList<>();
 

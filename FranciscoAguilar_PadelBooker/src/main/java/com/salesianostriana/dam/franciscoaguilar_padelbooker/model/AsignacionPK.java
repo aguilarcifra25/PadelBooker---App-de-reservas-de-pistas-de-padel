@@ -1,0 +1,18 @@
+package com.salesianostriana.dam.franciscoaguilar_padelbooker.model;
+
+import java.io.Serializable;
+
+import jakarta.persistence.Embeddable;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@Embeddable
+public class AsignacionPK implements Serializable{
+
+	private static final Long serialVersionUID = 1L;
+	
+	private long pista_id;
+	private long reserva_id;
+}

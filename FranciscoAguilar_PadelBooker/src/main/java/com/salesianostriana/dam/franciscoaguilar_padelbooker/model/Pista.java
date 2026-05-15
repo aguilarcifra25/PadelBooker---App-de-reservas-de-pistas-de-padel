@@ -10,6 +10,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -29,7 +30,8 @@ public class Pista {
 	
 	@OneToMany(mappedBy = "pista")
     @Builder.Default
-    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+	@ToString.Exclude
     private List<Asignacion> asignaciones = new ArrayList<>();
 	
 }

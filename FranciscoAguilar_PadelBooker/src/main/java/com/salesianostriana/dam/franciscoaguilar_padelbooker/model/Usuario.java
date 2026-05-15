@@ -19,6 +19,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -43,6 +44,7 @@ public class Usuario implements UserDetails {
 	
 	@OneToMany(mappedBy = "usuario")
     @Builder.Default
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private List<Reserva> reservas = new ArrayList<>(); 
 	

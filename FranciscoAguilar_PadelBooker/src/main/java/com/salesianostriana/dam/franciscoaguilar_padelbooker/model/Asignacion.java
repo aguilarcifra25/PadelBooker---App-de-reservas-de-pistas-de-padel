@@ -1,11 +1,11 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.model;
 
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,19 +17,45 @@ import lombok.NoArgsConstructor;
 @Data
 public class Asignacion {
 
-	@Id @GeneratedValue
-	private Long id;
+	@EmbeddedId
+	private AsignacionPK asignacionPK = new AsignacionPK();
 	
 	private boolean usaLuz;
     private double precio;
     private String observaciones;
 	
     @ManyToOne
+    @MapsId("reserva_id")
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_asignacion_reserva"))
     private Reserva reserva;
     
     @ManyToOne
+    @MapsId("pista_id")
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_asignacion_pista"))
     private Pista pista;
+    
+    
+    
+    public void agregarEnPista(Pista p) {
+		p.getAsignaciones().add(this);
+		this.pista = p;
+	}
+
+	public void eliminarDePista(Pista p) {
+		p.getAsignaciones().remove(this);
+		this.pista = null;
+	}
+    
+	
+	
+	public void agregarEnReserva(Reserva r) {
+		r.getAsignaciones().add(this);
+		this.reserva = r;
+	}
+
+	public void eliminarDeReserva(Reserva r) {
+		r.getAsignaciones().remove(this);
+		this.reserva = null;
+	}
     
 }
