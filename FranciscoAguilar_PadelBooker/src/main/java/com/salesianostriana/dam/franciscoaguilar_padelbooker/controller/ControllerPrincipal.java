@@ -39,14 +39,14 @@ public class ControllerPrincipal {
 	
 	
 	
-	@GetMapping("/borrar/{id}")
-	public String borrar(@PathVariable("id") long id) {
+	@GetMapping("/borrarUsuario/{id}")
+	public String borrarUsuario(@PathVariable("id") long id) {
 		
-		Optional<Usuario> aBorrar = usuarioService.buscarPorId(id);	
+		Optional<Usuario> uBorrar = usuarioService.buscarPorId(id);	
 		
-		if (aBorrar.isPresent()) {
+		if (uBorrar.isPresent()) {
 			
-			usuarioService.borrar(aBorrar.get());
+			usuarioService.borrar(uBorrar.get());
 			
 		} 
 		
@@ -55,7 +55,7 @@ public class ControllerPrincipal {
 	
 	
 	
-	@GetMapping("/editar/{id}")
+	@GetMapping("/editarUsuario/{id}")
 	public String mostrarFormularioEdicion(@PathVariable("id") long id, Model model) {
 						 		
 		Optional<Usuario> uEditar = usuarioService.buscarPorId(id);
@@ -76,8 +76,7 @@ public class ControllerPrincipal {
 	@PostMapping("/editarUsuario/submit")
 	public String procesarEdicionUsuario(@ModelAttribute("alumno") Usuario u) {
 		
-		usuarioService.editar(u);	
-		System.out.println(u);
+		usuarioService.editar(u);
 		
 		return "redirect:/panelAdmin";
 		
@@ -105,7 +104,7 @@ public class ControllerPrincipal {
 	@GetMapping("/crearPista")
 	public String crearPista (Model model) {
 			    		
-		return "crearPista";
+		return "admin/crearPista";
 	}
 	
 	@PostMapping("/crearPista/submit")
@@ -115,6 +114,21 @@ public class ControllerPrincipal {
 		
 		return "redirect:/panelAdmin";
 		
+	}
+	
+	
+	@GetMapping("/borrarPista/{numero}")
+	public String borrarPista(@PathVariable("numero") long numero) {
+		
+		Optional<Pista> pBorrar = pistaService.buscarPorId(numero);	
+		System.out.println(pBorrar);
+		if (pBorrar.isPresent()) {
+			
+			pistaService.borrar(pBorrar.get());
+			
+		} 
+		
+		return "redirect:/panelAdmin";		
 	}
 	
 }
