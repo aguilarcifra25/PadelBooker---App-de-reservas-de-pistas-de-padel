@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.PistaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioService;
@@ -90,11 +91,27 @@ public class ControllerPrincipal {
 	}
 	
 	@PostMapping("/crearUsuario/submit")
-	public String procesarCreacionUsuario(@ModelAttribute("alumno") Usuario u) {
+	public String procesarCreacionUsuario(@ModelAttribute("usuario") Usuario u) {
 		
 		u.setPassword(encoder.encode(u.getPassword()));
 		
 		usuarioService.guardar(u);
+		
+		return "redirect:/panelAdmin";
+		
+	}
+	
+	
+	@GetMapping("/crearPista")
+	public String crearPista (Model model) {
+			    		
+		return "crearPista";
+	}
+	
+	@PostMapping("/crearPista/submit")
+	public String procesarCreacionPista(@ModelAttribute("pista") Pista p) {
+				
+		pistaService.guardar(p);
 		
 		return "redirect:/panelAdmin";
 		
