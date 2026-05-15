@@ -15,42 +15,85 @@
 
     <div th:replace="~{fragments/base :: header}"></div>
 
-    <main>
+    <main class="mb-5">
 
-        <div class="container mt-4">
+        <section>
 
-            <table class="table table-striped">
+            <div class="container mt-4">
 
-                <thead class="table-primary">
-                    <tr>
-                        <th>Id</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Teléfono</th>
-                        <th>Rol</th>
-                        <th>Opciones</th>
-                    </tr>
-                </thead>
+                <table class="table table-striped">
 
-                <tbody>
-                    <tr th:each="usuario : ${listaUsuarios}">
-                        <td th:text="${usuario.id}">ID</td>
-                        <td th:text="${usuario.username}">Nombre</td>
-                        <td th:text="${usuario.email}">Email</td>
-                        <td th:text="${usuario.telefono}">Teléfono</td>
-                        <td th:text="${usuario.rolUsuario}">Rol</td>
-                        <td>
-                            <a href="#" th:href="@{/editar/{id}(id=${usuario.id})}">Editar</a> |
-                            <a href="#" th:href="@{/borrar/{id}(id=${usuario.id})}">Borrar</a>
-                        </td>
-                    </tr>
-                </tbody>
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Id</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Rol</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
 
-            </table>
+                    <tbody>
+                        <tr th:each="usuario : ${listaUsuarios}">
+                            <td th:text="${usuario.id}">ID</td>
+                            <td th:text="${usuario.username}">Nombre</td>
+                            <td th:text="${usuario.email}">Email</td>
+                            <td th:text="${usuario.telefono}">Teléfono</td>
+                            <td th:text="${usuario.rolUsuario}">Rol</td>
+                            <td>
+                                <a href="#" th:href="@{/editar/{id}(id=${usuario.id})}">Editar</a> |
+                                <a href="#" th:href="@{/borrar/{id}(id=${usuario.id})}">Borrar</a>
+                            </td>
+                        </tr>
+                    </tbody>
 
-            <a href="crearUsuario" class="btn btn-primary">Crear nuevo usuario</a>
+                </table>
 
-        </div>
+                <a href="crearUsuario" class="btn btn-primary">Crear nuevo usuario</a>
+
+            </div>
+
+        </section>
+
+        <hr>
+
+        <section>
+
+            <div class="container mt-4">
+
+                <table class="table table-striped">
+
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Número</th>
+                            <th>Tipo</th>
+                            <th>Suelo</th>
+                            <th>Precio/Hora</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr th:each="pista : ${listaPistas}">
+                            <td th:text="${pista.numero}">ID</td>
+                            <td th:text="${pista.tipo}">Tipo</td>
+                            <td th:text="${pista.suelo}">Suelo</td>
+                            <td th:text="${pista.precioHora}">Precio/Hora</td>
+                            <td>
+                                <a href="#" th:href="@{/editarPista/{id}(id=${pista.numero})}">Editar</a> |
+                                <a href="#" th:href="@{/borrarPista/{id}(id=${pista.numero})}">Borrar</a>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+                <a href="crearPista" class="btn btn-primary">Añadir nueva pista</a>
+
+            </div>
+
+        </section>
 
     </main>
 
