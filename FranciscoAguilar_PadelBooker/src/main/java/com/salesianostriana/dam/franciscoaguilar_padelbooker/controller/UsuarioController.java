@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class UsuarioController {
 
 	private final UsuarioService usuarioService;
-	private final PasswordEncoder encoder;
 	
 	@GetMapping({"/","/home"})
 	public String paginaPrincipal (Model model) {
@@ -42,78 +41,6 @@ public class UsuarioController {
 	
 	
 	
-	@GetMapping("/panelAdmin")
-	public String paginaAdmin (Model model, @AuthenticationPrincipal UserDetails usuario) {
-				
-	    model.addAttribute("nombreUsuario", usuario.getUsername());
-	    model.addAttribute("listaUsuarios", usuarioService.buscarTodos())	;
-	    
-	    
-		return "admin/panelAdmin";
-	}
 	
-	
-	
-	@GetMapping("/borrar/{id}")
-	public String borrar(@PathVariable("id") long id) {
-		
-		Optional<Usuario> aBorrar = usuarioService.buscarPorId(id);	
-		
-		if (aBorrar.isPresent()) {
-			
-			usuarioService.borrar(aBorrar.get());
-			
-		} 
-		
-		return "redirect:/panelAdmin";		
-	}
-	
-	
-	
-	@GetMapping("/editar/{id}")
-	public String mostrarFormularioEdicion(@PathVariable("id") long id, Model model) {
-						 		
-		Optional<Usuario> uEditar = usuarioService.buscarPorId(id);
-		
-		if (uEditar.isPresent()) {
-			
-			model.addAttribute("usuario", uEditar.get());
-			
-			return "admin/editarUsuario";
-			
-		} else {
-			
-			return "redirect:/panelAdmin";
-			
-		}			
-	}
-	
-	@PostMapping("/editarUsuario/submit")
-	public String procesarEdicionUsuario(@ModelAttribute("alumno") Usuario u) {
-		
-		usuarioService.editar(u);	
-		System.out.println(u);
-		
-		return "redirect:/panelAdmin";
-		
-	}
-	
-	
-	@GetMapping("/crearUsuario")
-	public String crearUsuario (Model model) {
-			    		
-		return "crearUsuario";
-	}
-	
-	@PostMapping("/crearUsuario/submit")
-	public String procesarCreacionUsuario(@ModelAttribute("alumno") Usuario u) {
-		
-		u.setPassword(encoder.encode(u.getPassword()));
-		
-		usuarioService.guardar(u);
-		
-		return "redirect:/panelAdmin";
-		
-	}
 	
 }
