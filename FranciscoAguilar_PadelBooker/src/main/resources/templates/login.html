@@ -31,7 +31,7 @@
 
                 <div th:if="${param.logout}">Has cerrado sesión.</div>
 
-                <form th:action="@{/login}" method="post" class="form-control border-0">
+                <form th:action="@{/login}" method="post" class="border-0">
                     <div class="mb-3 input-group-text rounded-4 border-3">
                         <span class="input-group-text border-0">
                             <i class="bi bi-person-circle"></i>
@@ -50,6 +50,16 @@
                         <input type="submit" class="btn btn-primary rounded-pill p-2" value="Iniciar sesión" />
                     </div>
                 </form>
+
+                <div class="d-flex align-items-center my-5">
+                    <div class="flex-grow-1 border-bottom border-dark-subtle"></div>
+                    <span class="mx-3 fw-bold small">¿No tienes cuenta?</span>
+                    <div class="flex-grow-1 border-bottom border-dark-subtle"></div>
+                </div>
+
+                <div class="d-grid">
+                    <a href="crearUsuario" class="btn btn-outline-primary rounded-pill p-2">Crear nuevo usuario</a>
+                </div>
 
             </div>
 

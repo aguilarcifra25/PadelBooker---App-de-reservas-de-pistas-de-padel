@@ -57,13 +57,20 @@
 
                 </div>
 
-                <label for="rolUsuario" class="form-label">Rol de usuario</label>
-                <select name="rolUsuario" id="rolUsuario" class="form-select">
-                    <option>USER</option>
-                    <option>ADMIN</option>
-                </select>
+                <div sec:authorize="hasRole('ADMIN')">
+                    <label for="rolUsuario" class="form-label">Rol de usuario</label>
+                    <select name="rolUsuario" id="rolUsuario" class="form-select">
+                        <option value="USER">USER</option>
+                        <option value="ADMIN">ADMIN</option>
+                    </select>
+                </div>
 
-                <input type="submit" name="enviar" value="Enviar" class="form-control btn btn-primary mt-5 rounded" />
+                <div sec:authorize="isAnonymous()">
+                    <input type="hidden" name="rolUsuario" value="USER" />
+                </div>
+
+                <input type="submit" name="enviar" value="Crear usuario"
+                    class="form-control btn btn-primary mt-5 rounded" />
 
             </form>
 

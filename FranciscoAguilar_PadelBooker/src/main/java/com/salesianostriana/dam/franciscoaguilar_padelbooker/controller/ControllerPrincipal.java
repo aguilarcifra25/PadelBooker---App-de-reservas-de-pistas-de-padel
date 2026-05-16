@@ -89,13 +89,24 @@ public class ControllerPrincipal {
 	}
 	
 	@PostMapping("/crearUsuario/submit")
-	public String procesarCreacionUsuario(@ModelAttribute("usuario") Usuario u) {
+	public String procesarCreacionUsuario(@ModelAttribute("usuario") Usuario u, @AuthenticationPrincipal UserDetails uLogueado) {
 		
 		u.setPassword(encoder.encode(u.getPassword()));
 		
 		usuarioService.guardar(u);
+		System.out.println(u);
 		
-		return "redirect:/panelAdmin";
+		if (uLogueado != null && uLogueado.getAuthorities().stream()
+						.filter(rol -> rol.getAuthority()
+						.equals("ROLE_ADMIN"))
+						.findFirst()
+						.isPresent())  {
+			
+			return "redirect:/panelAdmin";
+			
+		}
+		
+		return "redirect:/login";
 		
 	}
 	
