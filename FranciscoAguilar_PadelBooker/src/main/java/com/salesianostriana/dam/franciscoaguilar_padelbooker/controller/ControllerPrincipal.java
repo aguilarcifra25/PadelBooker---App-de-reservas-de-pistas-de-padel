@@ -28,6 +28,12 @@ public class ControllerPrincipal {
 	private final PasswordEncoder encoder;
 	
 	
+	@GetMapping({"/","/home"})
+	public String paginaPrincipal (Model model) {
+			    		
+		return "home";
+	}
+	
 	@GetMapping("/panelAdmin")
 	public String paginaAdmin (Model model, @AuthenticationPrincipal UserDetails usuario) {
 				
@@ -73,7 +79,7 @@ public class ControllerPrincipal {
 	}
 	
 	@PostMapping("/editarUsuario/submit")
-	public String procesarEdicionUsuario(@ModelAttribute("alumno") Usuario u) {
+	public String procesarEdicionUsuario(@ModelAttribute("usuario") Usuario u) {
 		
 		usuarioService.editar(u);
 		
@@ -94,7 +100,6 @@ public class ControllerPrincipal {
 		u.setPassword(encoder.encode(u.getPassword()));
 		
 		usuarioService.guardar(u);
-		System.out.println(u);
 		
 		if (uLogueado != null && uLogueado.getAuthorities().stream()
 						.filter(rol -> rol.getAuthority()

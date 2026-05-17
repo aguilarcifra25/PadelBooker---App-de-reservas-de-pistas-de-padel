@@ -27,7 +27,7 @@ public class DataSeed {
 		
 		Pista p1 = Pista.builder()
 					.tipo("Indoor")
-					.suelo("Tierra")
+					.suelo("Césped artificial")
 					.precioHora(12)
 					.build(); 		
 		

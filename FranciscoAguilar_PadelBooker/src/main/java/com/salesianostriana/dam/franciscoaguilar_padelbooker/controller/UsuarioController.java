@@ -16,11 +16,7 @@ public class UsuarioController {
 
 	private final UsuarioService usuarioService;
 	
-	@GetMapping({"/","/home"})
-	public String paginaPrincipal (Model model) {
-			    		
-		return "home";
-	}
+	
 	
 	
 	
