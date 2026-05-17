@@ -140,7 +140,9 @@
                                     class="card-title">Pista</h4>
                                 <p th:text="${pista.suelo}" class="card-text">Césped artificial</p>
                                 <div class="d-grid">
-                                    <button type="button" class="btn btn-primary">Ver disponibilidad</button>
+                                    <a class="btn btn-primary"
+                                        th:href="@{/detallesPista/{numero}(numero=${pista.numero})}">Ver
+                                        disponibilidad</a>
                                 </div>
                             </div>
                         </div>
