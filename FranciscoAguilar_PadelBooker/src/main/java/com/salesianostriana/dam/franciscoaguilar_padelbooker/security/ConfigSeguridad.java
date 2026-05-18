@@ -20,7 +20,7 @@ public class ConfigSeguridad {
 		http.authorizeHttpRequests(
 				(authz) -> authz
 					
-					.requestMatchers("/", "/favicon.ico", "/home", "/login", "/pistas", "/crearUsuario", "/crearUsuario/submit", "/css/**", "/js/**", "/img/**").permitAll()
+					.requestMatchers("/", "/favicon.ico", "/h2-console/**", "/home", "/login", "/pistas", "/crearUsuario", "/crearUsuario/submit", "/css/**", "/js/**", "/img/**").permitAll()
 					.anyRequest()
 					.authenticated())
 					.requestCache(cache -> {
@@ -36,7 +36,7 @@ public class ConfigSeguridad {
 		// Añadimos esto para poder acceder a la consola de H2
 		// con Spring Security habilitado.
 		http.csrf((csrf) -> {
-			csrf.ignoringRequestMatchers("/h2/**");
+			csrf.ignoringRequestMatchers("/h2-console/**");
 		});
 		http.headers((headers) -> headers.frameOptions((opts) -> opts.disable()));
 

@@ -3,11 +3,12 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.model;
 import java.io.Serializable;
 
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
+@NoArgsConstructor @AllArgsConstructor
 @Embeddable
 public class AsignacionPK implements Serializable{
 

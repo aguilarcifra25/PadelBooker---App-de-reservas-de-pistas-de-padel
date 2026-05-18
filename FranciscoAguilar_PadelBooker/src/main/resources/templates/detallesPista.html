@@ -78,7 +78,8 @@
 
                 </div>
 
-                <div class="col-lg-4 mt-5">
+                <div class="col-lg-4 mb-5">
+
                     <div class="border border-2 border-primary rounded shadow-lg p-4">
                         <div class="mb-4">
                             <h4 class="fw-bold">
@@ -86,8 +87,8 @@
                             </h4>
                         </div>
 
-                        <form th:action="@{/reservar}" method="POST">
-                            <input type="hidden" name="pistaId" th:value="${pista.numero}" />
+                        <form th:action="@{/reservar/submit}" method="POST">
+                            <input type="hidden" name="numeroPista" th:value="${pista.numero}" />
 
                             <div class="mb-4">
                                 <label class="form-label small fw-bold mb-2">
@@ -177,23 +178,49 @@
                                 </div>
                             </div>
 
-                            <div class="mb-3 pt-4 border-top">
-                                <label class="form-label small fw-bold mb-2 text-dark">Nombre completo</label>
-                                <input type="text" name="nombre" class="form-control bg-light text-muted"
-                                    th:value="${#authentication.principal.username}" readonly />
-                            </div>
+                            <div class="mb-4 pt-4 border-top">
+                                <label class="form-label small fw-bold mb-3 text-dark">
+                                    <i class="bi bi-star-fill text-warning me-2"></i> Servicios Extras opcionales
+                                </label>
 
-                            <div class="mb-4">
-                                <label class="form-label small fw-bold mb-2 text-dark">Email de contacto</label>
-                                <input type="email" name="email" class="form-control bg-light text-muted"
-                                    th:value="${#authentication.principal.email}" readonly />
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <div class="p-3 border rounded h-100">
+                                            <div
+                                                class="form-check form-switch m-0 d-flex align-items-center justify-content-between ps-0">
+                                                <label class="form-check-label small fw-bold" for="usaLuz">Iluminación
+                                                    de pista (+4.50€)</label>
+                                                <input class="form-check-input bg-warning ms-0" type="checkbox"
+                                                    role="switch" id="usaLuz" name="usaLuz" value="true">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        <div class="p-3 border rounded h-100">
+                                            <div
+                                                class="form-check form-switch mb-2 d-flex align-items-center justify-content-between ps-0">
+                                                <label class="form-check-label small fw-bold" for="usaRaquetas">Alquilar
+                                                    palas (+2.00€/u)</label>
+                                                <input class="form-check-input bg-warning ms-0" type="checkbox"
+                                                    role="switch" id="usaRaquetas" name="usaRaquetas" value="true">
+                                            </div>
+                                            <div class="input-group input-group-sm">
+                                                <span
+                                                    class="input-group-text bg-white text-muted small">Cantidad:</span>
+                                                <input type="number" name="cantRaquetas" id="cantRaquetas"
+                                                    class="form-control" value="0" min="0" max="4">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-warning w-100 fw-bold text-dark py-3 mt-2 shadow-sm">
                                 Confirmar reserva <i class="bi bi-chevron-right"></i>
                             </button>
-                        </form>
 
+                        </form>
 
                     </div>
 

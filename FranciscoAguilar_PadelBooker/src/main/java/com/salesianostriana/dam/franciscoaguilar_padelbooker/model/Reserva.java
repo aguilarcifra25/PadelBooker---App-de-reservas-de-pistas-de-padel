@@ -1,6 +1,6 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.model;
 
-import java.time.Duration;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
@@ -29,7 +29,8 @@ public class Reserva {
 	private Long codigo;
 	
 	private Date fecha;
-	private Duration duracion; 
+	private LocalTime horaEntrada;
+	private LocalTime horaSalida; 
 	private double precioTotal;
 	
 	@OneToMany(mappedBy = "reserva")
