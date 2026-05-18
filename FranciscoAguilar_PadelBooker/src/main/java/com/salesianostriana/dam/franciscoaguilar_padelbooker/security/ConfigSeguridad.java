@@ -2,6 +2,7 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -9,6 +10,7 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class ConfigSeguridad {
 
 	
@@ -18,7 +20,7 @@ public class ConfigSeguridad {
 		http.authorizeHttpRequests(
 				(authz) -> authz
 					
-					.requestMatchers("/", "/home", "/login", "/pistas", "/crearUsuario", "/crearUsuario/submit", "/css/**", "/js/**", "/img/**").permitAll()
+					.requestMatchers("/", "/favicon.ico", "/home", "/login", "/pistas", "/crearUsuario", "/crearUsuario/submit", "/css/**", "/js/**", "/img/**").permitAll()
 					.anyRequest()
 					.authenticated())
 					.requestCache(cache -> {

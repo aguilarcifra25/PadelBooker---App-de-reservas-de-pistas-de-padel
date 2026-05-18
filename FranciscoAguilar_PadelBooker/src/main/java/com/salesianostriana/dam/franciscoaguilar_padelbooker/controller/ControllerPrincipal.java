@@ -2,6 +2,7 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
 import java.util.Optional;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,6 +35,7 @@ public class ControllerPrincipal {
 		return "home";
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/panelAdmin")
 	public String paginaAdmin (Model model, @AuthenticationPrincipal UserDetails usuario) {
 				
@@ -44,7 +46,7 @@ public class ControllerPrincipal {
 	}
 	
 	
-	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/borrarUsuario/{id}")
 	public String borrarUsuario(@PathVariable("id") long id) {
 		
@@ -116,7 +118,7 @@ public class ControllerPrincipal {
 	}
 	
 	
-	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/editarPista/{numero}")
 	public String mostrarFormularioEdicionPista(@PathVariable("numero") long numero, Model model) {
 						 		
@@ -135,6 +137,7 @@ public class ControllerPrincipal {
 		}			
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/editarPista/submit")
 	public String procesarEdicionPista(@ModelAttribute("pista") Pista p) {
 		
@@ -142,15 +145,16 @@ public class ControllerPrincipal {
 		
 		return "redirect:/panelAdmin";
 		
-	}
+	}	
 	
-	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/crearPista")
 	public String crearPista (Model model) {
 			    		
 		return "admin/crearPista";
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/crearPista/submit")
 	public String procesarCreacionPista(@ModelAttribute("pista") Pista p) {
 				
@@ -161,6 +165,7 @@ public class ControllerPrincipal {
 	}
 	
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/borrarPista/{numero}")
 	public String borrarPista(@PathVariable("numero") long numero) {
 		

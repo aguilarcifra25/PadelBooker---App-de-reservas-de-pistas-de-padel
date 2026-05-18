@@ -2,6 +2,7 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
 import java.util.Optional;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,7 @@ public class PistaController {
 		return "pistas";
 	}
 	
-	
+	@PreAuthorize("hasRole('USER')")
 	@GetMapping("/detallesPista/{numero}")
 	public String verDetallesPista (@PathVariable("numero") long numero, Model model) {
 		
