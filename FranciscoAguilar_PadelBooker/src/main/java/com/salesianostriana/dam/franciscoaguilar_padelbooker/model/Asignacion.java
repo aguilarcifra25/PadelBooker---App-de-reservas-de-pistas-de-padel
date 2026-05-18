@@ -21,6 +21,7 @@ public class Asignacion {
 	private AsignacionPK asignacionPK = new AsignacionPK();
 	
 	private boolean usaLuz;
+	private int cantRaquetas;
     private double precio;
     private String observaciones;
 	

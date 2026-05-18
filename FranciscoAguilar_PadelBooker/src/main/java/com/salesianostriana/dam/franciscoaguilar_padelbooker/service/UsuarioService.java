@@ -1,6 +1,6 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.service;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -16,4 +16,10 @@ public class UsuarioService extends ServiciosBaseImpl<Usuario, Long, UsuarioRepo
 
 	private final UsuarioRepository usuarioRepository;
 			
+	public Optional<Usuario> buscarPorNombre(String username) {
+		
+        return usuarioRepository.findByUsername(username);
+        
+    }
+	
 }
