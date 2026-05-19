@@ -17,13 +17,49 @@
 
     <main class="mt-5">
 
-        <form th:action="@{/editarUsuario/submit}" th:object="${usuario}" method="post" class="form-control">
-            <input th:if="${usuario.id != 0}" type="hidden" name="id" th:field="*{id}" />
-            <input type="text" name="nombre" th:field="*{username}" placeholder="Nombre" />
-            <input type="email" name="apellidos" th:field="*{email}" placeholder="Email" />
-            <input type="text" name="email" th:field="*{telefono}" placeholder="Teléfono" />
-            <input type="submit" name="enviar" value="Enviar" />
-        </form>
+        <div class="container my-5 p-3 mx-auto card shadow-lg bg-secondary">
+
+            <form th:action="@{/editarUsuario/submit}" th:object="${usuario}" method="post">
+
+                <input th:if="${usuario.id != 0}" type="hidden" name="id" th:field="*{id}" class="form-control" />
+
+                <div class="row">
+
+                    <div class="col-6">
+
+                        <label for="username" class="form-label">Nombre</label>
+                        <input type="text" name="nombre" th:field="*{username}" placeholder="Nombre" id="username"
+                            class="form-control" required />
+
+                    </div>
+
+                    <div class="col-6">
+
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" name="apellidos" th:field="*{email}" placeholder="Email" id="email"
+                            class="form-control" required />
+
+                    </div>
+
+                </div>
+
+                <div class="row my-5">
+
+                    <div class="col-6">
+
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="text" name="email" th:field="*{telefono}" placeholder="Teléfono" id="telefono"
+                            class="form-control" required />
+
+                    </div>
+
+                </div>
+
+                <input type="submit" name="enviar" value="Enviar" class="form-control btn btn-primary mt-5 rounded" />
+
+            </form>
+
+        </div>
 
     </main>
 
