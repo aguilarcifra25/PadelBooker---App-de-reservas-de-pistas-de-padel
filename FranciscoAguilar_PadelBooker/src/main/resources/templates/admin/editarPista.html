@@ -17,25 +17,54 @@
 
     <main class="mt-5">
 
-        <form th:action="@{/editarPista/submit}" th:object="${pista}" method="post" class="form-control">
-            <input th:if="${pista.numero != 0}" type="hidden" name="id" th:numero="*{numero}" />
+        <div class="container my-5 p-3 mx-auto card shadow-lg bg-secondary">
 
-            <label for="tipo" class="form-label">Tipo de pista</label>
-            <select name="tipo" id="tipo" class="form-select" th:field="*{tipo}">
-                <option value="indoor">Indoor</option>
-                <option value="outdoor">Outdoor</option>
-            </select>
+            <form th:action="@{/editarPista/submit}" th:object="${pista}" method="post">
 
-            <label for="suelo" class="form-label">Tipo de suelo</label>
-            <select name="suelo" id="suelo" class="form-select" th:field="*{suelo}">
-                <option value="cesped artificial">Césped artificial</option>
-                <option value="cemento poroso">Cemento poroso</option>
-            </select>
+                <input th:if="${pista.numero != 0}" type="hidden" name="id" th:numero="*{numero}"
+                    class="form-control" />
 
-            <input type="text" name="precioHora" th:field="*{precioHora}" placeholder="Ej: 4.5" />
+                <div class="row">
 
-            <input type="submit" name="enviar" value="Enviar" />
-        </form>
+                    <div class="col-6">
+
+                        <label for="tipo" class="form-label">Tipo de pista</label>
+                        <select name="tipo" id="tipo" class="form-select" th:field="*{tipo}">
+                            <option value="indoor">Indoor</option>
+                            <option value="outdoor">Outdoor</option>
+                        </select>
+
+                    </div>
+
+                    <div class="col-6">
+
+                        <label for="suelo" class="form-label">Tipo de suelo</label>
+                        <select name="suelo" id="suelo" class="form-select" th:field="*{suelo}">
+                            <option value="cesped artificial">Césped artificial</option>
+                            <option value="cemento poroso">Cemento poroso</option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="row my-5">
+
+                    <div class="col-6">
+
+                        <label for="precioHora" class="form-label">Precio por hora</label>
+                        <input type="text" name="precioHora" th:field="*{precioHora}" placeholder="Ej: 4.5"
+                            id="precioHora" class="form-control" required />
+
+                    </div>
+
+                </div>
+
+                <input type="submit" name="enviar" value="Enviar" class="form-control btn btn-primary mt-5 rounded" />
+
+            </form>
+
+        </div>
 
     </main>
 
