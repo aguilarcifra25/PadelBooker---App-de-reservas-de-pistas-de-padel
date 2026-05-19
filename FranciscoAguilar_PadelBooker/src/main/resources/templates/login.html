@@ -27,9 +27,11 @@
                 <h1 class="fw-bolder display-5 text-center">¡Bienvenido de nuevo!</h1>
                 <h5 class="mt-2 mb-5 text-center">Inicia sesión para acceder a tu cuenta</h5>
 
-                <div th:if="${param.error}">Nombre de usuario y contraseña incorrectos.</div>
+                <div th:if="${param.error}" class="text-center text-danger mb-3">Nombre de usuario y contraseña
+                    incorrectos.
+                </div>
 
-                <div th:if="${param.logout}">Has cerrado sesión.</div>
+                <div th:if="${param.logout}" class="text-center mb-3">Has cerrado sesión.</div>
 
                 <form th:action="@{/login}" method="post" class="border-0">
                     <div class="mb-3 input-group-text rounded-4 border-3">
@@ -37,14 +39,14 @@
                             <i class="bi bi-person-circle"></i>
                         </span>
                         <input type="text" name="username" placeholder="Nombre de usuario"
-                            class="form-control p-2 border-0" />
+                            class="form-control p-2 border-0" required />
                     </div>
                     <div class="mb-3 input-group-text rounded-4 border-3">
                         <span class="input-group-text border-0">
                             <i class="bi bi-lock"></i>
                         </span>
                         <input type="password" name="password" placeholder="Contraseña"
-                            class="form-control p-2 border-0" />
+                            class="form-control p-2 border-0" required />
                     </div>
                     <div class="d-grid">
                         <input type="submit" class="btn btn-primary rounded-pill p-2" value="Iniciar sesión" />
