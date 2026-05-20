@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club DamPadel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <div th:replace="~{fragments/base :: header}"></div>
+
+    <main>
+
+        <div class="container my-5 p-3 mx-auto card shadow-lg bg-secondary">
+
+            <form th:action="@{/admin/reserva/crear}" method="POST">
+
+                <h5 class="text-secondary border-bottom pb-2 mb-3">Datos del Cliente</h5>
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <label for="usuarioId" class="form-label">Seleccionar Usuario / Cliente:</label>
+                        <select id="usuarioId" name="usuarioId" class="form-select" required>
+                            <option value="" disabled selected hidden>-- Elige el cliente que realiza la reserva --
+                            </option>
+                            <option th:each="u : ${listaUsuarios}" th:value="${u.id}"
+                                th:text="${u.username + ' (' + u.email + ')'}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <h5 class="text-secondary border-bottom pb-2 mt-4 mb-3">Datos de Horario</h5>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="fecha" class="form-label">Fecha de la Reserva:</label>
+                        <input type="date" id="fecha" name="fecha" class="form-control"
+                            th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="horaInicio" class="form-label">Hora de Inicio:</label>
+                        <select id="horaInicio" name="horaInicio" class="form-select form-select-lg fs-6" required>
+                            <option value="" disabled selected hidden>--:--</option>
+                            <option value="08:00">08:00</option>
+                            <option value="08:30">08:30</option>
+                            <option value="09:00">09:00</option>
+                            <option value="09:30">09:30</option>
+                            <option value="10:00">10:00</option>
+                            <option value="10:30">10:30</option>
+                            <option value="11:00">11:00</option>
+                            <option value="11:30">11:30</option>
+                            <option value="12:00">12:00</option>
+                            <option value="12:30">12:30</option>
+                            <option value="13:00">13:00</option>
+                            <option value="13:30">13:30</option>
+                            <option value="14:00">14:00</option>
+                            <option value="14:30">14:30</option>
+                            <option value="15:00">15:00</option>
+                            <option value="15:30">15:30</option>
+                            <option value="16:00">16:00</option>
+                            <option value="16:30">16:30</option>
+                            <option value="17:00">17:00</option>
+                            <option value="17:30">17:30</option>
+                            <option value="18:00">18:00</option>
+                            <option value="18:30">18:30</option>
+                            <option value="19:00">19:00</option>
+                            <option value="19:30">19:30</option>
+                            <option value="20:00">20:00</option>
+                            <option value="20:30">20:30</option>
+                            <option value="21:00">21:00</option>
+                            <option value="21:30">21:30</option>
+                            <option value="22:00">22:00</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="horaFin" class="form-label">Hora de Fin:</label>
+                        <select id="horaFin" name="horaFin" class="form-select form-select-lg fs-6" required>
+                            <option value="" disabled selected hidden>--:--</option>
+                            <option value="08:30">08:30</option>
+                            <option value="09:00">09:00</option>
+                            <option value="09:30">09:30</option>
+                            <option value="10:00">10:00</option>
+                            <option value="10:30">10:30</option>
+                            <option value="11:00">11:00</option>
+                            <option value="11:30">11:30</option>
+                            <option value="12:00">12:00</option>
+                            <option value="12:30">12:30</option>
+                            <option value="13:00">13:00</option>
+                            <option value="13:30">13:30</option>
+                            <option value="14:00">14:00</option>
+                            <option value="14:30">14:30</option>
+                            <option value="15:00">15:00</option>
+                            <option value="15:30">15:30</option>
+                            <option value="16:00">16:00</option>
+                            <option value="16:30">16:30</option>
+                            <option value="17:00">17:00</option>
+                            <option value="17:30">17:30</option>
+                            <option value="18:00">18:00</option>
+                            <option value="18:30">18:30</option>
+                            <option value="19:00">19:00</option>
+                            <option value="19:30">19:30</option>
+                            <option value="20:00">20:00</option>
+                            <option value="20:30">20:30</option>
+                            <option value="21:00">21:00</option>
+                            <option value="21:30">21:30</option>
+                            <option value="22:00">22:00</option>
+                            <option value="22:30">22:30</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h5 class="text-secondary border-bottom pb-2 mt-4 mb-3">Detalles de la Pista y Equipamiento</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="numero" class="form-label">Seleccionar Pista:</label>
+                        <select id="numero" name="numero" class="form-select" required>
+                            <option value="" disabled selected>-- Elige una pista disponible --</option>
+                            <option th:each="p : ${listaPistas}" th:value="${p.numero}"
+                                th:text="${'Pista ' + p.numero + ' (' + p.tipo + ' - ' + p.precioHora + '€/h)'}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="cantRaquetas" class="form-label">Alquiler de Raquetas:</label>
+                        <input type="number" id="cantRaquetas" name="cantRaquetas" class="form-control" min="0" max="4"
+                            value="0" required />
+                    </div>
+
+                    <div class="col-md-3 mb-3 d-flex align-items-center pt-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="usaLuz" name="usaLuz" value="true">
+                            <label class="form-check-label" for="usaLuz">¿Requiere Luz Eléctrica?</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <label for="observaciones" class="form-label">Observaciones / Notas Adicionales:</label>
+                        <textarea id="observaciones" name="observaciones" class="form-control" rows="3"
+                            placeholder="Ej. El usuario pagará con tarjeta en recepción..."></textarea>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a th:href="@{/panelAdmin}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success">Confirmar y Guardar Reserva</button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+
+</body>
+
+</html>
