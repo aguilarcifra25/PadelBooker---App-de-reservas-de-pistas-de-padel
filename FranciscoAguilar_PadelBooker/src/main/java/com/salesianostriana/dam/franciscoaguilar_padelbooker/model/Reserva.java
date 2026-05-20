@@ -3,8 +3,12 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.model;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.ArrayList;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -28,12 +32,14 @@ public class Reserva {
 	@Id @GeneratedValue
 	private Long codigo;
 	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date fecha;
+	
 	private LocalTime horaEntrada;
 	private LocalTime horaSalida; 
 	private double precioTotal;
 	
-	@OneToMany(mappedBy = "reserva")
+	@OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL)
 	@Builder.Default
 	@EqualsAndHashCode.Exclude
     @ToString.Exclude

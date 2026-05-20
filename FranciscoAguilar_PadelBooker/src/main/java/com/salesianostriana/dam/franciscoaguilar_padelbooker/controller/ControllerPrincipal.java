@@ -1,5 +1,8 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaService;
+
+import java.time.LocalTime;
 import java.util.Optional;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,8 +15,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Asignacion;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.PistaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioService;
@@ -24,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ControllerPrincipal {
 
+	private final ReservaService reservaService;
 	private final UsuarioService usuarioService;
 	private final PistaService pistaService;
 	private final PasswordEncoder encoder;
@@ -41,6 +48,7 @@ public class ControllerPrincipal {
 				
 	    model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
 	    model.addAttribute("listaPistas", pistaService.buscarTodos());
+	    model.addAttribute("listaReservas", reservaService.buscarTodos());
 	    	    
 		return "admin/panelAdmin";
 	}
@@ -163,17 +171,93 @@ public class ControllerPrincipal {
 		return "redirect:/panelAdmin";
 		
 	}
-	
-	
+		
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/borrarPista/{numero}")
 	public String borrarPista(@PathVariable("numero") long numero) {
 		
 		Optional<Pista> pBorrar = pistaService.buscarPorId(numero);	
-		System.out.println(pBorrar);
+		
 		if (pBorrar.isPresent()) {
 			
 			pistaService.borrar(pBorrar.get());
+			
+		} 
+		
+		return "redirect:/panelAdmin";		
+	}
+	
+	
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/crearReserva")
+	public String crearReserva (Model model) {
+			    		
+		return "admin/crearReserva";
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/editarReserva/{codigo}")
+	public String mostrarFormularioEdicionReserva(@PathVariable("codigo") long codigo, Model model) {
+						 		
+		Optional<Reserva> rEditar = reservaService.buscarPorId(codigo);
+		
+		if (rEditar.isPresent()) {
+			
+			model.addAttribute("reserva", rEditar.get());
+			
+			return "admin/editarReserva";
+			
+		} else {
+			
+			return "redirect:/panelAdmin";
+			
+		}			
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@PostMapping("/editarReserva/submit")
+	public String procesarEdicionReserva(
+	        @ModelAttribute("reserva") Reserva r,
+	        @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
+	        @RequestParam("cantRaquetas") int cantRaquetas) {
+	    
+		Reserva reservaExistente = reservaService.buscarPorId(r.getCodigo())
+												.orElseThrow(() -> new RuntimeException("No se encuentra la reserva " + r.getCodigo()));
+	    
+	    reservaExistente.setFecha(r.getFecha());
+	    reservaExistente.setHoraEntrada(r.getHoraEntrada());
+	    reservaExistente.setHoraSalida(r.getHoraSalida());
+
+	    Asignacion asignacionExistente = reservaExistente.getAsignaciones().getFirst();
+	    
+	    asignacionExistente.setUsaLuz(usaLuz);
+	    asignacionExistente.setCantRaquetas(cantRaquetas);
+	    
+	    double precioReservaExistente = reservaService.calcularPrecioTotal(
+	        reservaExistente.getHoraEntrada(), 
+	        reservaExistente.getHoraSalida(), 
+	        asignacionExistente.getCantRaquetas(), 
+	        asignacionExistente.getPrecio(),
+	        asignacionExistente.isUsaLuz()
+	    );
+	    
+	    reservaExistente.setPrecioTotal(precioReservaExistente);
+	    
+	    reservaService.editar(reservaExistente);
+	    
+	    return "redirect:/panelAdmin?tab=reservas";
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/borrarReserva/{codigo}")
+	public String borrarReserva(@PathVariable("codigo") long codigo) {
+		
+		Optional<Reserva> rBorrar = reservaService.buscarPorId(codigo);	
+		
+		if (rBorrar.isPresent()) {
+			
+			reservaService.borrar(rBorrar.get());
 			
 		} 
 		
