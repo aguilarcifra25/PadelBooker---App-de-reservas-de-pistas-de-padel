@@ -25,14 +25,19 @@
 
                 <div class="list-group list-group-flush">
 
-                    <button class="list-group-item list-group-item-action border rounded mb-2 active"
-                        data-bs-toggle="list" data-bs-target="#seccion-usuarios">
-                        Gestión de Usuarios
+                    <button class="list-group-item list-group-item-action border rounded active" data-bs-toggle="list"
+                        data-bs-target="#seccion-usuarios">
+                        Gestión de usuarios
+                    </button>
+
+                    <button class="list-group-item list-group-item-action border rounded my-2" data-bs-toggle="list"
+                        data-bs-target="#seccion-pistas">
+                        Gestión de pistas
                     </button>
 
                     <button class="list-group-item list-group-item-action border rounded" data-bs-toggle="list"
-                        data-bs-target="#seccion-pistas">
-                        Gestión de Pistas
+                        data-bs-target="#seccion-reservas">
+                        Gestión de reservas
                     </button>
 
                 </div>
@@ -109,6 +114,47 @@
                                             th:href="@{/editarPista/{numero}(numero=${pista.numero})}">Editar</a> |
                                         <a href="#"
                                             th:href="@{/borrarPista/{numero}(numero=${pista.numero})}">Borrar</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+                <section class="tab-pane fade" id="seccion-reservas">
+
+                    <div class="container mt-4">
+
+                        <a th:href="@{/crearReserva}" class="btn btn-outline-primary my-3">Añadir nueva reserva</a>
+
+                        <table class="table table-striped">
+
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Fecha</th>
+                                    <th>Hora de entrada</th>
+                                    <th>Hora de salida</th>
+                                    <th>Precio total</th>
+                                    <th>Opciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr th:each="reserva : ${listaReservas}">
+                                    <td th:text="${reserva.codigo}"></td>
+                                    <td th:text="${reserva.fecha}"></td>
+                                    <td th:text="${reserva.horaEntrada}"></td>
+                                    <td th:text="${reserva.horaSalida}"></td>
+                                    <td th:text="${reserva.precioTotal}"></td>
+                                    <td>
+                                        <a href="#"
+                                            th:href="@{/editarReserva/{codigo}(codigo=${reserva.codigo})}">Editar</a> |
+                                        <a href="#"
+                                            th:href="@{/borrarReserva/{codigo}(codigo=${reserva.codigo})}">Borrar</a>
                                     </td>
                                 </tr>
                             </tbody>
