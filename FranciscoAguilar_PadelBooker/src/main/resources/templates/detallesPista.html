@@ -64,7 +64,8 @@
                                 <p class="mb-2"><i class="bi bi-check text-success me-2"></i>Iluminación LED de
                                     excelente visibilidad uniforme.</p>
 
-                                <p class="mb-2"><i class="bi bi-check text-success me-2"></i>Clima controlado con
+                                <p th:if="${pista.tipo == 'Outdoor'}" class="mb-2"><i
+                                        class="bi bi-check text-success me-2"></i>Clima controlado con
                                     temperatura ideal.</p>
 
                                 <p class="mb-2"><i class="bi bi-check text-success me-2"></i>Alquiler de material
@@ -187,10 +188,11 @@
                                     <div class="col-12 col-md-6">
                                         <div class="p-3 border rounded h-100">
                                             <div
-                                                class="form-check form-switch m-0 d-flex align-items-center justify-content-between ps-0">
-                                                <label class="form-check-label small fw-bold" for="usaLuz">Iluminación
-                                                    de pista (+4.50€)</label>
-                                                <input class="form-check-input bg-warning ms-0" type="checkbox"
+                                                class="form-check form-switch m-0 d-flex flex-column align-items-center justify-content-between ps-0">
+                                                <label class="form-check-label small fw-bold mb-3"
+                                                    for="usaLuz">Iluminación
+                                                    de pista (+4.50€/hora)</label>
+                                                <input class="form-check-input bg-warning ms-0 fs-4" type="checkbox"
                                                     role="switch" id="usaLuz" name="usaLuz" value="true">
                                             </div>
                                         </div>
@@ -198,14 +200,9 @@
 
                                     <div class="col-12 col-md-6">
                                         <div class="p-3 border rounded h-100">
-                                            <div
-                                                class="form-check form-switch mb-2 d-flex align-items-center justify-content-between ps-0">
-                                                <label class="form-check-label small fw-bold" for="usaRaquetas">Alquilar
-                                                    palas (+2.00€/u)</label>
-                                                <input class="form-check-input bg-warning ms-0" type="checkbox"
-                                                    role="switch" id="usaRaquetas" name="usaRaquetas" value="true">
-                                            </div>
                                             <div class="input-group input-group-sm">
+                                                <label class="form-check-label small fw-bold mb-3"
+                                                    for="cantRaquetas">Alquiler de palas (+2€ ud)</label>
                                                 <span
                                                     class="input-group-text bg-white text-muted small">Cantidad:</span>
                                                 <input type="number" name="cantRaquetas" id="cantRaquetas"
