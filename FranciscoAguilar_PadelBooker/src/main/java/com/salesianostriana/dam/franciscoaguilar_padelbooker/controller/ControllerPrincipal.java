@@ -1,8 +1,11 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaService;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Asignacion;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.AsignacionPK;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
@@ -30,11 +34,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ControllerPrincipal {
 
+	private final AsignacionService asignacionService;
 	private final ReservaService reservaService;
 	private final UsuarioService usuarioService;
 	private final PistaService pistaService;
 	private final PasswordEncoder encoder;
-	
+
 	
 	@GetMapping({"/","/home"})
 	public String paginaPrincipal (Model model) {
@@ -193,8 +198,68 @@ public class ControllerPrincipal {
 	@GetMapping("/crearReserva")
 	public String crearReserva (Model model) {
 			    		
+		model.addAttribute("listaPistas", pistaService.buscarTodos());
+		model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
+		
 		return "admin/crearReserva";
 	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@PostMapping("/admin/reserva/crear")
+	public String guardarReserva(
+	        @RequestParam("fecha") LocalDate fecha,
+	        @RequestParam("horaInicio") LocalTime horaEntrada,
+	        @RequestParam("horaFin") LocalTime horaSalida,        
+	        @RequestParam("numero") Long numero,
+	        @RequestParam("usuarioId") Long usuarioId,
+	        @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
+	        @RequestParam("cantRaquetas") int cantRaquetas,
+	        @RequestParam(value = "observaciones", required = false) String observaciones,
+	        Model model) {
+	   
+	    Pista p = pistaService.buscarPorId(numero).orElseThrow();
+	    Usuario u = usuarioService.buscarPorId(usuarioId).orElseThrow();
+	    Reserva r;
+	    Asignacion a;
+	    AsignacionPK aPK = new AsignacionPK();
+	    
+	    double precioReserva = reservaService.calcularPrecioTotal(
+	    		horaEntrada, 
+	    		horaSalida, 
+		        cantRaquetas, 
+		        p.getPrecioHora(),
+		        usaLuz
+		    );
+	    
+	    r = Reserva.builder()
+	    		.fecha(java.sql.Date.valueOf(fecha))
+	    		.horaEntrada(horaEntrada)
+	    		.horaSalida(horaSalida)
+	    		.precioTotal(precioReserva)
+	    		.usuario(u)
+	    		.asignaciones(new ArrayList<>())
+	    		.build();
+	    
+	    
+	    aPK.setPista_id(p.getNumero());
+	    
+	    
+	    a = Asignacion.builder()
+	    		.asignacionPK(aPK)
+	            .usaLuz(usaLuz)
+	            .cantRaquetas(cantRaquetas)
+	            .precio(p.getPrecioHora())
+	            .observaciones(observaciones)
+	            .build();
+	            
+	    a.agregarEnReserva(r);
+	    a.agregarEnPista(p);
+	    	    
+	    reservaService.guardar(r);
+	    
+	    return "redirect:/panelAdmin?tab=reservas";
+	}
+	
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/editarReserva/{codigo}")
