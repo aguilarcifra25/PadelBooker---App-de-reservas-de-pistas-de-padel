@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.ArrayList;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -38,7 +39,7 @@ public class Reserva {
 	private LocalTime horaSalida; 
 	private double precioTotal;
 	
-	@OneToMany(mappedBy = "reserva")
+	@OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL)
 	@Builder.Default
 	@EqualsAndHashCode.Exclude
     @ToString.Exclude
