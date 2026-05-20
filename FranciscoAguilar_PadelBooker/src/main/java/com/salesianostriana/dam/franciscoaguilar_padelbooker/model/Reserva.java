@@ -3,6 +3,9 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.model;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.ArrayList;
 
 import jakarta.persistence.Entity;
@@ -28,7 +31,9 @@ public class Reserva {
 	@Id @GeneratedValue
 	private Long codigo;
 	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date fecha;
+	
 	private LocalTime horaEntrada;
 	private LocalTime horaSalida; 
 	private double precioTotal;

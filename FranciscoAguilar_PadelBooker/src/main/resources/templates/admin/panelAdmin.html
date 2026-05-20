@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -25,18 +25,20 @@
 
                 <div class="list-group list-group-flush">
 
-                    <button class="list-group-item list-group-item-action border rounded active" data-bs-toggle="list"
-                        data-bs-target="#seccion-usuarios">
+                    <button class="list-group-item list-group-item-action border rounded" data-bs-toggle="list"
+                        data-bs-target="#seccion-usuarios" th:classappend="${param.tab == null} ? 'active' : ''">
                         Gestión de usuarios
                     </button>
 
                     <button class="list-group-item list-group-item-action border rounded my-2" data-bs-toggle="list"
-                        data-bs-target="#seccion-pistas">
+                        data-bs-target="#seccion-pistas"
+                        th:classappend="${param.tab != null and param.tab[0] == 'pistas'} ? 'active' : ''">
                         Gestión de pistas
                     </button>
 
                     <button class="list-group-item list-group-item-action border rounded" data-bs-toggle="list"
-                        data-bs-target="#seccion-reservas">
+                        data-bs-target="#seccion-reservas"
+                        th:classappend="${param.tab != null and param.tab[0] == 'reservas'} ? 'active' : ''">
                         Gestión de reservas
                     </button>
 
@@ -46,7 +48,8 @@
 
             <div class="col-10 px-md-4 mb-5 tab-content">
 
-                <section class="tab-pane fade show active" id="seccion-usuarios">
+                <section class="tab-pane fade" id="seccion-usuarios"
+                    th:classappend="${param.tab == null} ? 'show active' : ''">
 
                     <div class="container mt-4">
 
@@ -85,7 +88,8 @@
 
                 </section>
 
-                <section class="tab-pane fade" id="seccion-pistas">
+                <section class="tab-pane fade" id="seccion-pistas"
+                    th:classappend="${param.tab != null and param.tab[0] == 'pistas'} ? 'show active' : ''">
 
                     <div class="container mt-4">
 
@@ -124,7 +128,8 @@
 
                 </section>
 
-                <section class="tab-pane fade" id="seccion-reservas">
+                <section class="tab-pane fade" id="seccion-reservas"
+                    th:classappend="${param.tab != null and param.tab[0] == 'reservas'} ? 'show active' : ''">
 
                     <div class="container mt-4">
 
@@ -135,26 +140,52 @@
                             <thead class="table-primary">
                                 <tr>
                                     <th>Código</th>
+                                    <th>Usuario</th>
                                     <th>Fecha</th>
                                     <th>Hora de entrada</th>
                                     <th>Hora de salida</th>
-                                    <th>Precio total</th>
+                                    <th>Pista</th>
+                                    <th>Cant. Raquetas</th>
+                                    <th>¿Usa Luz?</th>
+                                    <th>Precio</th>
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 <tr th:each="reserva : ${listaReservas}">
+
                                     <td th:text="${reserva.codigo}"></td>
-                                    <td th:text="${reserva.fecha}"></td>
+
+                                    <td th:text="${reserva.usuario.username}"></td>
+
+                                    <td th:text="${#dates.format(reserva.fecha, 'dd/MM/yyyy')}"></td>
+
                                     <td th:text="${reserva.horaEntrada}"></td>
                                     <td th:text="${reserva.horaSalida}"></td>
-                                    <td th:text="${reserva.precioTotal}"></td>
+
                                     <td>
-                                        <a href="#"
-                                            th:href="@{/editarReserva/{codigo}(codigo=${reserva.codigo})}">Editar</a> |
-                                        <a href="#"
-                                            th:href="@{/borrarReserva/{codigo}(codigo=${reserva.codigo})}">Borrar</a>
+                                        <span th:each="asig : ${reserva.asignaciones}"
+                                            th:text="${asig.pista.numero}"></span>
+                                    </td>
+
+                                    <td>
+                                        <span th:each="asig : ${reserva.asignaciones}"
+                                            th:text="${asig.cantRaquetas}"></span>
+                                    </td>
+
+                                    <td>
+                                        <span th:each="asig : ${reserva.asignaciones}"
+                                            th:text="${asig.usaLuz ? 'Sí' : 'No'}"></span>
+                                    </td>
+
+                                    <td>
+                                        <span th:text="${reserva.precioTotal} + '€'"></span>
+                                    </td>
+
+                                    <td>
+                                        <a th:href="@{/editarReserva/{codigo}(codigo=${reserva.codigo})}">Editar</a> |
+                                        <a th:href="@{/borrarReserva/{codigo}(codigo=${reserva.codigo})}">Borrar</a>
                                     </td>
                                 </tr>
                             </tbody>

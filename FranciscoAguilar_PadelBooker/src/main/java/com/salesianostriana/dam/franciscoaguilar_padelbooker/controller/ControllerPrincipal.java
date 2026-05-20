@@ -1,6 +1,8 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaService;
+
+import java.time.LocalTime;
 import java.util.Optional;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,7 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Asignacion;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
@@ -213,13 +217,37 @@ public class ControllerPrincipal {
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/editarReserva/submit")
-	public String procesarEdicionReserva(@ModelAttribute("reserva") Reserva r) {
-		
-		reservaService.editar(r);
-		
-		return "redirect:/panelAdmin";
-		
-	}	
+	public String procesarEdicionReserva(
+	        @ModelAttribute("reserva") Reserva r,
+	        @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
+	        @RequestParam("cantRaquetas") int cantRaquetas) {
+	    
+		Reserva reservaExistente = reservaService.buscarPorId(r.getCodigo())
+												.orElseThrow(() -> new RuntimeException("No se encuentra la reserva " + r.getCodigo()));
+	    
+	    reservaExistente.setFecha(r.getFecha());
+	    reservaExistente.setHoraEntrada(r.getHoraEntrada());
+	    reservaExistente.setHoraSalida(r.getHoraSalida());
+
+	    Asignacion asignacionExistente = reservaExistente.getAsignaciones().getFirst();
+	    
+	    asignacionExistente.setUsaLuz(usaLuz);
+	    asignacionExistente.setCantRaquetas(cantRaquetas);
+	    
+	    double precioReservaExistente = reservaService.calcularPrecioTotal(
+	        reservaExistente.getHoraEntrada(), 
+	        reservaExistente.getHoraSalida(), 
+	        asignacionExistente.getCantRaquetas(), 
+	        asignacionExistente.getPrecio(),
+	        asignacionExistente.isUsaLuz()
+	    );
+	    
+	    reservaExistente.setPrecioTotal(precioReservaExistente);
+	    
+	    reservaService.editar(reservaExistente);
+	    
+	    return "redirect:/panelAdmin?tab=reservas";
+	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/borrarReserva/{codigo}")
