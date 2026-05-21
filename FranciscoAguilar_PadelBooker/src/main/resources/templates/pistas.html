@@ -133,8 +133,10 @@
 
                     <div class="col-4" th:each="pista : ${listaPistas}">
                         <div class="card h-100 overflow-hidden rounded shadow-lg">
-                            <img class="img-fluid card-img-top w-100 h-100" src="../static/img/pistaIndoor.jpg"
-                                th:src="@{/img/pistaIndoor.jpg}" alt=" Card image">
+
+                            <img th:src="${pista.imagen != null ? pista.imagen : '/img/fotoError.png'}"
+                                class="card-img-top w-100 h-100 img-fluid" th:alt="|Pista ${pista.tipo}|">
+
                             <div class="card-body z-1 bg-white">
                                 <h4 th:text="|Pista ${pista.tipo} ${#numbers.formatInteger(pista.numero, 2)}|"
                                     class="card-title">Pista</h4>
