@@ -21,5 +21,5 @@ public class UsuarioService extends ServiciosBaseImpl<Usuario, Long, UsuarioRepo
         return usuarioRepository.findByUsername(username);
         
     }
-	
+		
 }
