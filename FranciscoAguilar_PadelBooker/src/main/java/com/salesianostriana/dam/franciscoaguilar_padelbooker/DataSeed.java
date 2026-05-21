@@ -37,11 +37,13 @@ public class DataSeed {
                 .tipo("Indoor")
                 .suelo("Césped artificial")
                 .precioHora(12)
+                .imagen("https://res.cloudinary.com/playtomic/image/upload/c_scale,w_3840,q_80,f_auto/pro/tenants/d89b7dce-c0e0-4e52-b206-0a3491fb1845/padelindooroarso_0001")
                 .build();         
     
     Pista p2 = Pista.builder()
                 .tipo("Outdoor")
                 .suelo("Cemento poroso")
+                .imagen("https://www.elbierzodigital.com/wp-content/uploads/2022/05/PADEL2-1200x900.jpg")
                 .precioHora(12)
                 .build(); 
     
@@ -49,6 +51,7 @@ public class DataSeed {
                 .tipo("Frontón")
                 .suelo("Cemento poroso")
                 .precioHora(6)
+                .imagen("https://www.elbarraco.org/wp-content/uploads/2017/07/fronton2.jpg")
                 .build(); 
     
     Usuario u1 = Usuario.builder()
