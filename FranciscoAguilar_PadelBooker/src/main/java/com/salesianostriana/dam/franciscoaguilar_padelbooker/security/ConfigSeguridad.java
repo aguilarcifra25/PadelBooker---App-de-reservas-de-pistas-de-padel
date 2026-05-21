@@ -20,7 +20,7 @@ public class ConfigSeguridad {
 		http.authorizeHttpRequests(
 				(authz) -> authz
 					
-					.requestMatchers("/", "/favicon.ico", "/h2-console/**", "/home", "/login", "/pistas", "/crearUsuario", "/crearUsuario/submit", "/css/**", "/js/**", "/img/**").permitAll()
+					.requestMatchers("/", "/favicon.ico", "/error", "/h2-console/**", "/home", "/login", "/pistas", "/crearUsuario", "/crearUsuario/submit", "/css/**", "/js/**", "/img/**").permitAll()
 					.anyRequest()
 					.authenticated())
 					.requestCache(cache -> {
