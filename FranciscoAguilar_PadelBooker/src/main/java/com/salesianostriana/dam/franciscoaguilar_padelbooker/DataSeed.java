@@ -58,7 +58,7 @@ public class DataSeed {
                     .username("Paco")
                     .password(encoder.encode("123"))
                     .email("aguilar.cifra25@triana.salesianos.edu")
-                    .telefono("123 45 67 89")
+                    .telefono("123456789")
                     .rolUsuario(RolUsuario.USER)
                     .build();
     
@@ -66,7 +66,7 @@ public class DataSeed {
                 .username("Francis")
                 .password(encoder.encode("123"))
                 .email("francispadel@gmail.com")
-                .telefono("321 54 76 98")
+                .telefono("321547698")
                 .rolUsuario(RolUsuario.USER)
                 .build();
     
@@ -74,7 +74,7 @@ public class DataSeed {
                 .username("Curro")
                 .password(encoder.encode("123"))
                 .email("currillopillo@gmail.com")
-                .telefono("987 65 43 21")
+                .telefono("987654321")
                 .rolUsuario(RolUsuario.USER)
                 .build();
     
@@ -93,7 +93,7 @@ public class DataSeed {
                 .build();
     
     Reserva r1 = Reserva.builder()
-                .fecha(new Date())
+                .fecha(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))
                 .horaEntrada(LocalTime.of(9, 0, 0))
                 .horaSalida(LocalTime.of(10, 0, 0))
                 .precioTotal(12)
