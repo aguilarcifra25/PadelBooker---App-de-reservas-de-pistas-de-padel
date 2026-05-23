@@ -13,10 +13,16 @@ import java.util.Collection;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,12 +42,23 @@ public class Usuario implements UserDetails {
 	private Long id;
 	
 	@Column(nullable = false, unique = true)
+	@NotBlank(message = "El nombre de usuario no puede estar vacío")
 	private String username;
 	
+	@Column(nullable = false, unique = true)
+    @NotBlank(message = "El email no puede estar vacío.")
+    @Email(message = "El formato del email no es válido.")
 	private String email;
+	
+	@Pattern(regexp = "^(\\+?[0-9]{9,15})?$", message = "El teléfono debe ser un número válido entre 9 y 15 dígitos")
 	private String telefono;
+		
+	@Column(nullable = false)
+    @NotBlank(message = "La contraseña no puede estar vacía.")
 	private String password;
 	
+	@NotNull(message = "El rol de usuario es obligatorio.")
+    @Enumerated(EnumType.STRING)
 	private RolUsuario rolUsuario;
 	
 	
