@@ -6,14 +6,17 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaServ
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Optional;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,16 +28,21 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.AsignacionPK;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.security.RolUsuario;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.PistaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioService;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
 public class ControllerPrincipal {
 
-	private final AsignacionService asignacionService;
 	private final ReservaService reservaService;
 	private final UsuarioService usuarioService;
 	private final PistaService pistaService;
@@ -77,40 +85,59 @@ public class ControllerPrincipal {
 	
 	@GetMapping("/editarUsuario/{id}")
 	public String mostrarFormularioEdicionUsuario(@PathVariable("id") long id, Model model) {
-						 		
-		Optional<Usuario> uEditar = usuarioService.buscarPorId(id);
-		
-		if (uEditar.isPresent()) {
-			
-			model.addAttribute("usuario", uEditar.get());
-			
-			return "admin/editarUsuario";
-			
-		} else {
-			
-			return "redirect:/panelAdmin";
-			
-		}			
+	    
+	    Optional<Usuario> uEditar = usuarioService.buscarPorId(id);
+	    
+	    if (uEditar.isPresent()) {
+	    	
+	        model.addAttribute("usuario", uEditar.get());
+	        
+	        return "admin/editarUsuario";
+	        
+	    } else {
+	    	
+	        return "redirect:/panelAdmin";
+	        
+	    }           
 	}
-	
+
 	@PostMapping("/editarUsuario/submit")
-	public String procesarEdicionUsuario(@ModelAttribute("usuario") Usuario u) {
-		
-		usuarioService.editar(u);
-		
-		return "redirect:/panelAdmin";
-		
+	public String procesarEdicionUsuario(@Valid @ModelAttribute("usuario") Usuario u,
+	        									BindingResult bindingResult, Model model) {
+	    
+	    if (bindingResult.hasErrors()) {
+	    	
+	        return "admin/editarUsuario";
+	        
+	    }
+	    
+	    usuarioService.editar(u);
+	    
+	    return "redirect:/panelAdmin";
 	}
 	
 	
 	@GetMapping("/crearUsuario")
 	public String crearUsuario (Model model) {
 			    		
+		Usuario nuevoUsuario = new Usuario();
+	    	    
+	    nuevoUsuario.setRolUsuario(RolUsuario.USER); 
+	    
+	    model.addAttribute("usuario", nuevoUsuario);
+		
 		return "crearUsuario";
 	}
 	
 	@PostMapping("/crearUsuario/submit")
-	public String procesarCreacionUsuario(@ModelAttribute("usuario") Usuario u, @AuthenticationPrincipal UserDetails uLogueado) {
+	public String procesarCreacionUsuario(@Valid @ModelAttribute("usuario") Usuario u,
+										BindingResult bindingResult, @AuthenticationPrincipal UserDetails uLogueado, Model model) {
+		
+		if (bindingResult.hasErrors()) {
+	       
+	        return "crearUsuario";
+	        
+	    }
 		
 		u.setPassword(encoder.encode(u.getPassword()));
 		
@@ -134,47 +161,61 @@ public class ControllerPrincipal {
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/editarPista/{numero}")
 	public String mostrarFormularioEdicionPista(@PathVariable("numero") long numero, Model model) {
-						 		
-		Optional<Pista> pEditar = pistaService.buscarPorId(numero);
-		
-		if (pEditar.isPresent()) {
-			
-			model.addAttribute("pista", pEditar.get());
-			
-			return "admin/editarPista";
-			
-		} else {
-			
-			return "redirect:/panelAdmin";
-			
-		}			
+	                    
+	    Optional<Pista> pEditar = pistaService.buscarPorId(numero);
+	    
+	    if (pEditar.isPresent()) {
+	    	
+	        model.addAttribute("pista", pEditar.get());
+	        
+	        return "admin/editarPista";
+	        
+	    } else {
+	    	
+	        return "redirect:/panelAdmin";
+	        
+	    }           
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/editarPista/submit")
-	public String procesarEdicionPista(@ModelAttribute("pista") Pista p) {
-		
-		pistaService.editar(p);
-		
-		return "redirect:/panelAdmin";
-		
-	}	
+	public String procesarEdicionPista(@Valid @ModelAttribute("pista") Pista p,
+	        								BindingResult bindingResult,Model model) {
+	    
+	    if (bindingResult.hasErrors()) {
+	    	
+	        return "admin/editarPista";
+	        
+	    }
+	    
+	    pistaService.editar(p);
+	    
+	    return "redirect:/panelAdmin";
+	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/crearPista")
-	public String crearPista (Model model) {
-			    		
-		return "admin/crearPista";
+	public String crearPista(Model model) {
+	    
+	    model.addAttribute("pista", new Pista());
+	    
+	    return "admin/crearPista";
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/crearPista/submit")
-	public String procesarCreacionPista(@ModelAttribute("pista") Pista p) {
-				
-		pistaService.guardar(p);
-		
-		return "redirect:/panelAdmin";
-		
+	public String procesarCreacionPista(@Valid @ModelAttribute("pista") Pista p, BindingResult bindingResult,
+	        								Model model) {
+	            
+	    if (bindingResult.hasErrors()) {
+	    	
+	        return "admin/crearPista";
+	        
+	    }
+	            
+	    pistaService.guardar(p);
+	    
+	    return "redirect:/panelAdmin";
 	}
 		
 	@PreAuthorize("hasRole('ADMIN')")
@@ -196,56 +237,47 @@ public class ControllerPrincipal {
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/crearReserva")
-	public String crearReserva (Model model) {
-			    		
-		model.addAttribute("listaPistas", pistaService.buscarTodos());
-		model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
-		
-		return "admin/crearReserva";
+	public String crearReserva(Model model) {
+	    
+	    model.addAttribute("listaPistas", pistaService.buscarTodos());
+	    model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
+	    
+	    return "admin/crearReserva";
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/admin/reserva/crear")
-	public String guardarReserva(
-	        @RequestParam("fecha") LocalDate fecha,
-	        @RequestParam("horaInicio") LocalTime horaEntrada,
-	        @RequestParam("horaFin") LocalTime horaSalida,        
-	        @RequestParam("numero") Long numero,
-	        @RequestParam("usuarioId") Long usuarioId,
-	        @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
-	        @RequestParam("cantRaquetas") int cantRaquetas,
-	        @RequestParam(value = "observaciones", required = false) String observaciones,
-	        Model model) {
+	public String guardarReserva( @RequestParam("fecha") @NotNull @FutureOrPresent @DateTimeFormat(pattern = "yyyy-MM-dd") Date fecha,
+									@RequestParam("horaInicio") @NotNull LocalTime horaEntrada, @RequestParam("horaFin") @NotNull LocalTime horaSalida,        
+									@RequestParam("numero") @NotNull Long numero, @RequestParam("usuarioId") @NotNull Long usuarioId,
+									@RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz, @RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas,
+									@RequestParam(value = "observaciones", required = false) String observaciones, Model model) {
 	   
-	    Pista p = pistaService.buscarPorId(numero).orElseThrow();
-	    Usuario u = usuarioService.buscarPorId(usuarioId).orElseThrow();
-	    Reserva r;
-	    Asignacion a;
-	    AsignacionPK aPK = new AsignacionPK();
+	    Pista p = pistaService.buscarPorId(numero).get();
+	    Usuario u = usuarioService.buscarPorId(usuarioId).get();
 	    
 	    double precioReserva = reservaService.calcularPrecioTotal(
-	    		horaEntrada, 
-	    		horaSalida, 
-		        cantRaquetas, 
-		        p.getPrecioHora(),
-		        usaLuz
-		    );
+	            horaEntrada, 
+	            horaSalida, 
+	            cantRaquetas, 
+	            p.getPrecioHora(),
+	            usaLuz
+	        );
 	    
-	    r = Reserva.builder()
-	    		.fecha(java.sql.Date.valueOf(fecha))
-	    		.horaEntrada(horaEntrada)
-	    		.horaSalida(horaSalida)
-	    		.precioTotal(precioReserva)
-	    		.usuario(u)
-	    		.asignaciones(new ArrayList<>())
-	    		.build();
+	    Reserva r = Reserva.builder()
+	            .fecha(fecha)
+	            .horaEntrada(horaEntrada)
+	            .horaSalida(horaSalida)
+	            .precioTotal(precioReserva)
+	            .usuario(u)
+	            .asignaciones(new ArrayList<>())
+	            .build();
 	    
-	    
+	    AsignacionPK aPK = new AsignacionPK();
 	    aPK.setPista_id(p.getNumero());
 	    
-	    
-	    a = Asignacion.builder()
-	    		.asignacionPK(aPK)
+	    Asignacion a = Asignacion.builder()
+	            .asignacionPK(aPK)
 	            .usaLuz(usaLuz)
 	            .cantRaquetas(cantRaquetas)
 	            .precio(p.getPrecioHora())
@@ -254,7 +286,7 @@ public class ControllerPrincipal {
 	            
 	    a.agregarEnReserva(r);
 	    a.agregarEnPista(p);
-	    	    
+	            
 	    reservaService.guardar(r);
 	    
 	    return "redirect:/panelAdmin?tab=reservas";
@@ -264,31 +296,28 @@ public class ControllerPrincipal {
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/editarReserva/{codigo}")
 	public String mostrarFormularioEdicionReserva(@PathVariable("codigo") long codigo, Model model) {
-						 		
-		Optional<Reserva> rEditar = reservaService.buscarPorId(codigo);
-		
-		if (rEditar.isPresent()) {
-			
-			model.addAttribute("reserva", rEditar.get());
-			
-			return "admin/editarReserva";
-			
-		} else {
-			
-			return "redirect:/panelAdmin";
-			
-		}			
+	                            
+	    Optional<Reserva> rEditar = reservaService.buscarPorId(codigo);
+	    
+	    if (rEditar.isPresent()) {
+	    	
+	        model.addAttribute("reserva", rEditar.get());
+	        
+	        return "admin/editarReserva";
+	        
+	    } else {
+	    	
+	        return "redirect:/panelAdmin";
+	        
+	    }           
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/editarReserva/submit")
-	public String procesarEdicionReserva(
-	        @ModelAttribute("reserva") Reserva r,
-	        @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
-	        @RequestParam("cantRaquetas") int cantRaquetas) {
+	public String procesarEdicionReserva(@ModelAttribute("reserva") Reserva r, @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
+											@RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas) {
 	    
-		Reserva reservaExistente = reservaService.buscarPorId(r.getCodigo())
-												.orElseThrow(() -> new RuntimeException("No se encuentra la reserva " + r.getCodigo()));
+	    Reserva reservaExistente = reservaService.buscarPorId(r.getCodigo()).get();
 	    
 	    reservaExistente.setFecha(r.getFecha());
 	    reservaExistente.setHoraEntrada(r.getHoraEntrada());

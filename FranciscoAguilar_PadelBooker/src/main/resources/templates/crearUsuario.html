@@ -19,54 +19,62 @@
 
         <div class="container my-5 p-3 mx-auto card shadow-lg bg-secondary">
 
-            <form th:action="@{/crearUsuario/submit}" method="post">
+            <form th:action="@{/crearUsuario/submit}" th:object="${usuario}" method="post">
 
-                <input type="hidden" name="id" class="form-control" />
+                <input type="hidden" th:field="*{id}" />
 
                 <div class="row">
-
                     <div class="col-6">
                         <label for="username" class="form-label">Nombre de usuario</label>
-                        <input type="text" name="username" placeholder="Nombre" id="username" class="form-control"
-                            required />
+                        <input type="text" th:field="*{username}" placeholder="Nombre" class="form-control"
+                            th:errorclass="is-invalid" />
+
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">
+                        </div>
                     </div>
 
                     <div class="col-6">
                         <label for="password" class="form-label">Contraseña</label>
-                        <input type="text" name="password" placeholder="Contraseña" id="password" class="form-control"
-                            required />
-                    </div>
+                        <input type="password" th:field="*{password}" placeholder="Contraseña" class="form-control"
+                            th:errorclass="is-invalid" />
 
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row my-5">
-
                     <div class="col-6">
-
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" name="email" placeholder="Email" id="email" class="form-control" required />
+                        <input type="email" th:field="*{email}" placeholder="Email" class="form-control"
+                            th:errorclass="is-invalid" />
 
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                     </div>
 
                     <div class="col-6">
-
                         <label for="telefono" class="form-label">Teléfono</label>
-                        <input type="text" name="telefono" placeholder="Teléfono" id="telefono" class="form-control" />
+                        <input type="text" th:field="*{telefono}" placeholder="Teléfono" class="form-control"
+                            th:errorclass="is-invalid" />
 
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}">
+                        </div>
                     </div>
-
                 </div>
 
                 <div sec:authorize="hasRole('ADMIN')">
                     <label for="rolUsuario" class="form-label">Rol de usuario</label>
-                    <select name="rolUsuario" id="rolUsuario" class="form-select">
+                    <select th:field="*{rolUsuario}" class="form-select" th:errorclass="is-invalid">
                         <option value="USER">USER</option>
                         <option value="ADMIN">ADMIN</option>
                     </select>
+
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('rolUsuario')}" th:errors="*{rolUsuario}">
+                    </div>
                 </div>
 
                 <div sec:authorize="isAnonymous()">
-                    <input type="hidden" name="rolUsuario" value="USER" />
+                    <input type="hidden" th:field="*{rolUsuario}" value="USER" />
                 </div>
 
                 <input type="submit" name="enviar" value="Crear usuario"
