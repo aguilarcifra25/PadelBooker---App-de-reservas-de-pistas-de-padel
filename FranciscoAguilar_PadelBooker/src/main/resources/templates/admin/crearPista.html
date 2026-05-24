@@ -19,30 +19,27 @@
 
         <div class="container my-5 p-3 mx-auto card shadow-lg bg-secondary">
 
-            <form th:action="@{/crearPista/submit}" method="post">
-
-                <input type="hidden" name="id" class="form-control" />
+            <form th:action="@{/crearPista/submit}" th:object="${pista}" method="post">
 
                 <div class="row">
 
                     <div class="col-6">
-
                         <label for="tipo" class="form-label">Tipo de pista</label>
-                        <select name="tipo" id="tipo" class="form-select">
-                            <option>Indoor</option>
-                            <option>Outdoor</option>
+                        <select id="tipo" class="form-select" th:field="*{tipo}" th:errorclass="is-invalid">
+                            <option value="Indoor">Indoor</option>
+                            <option value="Outdoor">Outdoor</option>
+                            <option value="Frontón">Frontón</option>
                         </select>
-
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></div>
                     </div>
 
                     <div class="col-6">
-
                         <label for="suelo" class="form-label">Tipo de suelo</label>
-                        <select name="suelo" id="suelo" class="form-select">
-                            <option>Césped artificial</option>
-                            <option>Cemento poroso</option>
+                        <select id="suelo" class="form-select" th:field="*{suelo}" th:errorclass="is-invalid">
+                            <option value="Césped artificial">Césped artificial</option>
+                            <option value="Cemento poroso">Cemento poroso</option>
                         </select>
-
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('suelo')}" th:errors="*{suelo}"></div>
                     </div>
 
                 </div>
@@ -50,16 +47,16 @@
                 <div class="row my-5">
 
                     <div class="col-6">
-
                         <label for="precioHora" class="form-label">Precio por hora</label>
-                        <input type="text" name="precioHora" placeholder="Ej: 4.5" id="precioHora" class="form-control"
-                            required />
-
+                        <input type="number" step="0.01" min="5" th:field="*{precioHora}" placeholder="Mínimo 5"
+                            id="precioHora" class="form-control" th:errorclass="is-invalid" required />
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('precioHora')}"
+                            th:errors="*{precioHora}"></div>
                     </div>
 
                 </div>
 
-                <input type="submit" name="enviar" value="Enviar" class="form-control btn btn-primary mt-5 rounded" />
+                <input type="submit" value="Enviar" class="form-control btn btn-primary mt-5 rounded" />
 
             </form>
 

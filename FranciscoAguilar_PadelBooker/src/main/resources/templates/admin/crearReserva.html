@@ -121,7 +121,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="numero" class="form-label">Seleccionar Pista:</label>
                         <select id="numero" name="numero" class="form-select" required>
-                            <option value="" disabled selected>-- Elige una pista disponible --</option>
+                            <option value="" disabled selected hidden>-- Elige una pista disponible --</option>
                             <option th:each="p : ${listaPistas}" th:value="${p.numero}"
                                 th:text="${'Pista ' + p.numero + ' (' + p.tipo + ' - ' + p.precioHora + '€/h)'}">
                             </option>

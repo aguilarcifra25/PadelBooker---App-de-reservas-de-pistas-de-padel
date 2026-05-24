@@ -21,29 +21,28 @@
 
             <form th:action="@{/editarPista/submit}" th:object="${pista}" method="post">
 
-                <input th:if="${pista.numero != 0}" type="hidden" name="id" th:numero="*{numero}"
-                    class="form-control" />
+                <input type="hidden" th:field="*{numero}" />
+                <input type="hidden" th:field="*{imagen}" />
 
                 <div class="row">
 
                     <div class="col-6">
-
                         <label for="tipo" class="form-label">Tipo de pista</label>
-                        <select name="tipo" id="tipo" class="form-select" th:field="*{tipo}">
-                            <option value="indoor">Indoor</option>
-                            <option value="outdoor">Outdoor</option>
+                        <select id="tipo" class="form-select" th:field="*{tipo}" th:errorclass="is-invalid">
+                            <option value="Indoor">Indoor</option>
+                            <option value="Outdoor">Outdoor</option>
+                            <option value="Frontón">Frontón</option>
                         </select>
-
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></div>
                     </div>
 
                     <div class="col-6">
-
                         <label for="suelo" class="form-label">Tipo de suelo</label>
-                        <select name="suelo" id="suelo" class="form-select" th:field="*{suelo}">
-                            <option value="cesped artificial">Césped artificial</option>
-                            <option value="cemento poroso">Cemento poroso</option>
+                        <select id="suelo" class="form-select" th:field="*{suelo}" th:errorclass="is-invalid">
+                            <option value="Césped artificial">Césped artificial</option>
+                            <option value="Cemento poroso">Cemento poroso</option>
                         </select>
-
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('suelo')}" th:errors="*{suelo}"></div>
                     </div>
 
                 </div>
@@ -51,16 +50,16 @@
                 <div class="row my-5">
 
                     <div class="col-6">
-
                         <label for="precioHora" class="form-label">Precio por hora</label>
-                        <input type="text" name="precioHora" th:field="*{precioHora}" placeholder="Ej: 4.5"
-                            id="precioHora" class="form-control" required />
-
+                        <input type="number" step="0.01" min="5" th:field="*{precioHora}" placeholder="Mínimo 5"
+                            id="precioHora" class="form-control" th:errorclass="is-invalid" required />
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('precioHora')}"
+                            th:errors="*{precioHora}"></div>
                     </div>
 
                 </div>
 
-                <input type="submit" name="enviar" value="Enviar" class="form-control btn btn-primary mt-5 rounded" />
+                <input type="submit" value="Enviar" class="form-control btn btn-primary mt-5 rounded" />
 
             </form>
 
