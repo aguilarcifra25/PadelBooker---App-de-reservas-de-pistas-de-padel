@@ -23,14 +23,14 @@ public class AsignacionService extends ServiciosBaseImpl<Asignacion, AsignacionP
         
         Asignacion asignacion = Asignacion.builder()
                 .asignacionPK(pk)
+                .reserva(reserva)
+                .pista(pista)
                 .usaLuz(usaLuz)
                 .cantRaquetas(cantRaquetas)
                 .precio(precioTotal)
                 .observaciones("Reserva de Dam Padel en la web.")
                 .build();
         
-        asignacion.agregarEnReserva(reserva);
-        asignacion.agregarEnPista(pista);
         
         return asignacionRepository.save(asignacion);
     }

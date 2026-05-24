@@ -3,6 +3,7 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -40,7 +41,6 @@ public class ReservaController {
 	        @RequestParam("horaSalida") String horaSalidaStr,
 	        @RequestParam("numeroPista") long numeroPista,
 	        @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
-	        @RequestParam(value = "usaRaquetas", defaultValue = "false") boolean usaRaquetas,
 	        @RequestParam(value = "cantRaquetas", defaultValue = "0") int cantRaquetas,
 	        @AuthenticationPrincipal UserDetails uLogueado,
 	        Model model) {
@@ -75,6 +75,7 @@ public class ReservaController {
 	            .horaSalida(horaSalida)
 	            .precioTotal(precioTotal)
 	            .usuario(uOpt.get())
+	            .asignaciones(new ArrayList<>())
 	            .build();
 	    
 	    reservaService.guardar(reserva);
