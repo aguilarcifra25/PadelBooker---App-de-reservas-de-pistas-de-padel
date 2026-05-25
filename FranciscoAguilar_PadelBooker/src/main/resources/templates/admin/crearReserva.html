@@ -21,10 +21,10 @@
 
             <form th:action="@{/admin/reserva/crear}" method="POST">
 
-                <h5 class="text-secondary border-bottom pb-2 mb-3">Datos del Cliente</h5>
+                <h5 class="text-secondary border-bottom pb-2 mb-3">Datos del cliente</h5>
                 <div class="row">
                     <div class="col-12 mb-3">
-                        <label for="usuarioId" class="form-label">Seleccionar Usuario / Cliente:</label>
+                        <label for="usuarioId" class="form-label">Seleccionar usuario / Cliente:</label>
                         <select id="usuarioId" name="usuarioId" class="form-select" required>
                             <option value="" disabled selected hidden>-- Elige el cliente que realiza la reserva --
                             </option>
@@ -35,16 +35,16 @@
                     </div>
                 </div>
 
-                <h5 class="text-secondary border-bottom pb-2 mt-4 mb-3">Datos de Horario</h5>
+                <h5 class="text-secondary border-bottom pb-2 mt-4 mb-3">Datos de horario</h5>
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label for="fecha" class="form-label">Fecha de la Reserva:</label>
+                        <label for="fecha" class="form-label">Fecha de la reserva:</label>
                         <input type="date" id="fecha" name="fecha" class="form-control"
                             th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required />
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="horaInicio" class="form-label">Hora de Inicio:</label>
+                        <label for="horaInicio" class="form-label">Hora de inicio:</label>
                         <select id="horaInicio" name="horaInicio" class="form-select form-select-lg fs-6" required>
                             <option value="" disabled selected hidden>--:--</option>
                             <option value="08:00">08:00</option>
@@ -80,7 +80,7 @@
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="horaFin" class="form-label">Hora de Fin:</label>
+                        <label for="horaFin" class="form-label">Hora de fin:</label>
                         <select id="horaFin" name="horaFin" class="form-select form-select-lg fs-6" required>
                             <option value="" disabled selected hidden>--:--</option>
                             <option value="08:30">08:30</option>
@@ -116,10 +116,10 @@
                     </div>
                 </div>
 
-                <h5 class="text-secondary border-bottom pb-2 mt-4 mb-3">Detalles de la Pista y Equipamiento</h5>
+                <h5 class="text-secondary border-bottom pb-2 mt-4 mb-3">Detalles de la pista y equipamiento</h5>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="numero" class="form-label">Seleccionar Pista:</label>
+                        <label for="numero" class="form-label">Seleccionar pista:</label>
                         <select id="numero" name="numero" class="form-select" required>
                             <option value="" disabled selected hidden>-- Elige una pista disponible --</option>
                             <option th:each="p : ${listaPistas}" th:value="${p.numero}"
@@ -129,7 +129,7 @@
                     </div>
 
                     <div class="col-md-3 mb-3">
-                        <label for="cantRaquetas" class="form-label">Alquiler de Raquetas:</label>
+                        <label for="cantRaquetas" class="form-label">Alquiler de raquetas:</label>
                         <input type="number" id="cantRaquetas" name="cantRaquetas" class="form-control" min="0" max="4"
                             value="0" required />
                     </div>
@@ -137,22 +137,22 @@
                     <div class="col-md-3 mb-3 d-flex align-items-center pt-4">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="usaLuz" name="usaLuz" value="true">
-                            <label class="form-check-label" for="usaLuz">¿Requiere Luz Eléctrica?</label>
+                            <label class="form-check-label" for="usaLuz">¿Requiere luz eléctrica?</label>
                         </div>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-12 mb-3">
-                        <label for="observaciones" class="form-label">Observaciones / Notas Adicionales:</label>
+                        <label for="observaciones" class="form-label">Observaciones / Notas adicionales:</label>
                         <textarea id="observaciones" name="observaciones" class="form-control" rows="3"
                             placeholder="Ej. El usuario pagará con tarjeta en recepción..."></textarea>
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4">
-                    <a th:href="@{/panelAdmin}" class="btn btn-outline-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-success">Confirmar y Guardar Reserva</button>
+                    <a th:href="@{/panelAdmin}" class="btn btn-outline-danger">Cancelar</a>
+                    <button type="submit" class="btn btn-success">Confirmar y guardar reserva</button>
                 </div>
 
             </form>
