@@ -78,7 +78,12 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4">
-                    <a th:href="@{/panelAdmin}" class="btn btn-outline-danger">Cancelar</a>
+                    <div sec:authorize="isAnonymous()">
+                        <a th:href="@{/home}" class="btn btn-outline-danger">Cancelar</a>
+                    </div>
+                    <div sec:authorize="isAuthenticated()">
+                        <a th:href="@{/login}" class="btn btn-outline-danger">Cancelar</a>
+                    </div>
                     <button type="submit" class="btn btn-success">Crear usuario</button>
                 </div>
 
