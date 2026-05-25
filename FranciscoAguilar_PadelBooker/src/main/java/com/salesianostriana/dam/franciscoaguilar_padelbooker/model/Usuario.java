@@ -11,6 +11,7 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.security.RolUsuario
 import java.util.ArrayList;
 import java.util.Collection;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -62,7 +63,7 @@ public class Usuario implements UserDetails {
 	private RolUsuario rolUsuario;
 	
 	
-	@OneToMany(mappedBy = "usuario")
+	@OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @Builder.Default
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
