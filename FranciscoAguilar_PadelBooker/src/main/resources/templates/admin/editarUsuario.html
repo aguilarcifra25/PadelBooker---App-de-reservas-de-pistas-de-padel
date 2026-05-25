@@ -22,6 +22,7 @@
             <form th:action="@{/editarUsuario/submit}" th:object="${usuario}" method="post">
 
                 <input type="hidden" th:field="*{id}" />
+                <input type="hidden" th:field="*{password}" sec:authorize="hasRole('ADMIN')" />
                 <input type="hidden" th:field="*{rolUsuario}" sec:authorize="hasRole('USER')" />
 
                 <div class="row">
@@ -43,9 +44,9 @@
 
                 </div>
 
-                <div class="row my-5">
+                <div class="row my-5" sec:authorize="hasRole('USER')">
 
-                    <div class="col-6" sec:authorize="hasRole('USER')">
+                    <div class="col-6">
                         <label for="password" class="form-label">Contraseña</label>
                         <input type="password" th:field="*{password}" placeholder="Contraseña" id="password"
                             class="form-control" th:errorclass="is-invalid" required />
@@ -55,7 +56,7 @@
 
                 </div>
 
-                <div class="row">
+                <div class="row my-5">
 
                     <div class="col-6">
                         <label for="telefono" class="form-label">Teléfono</label>
@@ -65,7 +66,7 @@
                         </div>
                     </div>
 
-                    <div sec:authorize="hasRole('ADMIN')">
+                    <div class="col-6" sec:authorize="hasRole('ADMIN')">
 
                         <label for="rolUsuario" class="form-label">Rol de usuario</label>
                         <select th:field="*{rolUsuario}" class="form-select" th:errorclass="is-invalid">

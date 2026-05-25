@@ -44,6 +44,17 @@
 
                 </div>
 
+                <section class="container">
+                    <div th:if="${errorMensaje}" class="mx-auto">
+
+                        <p class="bg-danger text-white text-center p-3 mt-3 fw-bolder rounded">
+                            <i class="bi bi-x-circle me-2 fs-5"></i>
+                            <span class="fs-5" th:text="${errorMensaje}"></span>
+                        </p>
+
+                    </div>
+                </section>
+
             </nav>
 
             <div class="col-10 px-md-4 mb-5 tab-content">
