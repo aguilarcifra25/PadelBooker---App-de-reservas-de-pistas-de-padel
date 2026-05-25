@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionTiempoReserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
@@ -45,10 +46,21 @@ public class ReservaController {
 	        @AuthenticationPrincipal UserDetails uLogueado,
 	        Model model) {
 	    
+		
+		LocalTime horaEntrada = LocalTime.parse(horaEntradaStr);
+	    LocalTime horaSalida = LocalTime.parse(horaSalidaStr);		
+	    
 	    Optional<Pista> pOpt = pistaService.buscarPorId(numeroPista);
 	    Optional<Usuario> uOpt = usuarioService.buscarPorNombre(uLogueado.getUsername());
 	    
 	    Reserva reserva;
+	    
+	    if (horaEntrada.isAfter(horaSalida)) {
+	    	
+	    	throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
+	    		    	
+	    }
+	    
 	    
 	    double precioTotal;
 	    
@@ -62,8 +74,7 @@ public class ReservaController {
 	    	
 	    }         
                 
-	    LocalTime horaEntrada = LocalTime.parse(horaEntradaStr);
-	    LocalTime horaSalida = LocalTime.parse(horaSalidaStr);
+	    
 	    
 	    Pista p = pOpt.get();
 	    

@@ -24,6 +24,17 @@
 
         </section>
 
+        <section class="container">
+            <div th:if="${errorMensaje}" class="mx-auto">
+
+                <p class="bg-danger text-white text-center p-3 mt-3 fw-bolder rounded">
+                    <i class="bi bi-x-circle me-2 fs-5"></i>
+                    <span class="fs-5" th:text="${errorMensaje}"></span>
+                </p>
+
+            </div>
+        </section>
+
         <section>
 
             <div class="container mx-auto border border-3 my-4 p-3 shadow-lg rounded">
