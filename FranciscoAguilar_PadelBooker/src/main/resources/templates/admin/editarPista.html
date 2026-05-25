@@ -59,7 +59,10 @@
 
                 </div>
 
-                <input type="submit" value="Enviar" class="form-control btn btn-primary mt-5 rounded" />
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a th:href="@{/panelAdmin}" class="btn btn-outline-danger">Cancelar</a>
+                    <button type="submit" class="btn btn-success">Guardar cambios</button>
+                </div>
 
             </form>
 
