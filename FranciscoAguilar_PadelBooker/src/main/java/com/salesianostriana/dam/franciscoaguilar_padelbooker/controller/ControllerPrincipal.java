@@ -102,18 +102,36 @@ public class ControllerPrincipal {
 	}
 
 	@PostMapping("/editarUsuario/submit")
-	public String procesarEdicionUsuario(@Valid @ModelAttribute("usuario") Usuario u,
-	        									BindingResult bindingResult, Model model) {
+	public String procesarEdicionUsuario(@Valid @ModelAttribute("usuario") Usuario u,BindingResult bindingResult, 
+												Model model, @AuthenticationPrincipal UserDetails usuario) {
 	    
-	    if (bindingResult.hasErrors()) {
+	    if (bindingResult.hasErrors() && usuario.getAuthorities().stream()
+	    														.anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
 	    	
 	        return "admin/editarUsuario";
 	        
+	    } else if (bindingResult.hasErrors() && usuario.getAuthorities().stream()
+		.anyMatch(a -> a.getAuthority().equals("USER"))) {
+			
+			return "perfil";
+			
+		}
+	    
+	    u.setPassword(encoder.encode(u.getPassword()));
+	    usuarioService.editar(u);
+	    	    
+	    if ( usuario.getAuthorities().stream()
+	    							.anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+	    	
+	    	 return "redirect:/panelAdmin";
+	    	
+	    } else {
+	    	
+	    	return "perfil";
+	    	
 	    }
 	    
-	    usuarioService.editar(u);
-	    
-	    return "redirect:/panelAdmin";
+	   
 	}
 	
 	
