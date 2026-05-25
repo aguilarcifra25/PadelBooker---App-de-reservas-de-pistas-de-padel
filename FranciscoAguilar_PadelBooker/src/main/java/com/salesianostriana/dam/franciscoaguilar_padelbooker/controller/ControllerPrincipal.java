@@ -1,5 +1,6 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.repository.AsignacionRepository;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaService;
 
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionPistaOcupada;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionTiempoReserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Asignacion;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.AsignacionPK;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
@@ -43,6 +46,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ControllerPrincipal {
 
+	private final AsignacionRepository asignacionRepository;
 	private final ReservaService reservaService;
 	private final UsuarioService usuarioService;
 	private final PistaService pistaService;
@@ -224,11 +228,20 @@ public class ControllerPrincipal {
 		
 		Optional<Pista> pBorrar = pistaService.buscarPorId(numero);	
 		
+		boolean asignada = asignacionRepository.findAll().stream()
+										.anyMatch(a -> a.getPista() == pBorrar.get());
+		
+		if (asignada) {
+			
+			throw new ExcepcionPistaOcupada("No se puede borrar la pista. Debe eliminar las reservas asociadas a ellas y avisar a los usuarios.");
+			
+		}
+		
 		if (pBorrar.isPresent()) {
 			
 			pistaService.borrar(pBorrar.get());
 			
-		} 
+		}
 		
 		return "redirect:/panelAdmin";		
 	}
@@ -289,7 +302,7 @@ public class ControllerPrincipal {
 	            
 	    reservaService.guardar(r);
 	    
-	    return "redirect:/panelAdmin?tab=reservas";
+	    return "redirect:/panelAdmin";
 	}
 	
 	

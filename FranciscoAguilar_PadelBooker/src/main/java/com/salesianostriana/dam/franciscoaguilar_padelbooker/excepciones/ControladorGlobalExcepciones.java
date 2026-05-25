@@ -1,6 +1,8 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.PistaService;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaService;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioService;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,14 +10,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ControladorGlobalExcepciones {
 
+	private final ReservaService reservaService;
+	private final UsuarioService usuarioService;
 	private final PistaService pistaService;
 
-	ControladorGlobalExcepciones(PistaService pistaService) {
+	ControladorGlobalExcepciones(PistaService pistaService, UsuarioService usuarioService, ReservaService reservaService) {
 		this.pistaService = pistaService;
+		this.usuarioService = usuarioService;
+		this.reservaService = reservaService;
 	}
 
 	@ExceptionHandler(ExcepcionTiempoReserva.class)
-    public String handleSinPlazas(ExcepcionTiempoReserva eTiempoReserva, Model model) {
+    public String handleTiempoReserva(ExcepcionTiempoReserva eTiempoReserva, Model model) {
 		       
         model.addAttribute("errorMensaje", eTiempoReserva.getMessage());
         model.addAttribute("listaPistas", pistaService.buscarTodos());	
@@ -23,5 +29,15 @@ public class ControladorGlobalExcepciones {
         return "pistas";
     }
 	
+	@ExceptionHandler(ExcepcionPistaOcupada.class)
+    public String handlePistaOcupada(ExcepcionPistaOcupada ePistaOcupada, Model model) {
+		       
+        model.addAttribute("errorMensaje", ePistaOcupada.getMessage());
+        model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
+	    model.addAttribute("listaPistas", pistaService.buscarTodos());
+	    model.addAttribute("listaReservas", reservaService.buscarTodos());
+        
+        return "admin/panelAdmin";
+    }
 	
 }
