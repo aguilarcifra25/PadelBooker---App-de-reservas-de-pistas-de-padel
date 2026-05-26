@@ -152,9 +152,21 @@
                                 <h4 th:text="|Pista ${pista.tipo} ${#numbers.formatInteger(pista.numero, 2)}|"
                                     class="card-title">Pista</h4>
                                 <p th:text="${pista.suelo}" class="card-text">Césped artificial</p>
-                                <div class="d-grid">
+
+                                <div class="d-grid" sec:authorize="isAnonymous()">
                                     <a class="btn btn-primary"
                                         th:href="@{/detallesPista/{numero}(numero=${pista.numero})}">Ver
+                                        disponibilidad</a>
+                                </div>
+
+                                <div class="d-grid" sec:authorize="hasRole('USER')">
+                                    <a class="btn btn-primary"
+                                        th:href="@{/detallesPista/{numero}(numero=${pista.numero})}">Ver
+                                        disponibilidad</a>
+                                </div>
+
+                                <div class="d-grid" sec:authorize="hasRole('ADMIN')">
+                                    <a class="btn btn-primary disabled" href="javascript:void(0);">Ver
                                         disponibilidad</a>
                                 </div>
                             </div>
