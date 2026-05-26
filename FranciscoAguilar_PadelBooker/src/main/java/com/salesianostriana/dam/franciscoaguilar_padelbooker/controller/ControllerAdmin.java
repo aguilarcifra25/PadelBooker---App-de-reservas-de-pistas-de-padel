@@ -1,55 +1,114 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.PistaService;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaService;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioService;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Optional;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionNombreRepetido;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionPistaOcupada;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionTiempoReserva;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Asignacion;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.AsignacionPK;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.security.RolUsuario;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-public class ControllerPrincipal {
+public class ControllerAdmin {
+
+	private final PistaService pistaService;
+	private final UsuarioService usuarioService;
+	private final ReservaService reservaService;
+	private final AsignacionService asignacionService;
+	private final PasswordEncoder encoder;
 	
-	@GetMapping({"/","/home"})
-	public String paginaPrincipal (Model model) {
-			    		
-		return "home";
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/panelAdmin")
+	public String paginaAdmin (Model model, @AuthenticationPrincipal UserDetails usuario) {
+				
+	    model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
+	    model.addAttribute("listaPistas", pistaService.buscarTodos());
+	    model.addAttribute("listaReservas", reservaService.buscarTodos());
+	    	    
+		return "admin/panelAdmin";
+	}
+	
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/borrarUsuario/{id}")
+	public String borrarUsuario(@PathVariable("id") long id) {
+		
+		Optional<Usuario> uBorrar = usuarioService.buscarPorId(id);	
+		
+		if (uBorrar.isPresent()) {
+			
+			usuarioService.borrar(uBorrar.get());
+			
+		} 
+		
+		return "redirect:/panelAdmin";		
+	}
+		
+	
+	@GetMapping("/editarUsuario/{id}")
+	public String mostrarFormularioEdicionUsuario(@PathVariable("id") long id, Model model) {
+	    
+	    Optional<Usuario> uEditar = usuarioService.buscarPorId(id);
+	    
+	    if (uEditar.isPresent()) {
+	    	
+	        model.addAttribute("usuario", uEditar.get());
+	        
+	        return "admin/editarUsuario";
+	        
+	    } else {
+	    	
+	        return "redirect:/panelAdmin";
+	        
+	    }           
 	}
 
-<<<<<<< HEAD
 	@PostMapping("/editarUsuario/submit")
-	public String procesarEdicionUsuario(@Valid @ModelAttribute("usuario") Usuario u,BindingResult bindingResult, 
-												Model model, @AuthenticationPrincipal UserDetails usuario) {
+	public String procesarEdicionUsuario(@Valid @ModelAttribute("usuario") Usuario u,
+	        									BindingResult bindingResult, Model model) {
 	    
-	    if (bindingResult.hasErrors() && usuario.getAuthorities().stream()
-	    														.anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+	    if (bindingResult.hasErrors()) {
 	    	
 	        return "admin/editarUsuario";
 	        
-	    } else if (bindingResult.hasErrors() && usuario.getAuthorities().stream()
-	    																.anyMatch(a -> a.getAuthority().equals("ROLE_USER"))) {
-			
-			return "perfil";
-			
-		}
-	    
-	    u.setPassword(encoder.encode(u.getPassword()));
-	    usuarioService.editar(u);
-	    	    
-	    if ( usuario.getAuthorities().stream()
-	    							.anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-	    	
-	    	 return "redirect:/panelAdmin";
-	    	
-	    } else {
-	    	
-	    	model.addAttribute("usuario", usuarioService.buscarPorNombre(usuario.getUsername()).get());
-	    	
-	    	return "redirect:/perfil";
-	    	
 	    }
 	    
-	   
+	    usuarioService.editar(u);
+	    
+	    return "redirect:/panelAdmin";
 	}
 	
 	
@@ -68,6 +127,18 @@ public class ControllerPrincipal {
 	@PostMapping("/crearUsuario/submit")
 	public String procesarCreacionUsuario(@Valid @ModelAttribute("usuario") Usuario u,
 										BindingResult bindingResult, @AuthenticationPrincipal UserDetails uLogueado, Model model) {
+		
+		if (usuarioService.buscarTodos().stream()
+										.anyMatch(user -> user.getUsername().equals(u.getUsername()))) {
+	    	
+	    	throw new ExcepcionNombreRepetido("El nombre de usuario que intenta seleccionar está en uso.");
+	    		    	
+	    }else if (usuarioService.buscarTodos().stream()
+				.anyMatch(user -> user.getEmail().equals(u.getEmail()))) {
+
+			throw new ExcepcionNombreRepetido("El correo que intenta seleccionar está en uso.");
+
+		}
 		
 		if (bindingResult.hasErrors()) {
 	       
@@ -160,7 +231,7 @@ public class ControllerPrincipal {
 		
 		Optional<Pista> pBorrar = pistaService.buscarPorId(numero);	
 		
-		boolean asignada = asignacionRepository.findAll().stream()
+		boolean asignada = asignacionService.buscarTodos().stream()
 										.anyMatch(a -> a.getPista() == pBorrar.get());
 		
 		if (asignada) {
@@ -303,7 +374,5 @@ public class ControllerPrincipal {
 		return "redirect:/panelAdmin";		
 	}
 	
+	
 }
-=======
-}
->>>>>>> develop

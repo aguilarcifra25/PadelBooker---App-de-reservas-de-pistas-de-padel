@@ -17,6 +17,17 @@
 
     <main>
 
+        <section class="container">
+            <div th:if="${errorMensaje}" class="mx-auto mt-2">
+
+                <p class="bg-danger text-white text-center p-3 mt-3 fw-bolder rounded">
+                    <i class="bi bi-x-circle me-2 fs-5"></i>
+                    <span class="fs-5" th:text="${errorMensaje}"></span>
+                </p>
+
+            </div>
+        </section>
+
         <div class="container my-5 p-3 mx-auto card shadow-lg bg-secondary">
 
             <form th:action="@{/crearUsuario/submit}" th:object="${usuario}" method="post">
