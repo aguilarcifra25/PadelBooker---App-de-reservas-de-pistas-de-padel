@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionEmailRepetido;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionNombreRepetido;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionNombreRepetido;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionPistaOcupada;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionTiempoReserva;
@@ -97,9 +99,24 @@ public class ControllerAdmin {
 	}
 
 	@PostMapping("/editarUsuario/submit")
-	public String procesarEdicionUsuario(@Valid @ModelAttribute("usuario") Usuario u,
-	        									BindingResult bindingResult, Model model) {
+	public String procesarEdicionUsuario(@Valid @ModelAttribute("usuario") Usuario u,BindingResult bindingResult, 
+											Model model, @AuthenticationPrincipal UserDetails uLogueado) {
 	    
+		if (usuarioService.buscarTodos().stream()
+				.anyMatch(user -> user.getUsername().equals(u.getUsername()) 
+						&& !user.getId().equals(u.getId()))) {
+
+			throw new ExcepcionEdicionNombreRepetido("El nombre de usuario que intenta seleccionar está en uso.");
+
+		} else if (usuarioService.buscarTodos().stream()
+				.anyMatch(user -> user.getEmail().equals(u.getEmail()) 
+						&& !user.getId().equals(u.getId()))) {
+			
+			throw new ExcepcionEdicionEmailRepetido("El email que intenta seleccionar está en uso.");
+			
+		}
+		
+		
 	    if (bindingResult.hasErrors()) {
 	    	
 	        return "admin/editarUsuario";
@@ -108,7 +125,18 @@ public class ControllerAdmin {
 	    
 	    usuarioService.editar(u);
 	    
-	    return "redirect:/panelAdmin";
+	    if (uLogueado.getAuthorities().stream()
+	    							.anyMatch(rol -> rol.getAuthority().equals("ROLE_ADMIN"))) {
+	    	
+	    	return "redirect:/panelAdmin";
+	    	
+	    } else {
+	    	
+	    	return "redirect:/perfil";
+	    	
+	    }
+	    
+	    
 	}
 	
 	
@@ -133,7 +161,7 @@ public class ControllerAdmin {
 	    	
 	    	throw new ExcepcionNombreRepetido("El nombre de usuario que intenta seleccionar está en uso.");
 	    		    	
-	    }else if (usuarioService.buscarTodos().stream()
+	    } else if (usuarioService.buscarTodos().stream()
 				.anyMatch(user -> user.getEmail().equals(u.getEmail()))) {
 
 			throw new ExcepcionNombreRepetido("El correo que intenta seleccionar está en uso.");

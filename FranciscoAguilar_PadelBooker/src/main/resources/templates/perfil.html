@@ -29,6 +29,17 @@
 
         </div>
 
+        <section class="container">
+            <div th:if="${errorMensaje}" class="mx-auto mt-2">
+
+                <p class="bg-danger text-white text-center p-3 mt-3 fw-bolder rounded">
+                    <i class="bi bi-x-circle me-2 fs-5"></i>
+                    <span class="fs-5" th:text="${errorMensaje}"></span>
+                </p>
+
+            </div>
+        </section>
+
         <div class="row mb-4">
             <div class="col-12 text-center">
                 <h1 class="fw-bold text-dark">Perfil de Usuario</h1>
