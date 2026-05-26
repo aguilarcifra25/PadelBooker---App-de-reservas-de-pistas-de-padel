@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionNombreRepetido;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionPistaOcupada;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionTiempoReserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Asignacion;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.AsignacionPK;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
@@ -125,6 +127,18 @@ public class ControllerAdmin {
 	@PostMapping("/crearUsuario/submit")
 	public String procesarCreacionUsuario(@Valid @ModelAttribute("usuario") Usuario u,
 										BindingResult bindingResult, @AuthenticationPrincipal UserDetails uLogueado, Model model) {
+		
+		if (usuarioService.buscarTodos().stream()
+										.anyMatch(user -> user.getUsername().equals(u.getUsername()))) {
+	    	
+	    	throw new ExcepcionNombreRepetido("El nombre de usuario que intenta seleccionar está en uso.");
+	    		    	
+	    }else if (usuarioService.buscarTodos().stream()
+				.anyMatch(user -> user.getEmail().equals(u.getEmail()))) {
+
+			throw new ExcepcionNombreRepetido("El correo que intenta seleccionar está en uso.");
+
+		}
 		
 		if (bindingResult.hasErrors()) {
 	       
