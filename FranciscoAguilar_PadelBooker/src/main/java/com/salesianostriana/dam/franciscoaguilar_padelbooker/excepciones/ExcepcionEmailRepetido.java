@@ -1,11 +1,10 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones;
 
-public class ExcepcionPistaOcupada extends RuntimeException{
+public class ExcepcionEmailRepetido extends RuntimeException{
 
-	public ExcepcionPistaOcupada(String msg) {
+	public ExcepcionEmailRepetido(String msg) {
 		
         super(msg);
         
     }
-	
 }

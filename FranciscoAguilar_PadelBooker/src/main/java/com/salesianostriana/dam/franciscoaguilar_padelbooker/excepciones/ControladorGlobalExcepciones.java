@@ -1,8 +1,11 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.security.RolUsuario;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.PistaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioService;
+
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,5 +42,33 @@ public class ControladorGlobalExcepciones {
         
         return "admin/panelAdmin";
     }
+	
+	@ExceptionHandler(ExcepcionNombreRepetido.class)
+	public String handleNombreRepetido(ExcepcionNombreRepetido eNombreRepe, Model model) {
+		
+		Usuario nuevoUsuario = new Usuario();
+	    
+	    nuevoUsuario.setRolUsuario(RolUsuario.USER); 
+	    
+	    model.addAttribute("usuario", nuevoUsuario);		
+		model.addAttribute("errorMensaje", eNombreRepe.getMessage());
+					
+		return "crearUsuario";
+					
+	}
+	
+	@ExceptionHandler(ExcepcionEmailRepetido.class)
+	public String handleEmailRepetido(ExcepcionEmailRepetido eEmailRepe, Model model) {
+		
+		Usuario nuevoUsuario = new Usuario();
+	    
+	    nuevoUsuario.setRolUsuario(RolUsuario.USER); 
+	    
+	    model.addAttribute("usuario", nuevoUsuario);		
+		model.addAttribute("errorMensaje", eEmailRepe.getMessage());
+					
+		return "crearUsuario";
+					
+	}
 	
 }
