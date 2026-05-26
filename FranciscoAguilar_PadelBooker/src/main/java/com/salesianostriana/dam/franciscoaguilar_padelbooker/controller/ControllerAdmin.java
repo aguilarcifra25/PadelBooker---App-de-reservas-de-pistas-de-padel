@@ -56,7 +56,7 @@ public class ControllerAdmin {
 	@GetMapping("/panelAdmin")
 	public String paginaAdmin (Model model, @AuthenticationPrincipal UserDetails usuario) {
 				
-	    model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
+	    model.addAttribute("listaUsuarios", usuarioService.buscarTodosMenosAdminYLogeado(usuario.getUsername()));
 	    model.addAttribute("listaPistas", pistaService.buscarTodos());
 	    model.addAttribute("listaReservas", reservaService.buscarTodos());
 	    	    
@@ -284,7 +284,7 @@ public class ControllerAdmin {
 	public String crearReserva(Model model) {
 	    
 	    model.addAttribute("listaPistas", pistaService.buscarTodos());
-	    model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
+	    model.addAttribute("listaUsuarios", usuarioService.buscarPorRol(RolUsuario.USER));
 	    
 	    return "admin/crearReserva";
 	}
