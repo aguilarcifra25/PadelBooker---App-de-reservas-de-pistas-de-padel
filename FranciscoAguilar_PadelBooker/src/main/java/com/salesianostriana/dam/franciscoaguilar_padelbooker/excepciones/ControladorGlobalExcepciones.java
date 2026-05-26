@@ -6,22 +6,21 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.PistaServic
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioService;
 
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
+@RequiredArgsConstructor
 public class ControladorGlobalExcepciones {
 
 	private final ReservaService reservaService;
 	private final UsuarioService usuarioService;
 	private final PistaService pistaService;
-
-	ControladorGlobalExcepciones(PistaService pistaService, UsuarioService usuarioService, ReservaService reservaService) {
-		this.pistaService = pistaService;
-		this.usuarioService = usuarioService;
-		this.reservaService = reservaService;
-	}
 
 	@ExceptionHandler(ExcepcionTiempoReserva.class)
     public String handleTiempoReserva(ExcepcionTiempoReserva eTiempoReserva, Model model) {
@@ -42,6 +41,7 @@ public class ControladorGlobalExcepciones {
         
         return "admin/panelAdmin";
     }
+	
 	
 	@ExceptionHandler(ExcepcionNombreRepetido.class)
 	public String handleNombreRepetido(ExcepcionNombreRepetido eNombreRepe, Model model) {
@@ -71,4 +71,58 @@ public class ControladorGlobalExcepciones {
 					
 	}
 	
+	
+	@ExceptionHandler(ExcepcionEdicionNombreRepetido.class)
+	public String handleEdicionNombreRepetido(ExcepcionEdicionNombreRepetido eNombreRepe, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
+				
+		model.addAttribute("errorMensaje", eNombreRepe.getMessage());
+					
+		if (uLogueado.getAuthorities().stream()
+				.filter(rol -> rol.getAuthority()
+				.equals("ROLE_ADMIN"))
+				.findFirst()
+				.isPresent()) {			
+			
+		    model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
+		    model.addAttribute("listaPistas", pistaService.buscarTodos());
+		    model.addAttribute("listaReservas", reservaService.buscarTodos());
+			
+			return "admin/panelAdmin";
+			
+		} else {
+			
+			model.addAttribute("usuario", usuarioService.buscarPorNombre(uLogueado.getUsername()).get());
+			
+			return "perfil";
+			
+		}		
+					
+	}
+	
+	@ExceptionHandler(ExcepcionEdicionEmailRepetido.class)
+	public String handleEdicionEmailRepetido(ExcepcionEdicionEmailRepetido eEmailRepe, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
+				
+		model.addAttribute("errorMensaje", eEmailRepe.getMessage());
+					
+		if (uLogueado.getAuthorities().stream()
+				.filter(rol -> rol.getAuthority()
+				.equals("ROLE_ADMIN"))
+				.findFirst()
+				.isPresent()) {			
+			
+		    model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
+		    model.addAttribute("listaPistas", pistaService.buscarTodos());
+		    model.addAttribute("listaReservas", reservaService.buscarTodos());
+			
+			return "admin/panelAdmin";
+			
+		} else {
+			
+			model.addAttribute("usuario", usuarioService.buscarPorNombre(uLogueado.getUsername()).get());
+			
+			return "perfil";
+			
+		}		
+					
+	}
 }
