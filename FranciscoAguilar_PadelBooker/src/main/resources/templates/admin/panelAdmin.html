@@ -80,17 +80,42 @@
                             </thead>
 
                             <tbody>
-                                <tr th:each="usuario : ${listaUsuarios}">
-                                    <td th:text="${usuario.id}">ID</td>
-                                    <td th:text="${usuario.username}">Nombre</td>
-                                    <td th:text="${usuario.email}">Email</td>
-                                    <td th:text="${usuario.telefono}">Teléfono</td>
-                                    <td th:text="${usuario.rolUsuario}">Rol</td>
-                                    <td>
-                                        <a href="#" th:href="@{/editarUsuario/{id}(id=${usuario.id})}">Editar</a> |
-                                        <a href="#" th:href="@{/borrarUsuario/{id}(id=${usuario.id})}">Borrar</a>
-                                    </td>
-                                </tr>
+                                <th:block th:each="usuario : ${listaUsuarios}">
+                                    <tr>
+                                        <td th:text="${usuario.id}">ID</td>
+                                        <td th:text="${usuario.username}">Nombre</td>
+                                        <td th:text="${usuario.email}">Email</td>
+                                        <td th:text="${usuario.telefono}">Teléfono</td>
+                                        <td th:text="${usuario.rolUsuario}">Rol</td>
+                                        <td>
+                                            <a href="#" th:href="@{/editarUsuario/{id}(id=${usuario.id})}">Editar</a> |
+                                            <a th:href="@{/panelAdmin(borrarUsuario=${usuario.id})}"
+                                                class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i> Borrar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${param.borrarUsuario != null and param.borrarUsuario[0] == #strings.toString(usuario.id)}"
+                                        class="table-danger align-middle">
+                                        <td colspan="6" class="p-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i
+                                                        class="bi bi-exclamation-triangle-fill text-danger me-2 fs-5"></i>
+                                                    <span>¿Estás seguro de que deseas eliminar al usuario <strong
+                                                            th:text="${usuario.username}"></strong>? Esta acción es
+                                                        irreversible.</span>
+                                                </div>
+                                                <div>
+                                                    <a th:href="@{/panelAdmin}"
+                                                        class="btn btn-sm btn-secondary me-2">Cancelar</a>
+                                                    <a th:href="@{/borrarUsuario/{id}(id=${usuario.id})}"
+                                                        class="btn btn-sm btn-danger fw-bold">Eliminar</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </th:block>
                             </tbody>
 
                         </table>
@@ -119,18 +144,42 @@
                             </thead>
 
                             <tbody>
-                                <tr th:each="pista : ${listaPistas}">
-                                    <td th:text="${pista.numero}">Número de pista</td>
-                                    <td th:text="${pista.tipo}">Tipo</td>
-                                    <td th:text="${pista.suelo}">Suelo</td>
-                                    <td th:text="${pista.precioHora}">Precio/Hora</td>
-                                    <td>
-                                        <a href="#"
-                                            th:href="@{/editarPista/{numero}(numero=${pista.numero})}">Editar</a> |
-                                        <a href="#"
-                                            th:href="@{/borrarPista/{numero}(numero=${pista.numero})}">Borrar</a>
-                                    </td>
-                                </tr>
+                                <th:block th:each="pista : ${listaPistas}">
+                                    <tr>
+                                        <td th:text="${pista.numero}">Número de pista</td>
+                                        <td th:text="${pista.tipo}">Tipo</td>
+                                        <td th:text="${pista.suelo}">Suelo</td>
+                                        <td th:text="${pista.precioHora}">Precio/Hora</td>
+                                        <td>
+                                            <a href="#"
+                                                th:href="@{/editarPista/{numero}(numero=${pista.numero})}">Editar</a> |
+                                            <a th:href="@{/panelAdmin(tab='pistas', borrarPista=${pista.numero})}"
+                                                class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i> Borrar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${param.borrarPista != null and param.borrarPista[0] == #strings.toString(pista.numero)}"
+                                        class="table-danger align-middle">
+                                        <td colspan="5" class="p-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i
+                                                        class="bi bi-exclamation-triangle-fill text-danger me-2 fs-5"></i>
+                                                    <span>¿Estás seguro de que deseas eliminar la pista <strong
+                                                            th:text="${pista.numero}"></strong>? Esta acción es
+                                                        irreversible.</span>
+                                                </div>
+                                                <div>
+                                                    <a th:href="@{/panelAdmin(tab='pistas')}"
+                                                        class="btn btn-sm btn-secondary me-2">Cancelar</a>
+                                                    <a th:href="@{/borrarPista/{numero}(numero=${pista.numero})}"
+                                                        class="btn btn-sm btn-danger fw-bold">Eliminar</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </th:block>
                             </tbody>
 
                         </table>
@@ -164,41 +213,58 @@
                             </thead>
 
                             <tbody>
-                                <tr th:each="reserva : ${listaReservas}">
-
-                                    <td th:text="${reserva.codigo}"></td>
-
-                                    <td th:text="${reserva.usuario.username}"></td>
-
-                                    <td th:text="${#dates.format(reserva.fecha, 'dd/MM/yyyy')}"></td>
-
-                                    <td th:text="${reserva.horaEntrada}"></td>
-                                    <td th:text="${reserva.horaSalida}"></td>
-
-                                    <td>
-                                        <span th:each="asig : ${reserva.asignaciones}"
-                                            th:text="${asig.pista.numero}"></span>
-                                    </td>
-
-                                    <td>
-                                        <span th:each="asig : ${reserva.asignaciones}"
-                                            th:text="${asig.cantRaquetas}"></span>
-                                    </td>
-
-                                    <td>
-                                        <span th:each="asig : ${reserva.asignaciones}"
-                                            th:text="${asig.usaLuz ? 'Sí' : 'No'}"></span>
-                                    </td>
-
-                                    <td>
-                                        <span th:text="${reserva.precioTotal} + '€'"></span>
-                                    </td>
-
-                                    <td>
-                                        <a th:href="@{/editarReserva/{codigo}(codigo=${reserva.codigo})}">Editar</a> |
-                                        <a th:href="@{/borrarReserva/{codigo}(codigo=${reserva.codigo})}">Borrar</a>
-                                    </td>
-                                </tr>
+                                <th:block th:each="reserva : ${listaReservas}">
+                                    <tr>
+                                        <td th:text="${reserva.codigo}"></td>
+                                        <td th:text="${reserva.usuario.username}"></td>
+                                        <td th:text="${#dates.format(reserva.fecha, 'dd/MM/yyyy')}"></td>
+                                        <td th:text="${reserva.horaEntrada}"></td>
+                                        <td th:text="${reserva.horaSalida}"></td>
+                                        <td>
+                                            <span th:each="asig : ${reserva.asignaciones}"
+                                                th:text="${asig.pista.numero}"></span>
+                                        </td>
+                                        <td>
+                                            <span th:each="asig : ${reserva.asignaciones}"
+                                                th:text="${asig.cantRaquetas}"></span>
+                                        </td>
+                                        <td>
+                                            <span th:each="asig : ${reserva.asignaciones}"
+                                                th:text="${asig.usaLuz ? 'Sí' : 'No'}"></span>
+                                        </td>
+                                        <td>
+                                            <span th:text="${reserva.precioTotal} + '€'"></span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/editarReserva/{codigo}(codigo=${reserva.codigo})}">Editar</a>
+                                            |
+                                            <a th:href="@{/panelAdmin(tab='reservas', borrarReserva=${reserva.codigo})}"
+                                                class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i> Borrar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${param.borrarReserva != null and param.borrarReserva[0] == #strings.toString(reserva.codigo)}"
+                                        class="table-danger align-middle">
+                                        <td colspan="10" class="p-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i
+                                                        class="bi bi-exclamation-triangle-fill text-danger me-2 fs-5"></i>
+                                                    <span>¿Estás seguro de que deseas eliminar la reserva con código
+                                                        <strong th:text="${reserva.codigo}"></strong>? Esta acción es
+                                                        irreversible.</span>
+                                                </div>
+                                                <div>
+                                                    <a th:href="@{/panelAdmin(tab='reservas')}"
+                                                        class="btn btn-sm btn-secondary me-2">Cancelar</a>
+                                                    <a th:href="@{/borrarReserva/{codigo}(codigo=${reserva.codigo})}"
+                                                        class="btn btn-sm btn-danger fw-bold">Eliminar</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </th:block>
                             </tbody>
 
                         </table>
