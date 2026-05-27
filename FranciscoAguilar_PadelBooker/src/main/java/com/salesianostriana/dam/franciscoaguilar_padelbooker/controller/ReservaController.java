@@ -53,16 +53,12 @@ public class ReservaController {
 	    Optional<Pista> pOpt = pistaService.buscarPorId(numeroPista);
 	    Optional<Usuario> uOpt = usuarioService.buscarPorNombre(uLogueado.getUsername());
 	    
+	    Pista p = pOpt.get();
+	    boolean ocupada;
+	    
 	    Reserva reserva;
-	    
-	    if (horaEntrada.isAfter(horaSalida)) {
-	    	
-	    	throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
-	    		    	
-	    }
-	    
-	    
 	    double precioTotal;
+	    
 	    
 	    if (pOpt.isEmpty()) {
 	    	
@@ -72,12 +68,22 @@ public class ReservaController {
 	    	
 	    	return "redirect:/home";
 	    	
-	    }         
-                
+	    }  
 	    
+	    if (horaEntrada.isAfter(horaSalida)) {
+	    	
+	    	throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
+	    		    	
+	    }
 	    
-	    Pista p = pOpt.get();
+	    ocupada = reservaService.tieneConflictoHorario(p.getNumero(), fecha, horaEntrada, horaSalida);
 	    
+	    if (ocupada) {
+	    	
+	        throw new ExcepcionTiempoReserva("La pista ya se encuentra reservada en el horario seleccionado.");
+	        
+	    }
+	                    	    	    
 	    precioTotal = reservaService.calcularPrecioTotal(horaEntrada, horaSalida, cantRaquetas, p.getPrecioHora(), usaLuz);
 
 	    reserva = Reserva.builder()
