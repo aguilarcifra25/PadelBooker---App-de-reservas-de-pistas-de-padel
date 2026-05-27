@@ -25,16 +25,14 @@
                 <input type="hidden" th:field="*{usuario.id}" th:if="*{usuario != null}" />
 
                 <div class="row mb-3">
-                    <div class="col-6">
+                    <div class="col-3">
                         <label for="fecha" class="form-label fw-bold">Fecha de reserva</label>
                         <input type="date" class="form-control form-control-lg fs-6"
                             th:min="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" th:field="*{fecha}" required />
                     </div>
-                </div>
 
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <label for="horaEntrada" class="form-label small fw-bold mb-2">Hora entrada</label>
+                    <div class="col-2">
+                        <label for="horaEntrada" class="form-label small fw-bold mb-2">Hora de entrada:</label>
                         <select id="horaEntrada" class="form-select form-select-lg fs-6" th:field="*{horaEntrada}"
                             required>
                             <option value="" disabled selected hidden>--:--</option>
@@ -70,8 +68,8 @@
                         </select>
                     </div>
 
-                    <div class="col-6">
-                        <label for="horaSalida" class="form-label small fw-bold mb-2">Hora salida</label>
+                    <div class="col-2">
+                        <label for="horaSalida" class="form-label small fw-bold mb-2">Hora de salida:</label>
                         <select id="horaSalida" class="form-select form-select-lg fs-6" th:field="*{horaSalida}"
                             required>
                             <option value="" disabled selected hidden>--:--</option>
@@ -109,13 +107,13 @@
                 </div>
 
                 <div class="row mb-3">
-                    <div class="col-6 mb-3">
+                    <div class="col-2 mb-3">
                         <label for="cantRaquetas" class="form-label small fw-bold mb-2">Cantidad de raquetas</label>
                         <input type="number" id="cantRaquetas" name="cantRaquetas" class="form-control" min="0" max="4"
                             th:value="${reserva.asignaciones != null and !reserva.asignaciones.isEmpty() ? reserva.asignaciones[0].cantRaquetas : 0}"
                             required />
                     </div>
-                    <div class="col-6 d-flex align-items-center mt-3">
+                    <div class="col-3 d-flex align-items-center mt-3">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="usaLuz" name="usaLuz" value="true"
                                 th:checked="${reserva.asignaciones != null and !reserva.asignaciones.isEmpty() ? reserva.asignaciones[0].usaLuz : false}" />
