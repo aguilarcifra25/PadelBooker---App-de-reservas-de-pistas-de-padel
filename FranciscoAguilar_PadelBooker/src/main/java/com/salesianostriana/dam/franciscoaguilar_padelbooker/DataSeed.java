@@ -105,6 +105,7 @@ public class DataSeed {
                     .cantRaquetas(0)
                     .usaLuz(false)
                     .precio(r1.getPrecioTotal())
+                    .observaciones("")
                     .build();
     
     a1.agregarEnPista(p1); 
