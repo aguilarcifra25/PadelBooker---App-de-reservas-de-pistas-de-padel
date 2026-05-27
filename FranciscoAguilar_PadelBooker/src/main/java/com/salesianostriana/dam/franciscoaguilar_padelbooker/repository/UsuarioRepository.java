@@ -18,4 +18,7 @@ public interface UsuarioRepository  extends JpaRepository<Usuario, Long>{
 	
 	@Query("SELECT u FROM Usuario u WHERE u.username != :username AND u.username != 'admin'")
 	List<Usuario> findAllExceptYouAndAdmin(@Param("username") String username);
+
+	Integer countByRolUsuario (RolUsuario rolUsuario);
+	
 }
