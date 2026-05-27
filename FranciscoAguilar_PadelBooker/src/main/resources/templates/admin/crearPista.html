@@ -54,14 +54,24 @@
                             th:errors="*{precioHora}"></div>
                     </div>
 
+                    <div class="col-10">
+                        <label for="imagen" class="form-label">Imagen</label>
+                        <input type="url" placeholder="Pega aquí la URL de la imagen" th:field="*{imagen}"
+                            th:errorclass="is-invalid" id="imagen" class="form-control" />
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('imagen')}" th:errors="*{imagen}">
+                        </div>
+                    </div>
                 </div>
+
+
 
                 <div class="d-flex justify-content-end gap-2 mt-4">
                     <a th:href="@{/panelAdmin}" class="btn btn-outline-danger">Cancelar</a>
                     <button type="submit" class="btn btn-success">Crear pista</button>
                 </div>
+        </div>
 
-            </form>
+        </form>
 
         </div>
     </main>
