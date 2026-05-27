@@ -297,6 +297,12 @@ public class ControllerAdmin {
 									@RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz, @RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas,
 									@RequestParam(value = "observaciones", required = false) String observaciones, Model model) {
 	   
+		if (horaEntrada.isAfter(horaSalida)) {
+		    	
+			throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
+		    		    	
+		}
+		
 	    Pista p = pistaService.buscarPorId(numero).get();
 	    Usuario u = usuarioService.buscarPorId(usuarioId).get();
 	    
@@ -339,12 +345,12 @@ public class ControllerAdmin {
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/editarReserva/{codigo}")
-	public String mostrarFormularioEdicionReserva(@PathVariable("codigo") long codigo, Model model) {
-	                            
+	public String mostrarFormularioEdicionReserva(@PathVariable("codigo") long codigo, Model model) {        
+		
 	    Optional<Reserva> rEditar = reservaService.buscarPorId(codigo);
 	    
 	    if (rEditar.isPresent()) {
-	    	
+	    			    		    		    	
 	        model.addAttribute("reserva", rEditar.get());
 	        
 	        return "admin/editarReserva";
@@ -361,6 +367,13 @@ public class ControllerAdmin {
 	public String procesarEdicionReserva(@ModelAttribute("reserva") Reserva r, @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
 											@RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas) {
 	    
+		if (r.getHoraEntrada().isAfter(r.getHoraSalida())) {
+	    	
+			throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
+		    		    	
+		}	
+		
+		
 	    Reserva reservaExistente = reservaService.buscarPorId(r.getCodigo()).get();
 	    
 	    reservaExistente.setFecha(r.getFecha());
