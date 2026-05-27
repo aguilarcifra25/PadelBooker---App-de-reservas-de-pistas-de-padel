@@ -300,11 +300,21 @@ public class ControllerAdmin {
 									@RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz, @RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas,
 									@RequestParam(value = "observaciones", required = false) String observaciones, Model model) {
 	   
+		boolean ocupada;
+		
 		if (horaEntrada.isAfter(horaSalida)) {
 		    	
 			throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
 		    		    	
 		}
+		
+		ocupada = reservaService.tieneConflictoHorario(numero, fecha, horaEntrada, horaSalida);
+	    
+	    if (ocupada) {
+	    	
+	        throw new ExcepcionTiempoReserva("La pista ya se encuentra reservada en el horario seleccionado.");
+	        
+	    }
 		
 	    Pista p = pistaService.buscarPorId(numero).get();
 	    Usuario u = usuarioService.buscarPorId(usuarioId).get();
