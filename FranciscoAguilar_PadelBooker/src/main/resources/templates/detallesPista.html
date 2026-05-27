@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
     <link rel="stylesheet" href="../static/css/detallesPista.css" th:href="@{/css/detallesPista.css}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <script th:src="@{/js/precioDinamico.js}" defer></script>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -26,12 +27,9 @@
                     <div class="border border-3 border-primary rounded shadow-lg overflow-hidden">
 
                         <div class="text-center d-flex align-items-center justify-content-center" id="fotoPista">
-
                             <img th:if="${pista.imagen != null}" th:src="${pista.imagen}"
                                 class="w-100 h-100 object-fit-cover">
-
                             <i th:if="${pista.imagen == null}" class="bi bi-x-circle display-1"></i>
-
                         </div>
 
                         <div class="p-4" mb-3>
@@ -57,21 +55,16 @@
                             </div>
 
                             <div class="mt-4 pt-3 border-top ">
-
                                 <p class="mb-2"><i class="bi bi-check text-success me-2"></i>Superficie premium:
                                     <span th:text="${pista.suelo}"></span> de alta calidad.
                                 </p>
-
                                 <p class="mb-2"><i class="bi bi-check text-success me-2"></i>Iluminación LED de
                                     excelente visibilidad uniforme.</p>
-
                                 <p th:if="${pista.tipo == 'Outdoor'}" class="mb-2"><i
                                         class="bi bi-check text-success me-2"></i>Clima controlado con
                                     temperatura ideal.</p>
-
                                 <p class="mb-2"><i class="bi bi-check text-success me-2"></i>Alquiler de material
                                     disponible.</p>
-
                             </div>
 
                         </div>
@@ -82,7 +75,11 @@
 
                 <div class="col-lg-4 mb-5">
 
-                    <div class="border border-2 border-primary rounded shadow-lg p-4">
+                    <div class="border border-2 border-primary rounded shadow-lg p-4" id="contenedorReserva"
+                        th:data-precio-base="${pista.precioHora}"
+                        th:data-precio-luz="${reservaService != null ? reservaService.precioLuzHora : 4.5}"
+                        th:data-precio-raqueta="${reservaService != null ? reservaService.precioRaqueta : 2.0}">
+
                         <div class="mb-4">
                             <h4 class="fw-bold">
                                 <i class="bi bi-bookmark-star-fill text-primary fs-5 me-2"></i>Reservar pista
@@ -106,7 +103,8 @@
                                         <label class="form-label small fw-bold mb-2">
                                             <i class="bi bi-box-arrow-in-right text-success me-2"></i> Hora entrada
                                         </label>
-                                        <select name="horaEntrada" class="form-select form-select-lg fs-6" required>
+                                        <select id="horaEntrada" name="horaEntrada"
+                                            class="form-select form-select-lg fs-6" required>
                                             <option value="" disabled selected hidden>--:--</option>
                                             <option value="08:00">08:00</option>
                                             <option value="08:30">08:30</option>
@@ -144,7 +142,8 @@
                                         <label class="form-label small fw-bold mb-2">
                                             <i class="bi bi-box-arrow-left text-danger me-2"></i> Hora salida
                                         </label>
-                                        <select name="horaSalida" class="form-select form-select-lg fs-6" required>
+                                        <select id="horaSalida" name="horaSalida"
+                                            class="form-select form-select-lg fs-6" required>
                                             <option value="" disabled selected hidden>--:--</option>
                                             <option value="08:30">08:30</option>
                                             <option value="09:00">09:00</option>
@@ -190,9 +189,10 @@
                                         <div class="p-3 border rounded h-100">
                                             <div
                                                 class="form-check form-switch m-0 d-flex flex-column align-items-center justify-content-between ps-0">
-                                                <label class="form-check-label small fw-bold mb-3"
-                                                    for="usaLuz">Iluminación
-                                                    de pista (+4.50€/hora)</label>
+                                                <label class="form-check-label small fw-bold mb-3 text-center"
+                                                    for="usaLuz">
+                                                    Iluminación (+4.50€/h)
+                                                </label>
                                                 <input class="form-check-input bg-warning ms-0 fs-4" type="checkbox"
                                                     role="switch" id="usaLuz" name="usaLuz" value="true">
                                             </div>
@@ -202,15 +202,39 @@
                                     <div class="col-12 col-md-6">
                                         <div class="p-3 border rounded h-100">
                                             <div class="input-group input-group-sm">
-                                                <label class="form-check-label small fw-bold mb-3"
-                                                    for="cantRaquetas">Alquiler de palas (+2€ ud)</label>
-                                                <span
-                                                    class="input-group-text bg-white text-muted small">Cantidad:</span>
+                                                <label class="form-check-label small fw-bold mb-3 w-100"
+                                                    for="cantRaquetas">
+                                                    Alquiler palas (+2€ ud)
+                                                </label>
+                                                <span class="input-group-text bg-white text-muted small">Cant:</span>
                                                 <input type="number" name="cantRaquetas" id="cantRaquetas"
                                                     class="form-control" value="0" min="0" max="4">
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+
+                            <div id="seccionDesglose"
+                                class="bg-light rounded p-3 mb-4 d-none border border-light-subtle">
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Duración total:</span>
+                                    <span id="txtDuracion" class="fw-bold">0 horas</span>
+                                </div>
+                                <div id="filaExtraLuz"
+                                    class="d-flex justify-content-between small text-muted mb-1 d-none">
+                                    <span>Suplemento Luz:</span>
+                                    <span id="txtPrecioLuz" class="fw-bold">0.00€</span>
+                                </div>
+                                <div id="filaExtraPalas"
+                                    class="d-flex justify-content-between small text-muted mb-2 d-none">
+                                    <span>Alquiler Palas:</span>
+                                    <span id="txtPrecioPalas" class="fw-bold">0.00€</span>
+                                </div>
+                                <div
+                                    class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary-subtle">
+                                    <span class="fw-bold text-dark fs-5">Precio Total:</span>
+                                    <span id="precioDinamico" class="fw-bold text-primary fs-3">0.00€</span>
                                 </div>
                             </div>
 
@@ -233,7 +257,6 @@
             </div>
 
         </div>
-
     </main>
 
     <div th:replace="~{fragments/base :: footer}"></div>
