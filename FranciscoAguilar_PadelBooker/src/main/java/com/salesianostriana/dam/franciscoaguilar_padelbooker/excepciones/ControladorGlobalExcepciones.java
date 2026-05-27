@@ -23,12 +23,23 @@ public class ControladorGlobalExcepciones {
 	private final PistaService pistaService;
 
 	@ExceptionHandler(ExcepcionTiempoReserva.class)
-    public String handleTiempoReserva(ExcepcionTiempoReserva eTiempoReserva, Model model) {
+    public String handleTiempoReserva(ExcepcionTiempoReserva eTiempoReserva, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
 		       
         model.addAttribute("errorMensaje", eTiempoReserva.getMessage());
-        model.addAttribute("listaPistas", pistaService.buscarTodos());	
+        model.addAttribute("listaUsuarios", usuarioService.buscarTodosMenosAdminYLogeado(uLogueado.getUsername()));
+	    model.addAttribute("listaPistas", pistaService.buscarTodos());
+	    model.addAttribute("listaReservas", reservaService.buscarTodos());	
         
-        return "pistas";
+        if (uLogueado.getAuthorities().stream()
+	    							.anyMatch(rol -> rol.getAuthority().equals("ROLE_ADMIN"))) {
+        
+        	return "admin/panelAdmin";
+        
+        } else {
+        	
+        	return "pistas";
+        	
+        }
     }
 	
 	@ExceptionHandler(ExcepcionPistaOcupada.class)
