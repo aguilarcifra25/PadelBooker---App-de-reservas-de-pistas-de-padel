@@ -1,6 +1,6 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.service;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -37,7 +37,7 @@ public class AsignacionService extends ServiciosBaseImpl<Asignacion, AsignacionP
         return asignacionRepository.save(asignacion);
     }
 	
-	public Optional<Pista> buscarPistaMasReservada () {
+	public List<Pista> buscarPistaMasReservada () {
 		
 		return asignacionRepository.findMostBookedPista();
 		

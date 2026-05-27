@@ -61,8 +61,8 @@ public class ControllerAdmin {
 	    model.addAttribute("listaReservas", reservaService.buscarTodos());
 	    
 	    model.addAttribute("usuariosActivos", usuarioService.contarUsuariosNormales(RolUsuario.USER));	    
-	    model.addAttribute("pistaMasUsada", asignacionService.buscarPistaMasReservada().get());
-	    
+	    model.addAttribute("pistaMasUsada", asignacionService.buscarPistaMasReservada());
+	    	    
 		return "admin/panelAdmin";
 	}
 	

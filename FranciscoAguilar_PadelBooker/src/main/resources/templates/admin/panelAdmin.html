@@ -292,7 +292,11 @@
 
                             <div class="card col-5">
                                 <p class="card-img-top display-4 text-center pt-5"
-                                    th:text="|Pista ${pistaMasUsada.tipo} ${#numbers.formatInteger(pistaMasUsada.numero, 2)}|">
+                                    th:if="${not #lists.isEmpty(pistaMasUsada)}"
+                                    th:text="|Pista ${pistaMasUsada[0].tipo} ${#numbers.formatInteger(pistaMasUsada[0].numero, 2)}|">
+                                </p>
+                                <p class="card-img-top display-4 text-center pt-5"
+                                    th:if="${#lists.isEmpty(pistaMasUsada)}">Sin reservas
                                 </p>
                                 <div class="card-body py-3">
                                     <h4 class="card-title text-center py-3">Pista más usada</h4>
