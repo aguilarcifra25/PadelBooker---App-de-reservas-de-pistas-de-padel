@@ -35,7 +35,7 @@
                 <input type="hidden" th:field="*{id}" />
 
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-4">
                         <label for="username" class="form-label">Nombre de usuario</label>
                         <input type="text" th:field="*{username}" placeholder="Nombre" class="form-control"
                             th:errorclass="is-invalid" />
@@ -44,7 +44,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6">
+                    <div class="col-4">
                         <label for="password" class="form-label">Contraseña</label>
                         <input type="password" th:field="*{password}" placeholder="Contraseña" class="form-control"
                             th:errorclass="is-invalid" />
@@ -55,7 +55,7 @@
                 </div>
 
                 <div class="row my-5">
-                    <div class="col-6">
+                    <div class="col-4">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" th:field="*{email}" placeholder="Email" class="form-control"
                             th:errorclass="is-invalid" />
@@ -63,7 +63,7 @@
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                     </div>
 
-                    <div class="col-6">
+                    <div class="col-3">
                         <label for="telefono" class="form-label">Teléfono</label>
                         <input type="text" th:field="*{telefono}" placeholder="Teléfono" class="form-control"
                             th:errorclass="is-invalid" />
@@ -73,14 +73,17 @@
                     </div>
                 </div>
 
-                <div sec:authorize="hasRole('ADMIN')">
-                    <label for="rolUsuario" class="form-label">Rol de usuario</label>
-                    <select th:field="*{rolUsuario}" class="form-select" th:errorclass="is-invalid">
-                        <option value="USER">USER</option>
-                        <option value="ADMIN">ADMIN</option>
-                    </select>
+                <div class="row">
+                    <div sec:authorize="hasRole('ADMIN')" class="col-3">
+                        <label for="rolUsuario" class="form-label">Rol de usuario</label>
+                        <select th:field="*{rolUsuario}" class="form-select" th:errorclass="is-invalid">
+                            <option value="USER">USER</option>
+                            <option value="ADMIN">ADMIN</option>
+                        </select>
 
-                    <div class="invalid-feedback" th:if="${#fields.hasErrors('rolUsuario')}" th:errors="*{rolUsuario}">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('rolUsuario')}"
+                            th:errors="*{rolUsuario}">
+                        </div>
                     </div>
                 </div>
 
