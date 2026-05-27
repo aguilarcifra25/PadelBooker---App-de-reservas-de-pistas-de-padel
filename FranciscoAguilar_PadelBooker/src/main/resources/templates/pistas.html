@@ -140,12 +140,12 @@
 
         <section>
             <div class="container my-5">
-                <div class="row">
+                <div class="row g-4">
 
                     <div class="col-4" th:each="pista : ${listaPistas}">
                         <div class="card h-100 overflow-hidden rounded shadow-lg">
 
-                            <img th:src="${pista.imagen != null ? pista.imagen : '/img/fotoError.png'}"
+                            <img th:with="url=${(pista.imagen) ?: 'img/fotoError.png'}" th:src="@{${url}}"
                                 class="card-img-top w-100 h-100 img-fluid" th:alt="|Pista ${pista.tipo}|">
 
                             <div class="card-body z-1 bg-white">
