@@ -59,7 +59,10 @@ public class ControllerAdmin {
 	    model.addAttribute("listaUsuarios", usuarioService.buscarTodosMenosAdminYLogeado(usuario.getUsername()));
 	    model.addAttribute("listaPistas", pistaService.buscarTodos());
 	    model.addAttribute("listaReservas", reservaService.buscarTodos());
-	    	    
+	    
+	    model.addAttribute("usuariosActivos", usuarioService.contarUsuariosNormales(RolUsuario.USER));	    
+	    model.addAttribute("pistaMasUsada", asignacionService.buscarPistaMasReservada().get());
+	    
 		return "admin/panelAdmin";
 	}
 	

@@ -42,6 +42,10 @@
                         Gestión de reservas
                     </button>
 
+                    <button class="list-group-item list-group-item-action border rounded my-2" data-bs-toggle="list"
+                        data-bs-target="#estadisticas"> Estadísticas
+                    </button>
+
                 </div>
 
                 <section class="container">
@@ -268,6 +272,34 @@
                             </tbody>
 
                         </table>
+
+                    </div>
+
+                </section>
+
+                <section class="tab-pane fade" id="estadisticas">
+
+                    <div class="container mt-4">
+
+                        <div class="row mx-auto">
+
+                            <div class="card col-5 me-5">
+                                <p class="card-img-top display-4 text-center pt-5" th:text=" ${usuariosActivos}"></p>
+                                <div class="card-body">
+                                    <h4 class="card-title text-center py-3">Usuarios activos</h4>
+                                </div>
+                            </div>
+
+                            <div class="card col-5">
+                                <p class="card-img-top display-4 text-center pt-5"
+                                    th:text="|Pista ${pistaMasUsada.tipo} ${#numbers.formatInteger(pistaMasUsada.numero, 2)}|">
+                                </p>
+                                <div class="card-body py-3">
+                                    <h4 class="card-title text-center py-3">Pista más usada</h4>
+                                </div>
+                            </div>
+
+                        </div>
 
                     </div>
 

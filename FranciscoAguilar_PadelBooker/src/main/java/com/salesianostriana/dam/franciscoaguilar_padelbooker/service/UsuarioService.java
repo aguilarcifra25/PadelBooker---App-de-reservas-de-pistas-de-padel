@@ -37,4 +37,10 @@ public class UsuarioService extends ServiciosBaseImpl<Usuario, Long, UsuarioRepo
 		
 	}
 	
+	public Integer contarUsuariosNormales (RolUsuario rol) {
+		
+		return usuarioRepository.countByRolUsuario(rol);
+		
+	}
+	
 }
