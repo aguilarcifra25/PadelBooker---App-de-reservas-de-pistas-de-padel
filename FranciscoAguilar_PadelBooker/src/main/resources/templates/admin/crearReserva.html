@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
     <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <script th:src="@{/js/precioDinamico.js}" defer></script>
     <script th:src="@{/js/controlHoraSalida.js}" defer></script>
 </head>
 
@@ -18,7 +19,10 @@
 
     <main>
 
-        <div class="container my-5 p-3 mx-auto card shadow-lg bg-secondary">
+        <div class="container my-5 p-3 mx-auto card shadow-lg bg-secondary" id="contenedorReserva"
+            th:data-precio-base="${pista != null ? pista.precioHora : 0.0}"
+            th:data-precio-luz="${reservaService != null ? reservaService.precioLuzHora : 4.5}"
+            th:data-precio-raqueta="${reservaService != null ? reservaService.precioRaqueta : 2.0}">
 
             <form th:action="@{/admin/reserva/crear}" method="POST">
 
@@ -45,8 +49,8 @@
                     </div>
 
                     <div class="col-md-2 mb-3">
-                        <label for="horaInicio" class="form-label">Hora de entrada:</label>
-                        <select id="horaInicio" name="horaInicio" class="form-select form-select-lg fs-6" required>
+                        <label for="horaEntrada" class="form-label">Hora de entrada:</label>
+                        <select id="horaEntrada" name="horaInicio" class="form-select form-select-lg fs-6" required>
                             <option value="" disabled selected hidden>--:--</option>
                             <option value="08:00">08:00</option>
                             <option value="08:30">08:30</option>
@@ -81,8 +85,8 @@
                     </div>
 
                     <div class="col-md-2 mb-3">
-                        <label for="horaFin" class="form-label">Hora de salida:</label>
-                        <select id="horaFin" name="horaFin" class="form-select form-select-lg fs-6" required>
+                        <label for="horaSalida" class="form-label">Hora de salida:</label>
+                        <select id="horaSalida" name="horaFin" class="form-select form-select-lg fs-6" required>
                             <option value="" disabled selected hidden>--:--</option>
                             <option value="08:30">08:30</option>
                             <option value="09:00">09:00</option>
@@ -148,6 +152,26 @@
                         <label for="observaciones" class="form-label">Observaciones / Notas adicionales:</label>
                         <textarea id="observaciones" name="observaciones" class="form-control" rows="3"
                             placeholder="Ej. El usuario pagará con tarjeta en recepción..."></textarea>
+                    </div>
+                </div>
+
+                <div id="seccionDesglose" class="bg-light rounded p-3 mb-4 d-none border border-light-subtle">
+                    <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span>Duración total:</span>
+                        <span id="txtDuracion" class="fw-bold">0 horas</span>
+                    </div>
+                    <div id="filaExtraLuz" class="d-flex justify-content-between small text-muted mb-1 d-none">
+                        <span>Suplemento Luz:</span>
+                        <span id="txtPrecioLuz" class="fw-bold">0.00€</span>
+                    </div>
+                    <div id="filaExtraPalas" class="d-flex justify-content-between small text-muted mb-2 d-none">
+                        <span>Alquiler Palas:</span>
+                        <span id="txtPrecioPalas" class="fw-bold">0.00€</span>
+                    </div>
+                    <div
+                        class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary-subtle">
+                        <span class="fw-bold text-dark fs-5">Precio Total:</span>
+                        <span id="precioDinamico" class="fw-bold text-primary fs-3">0.00€</span>
                     </div>
                 </div>
 

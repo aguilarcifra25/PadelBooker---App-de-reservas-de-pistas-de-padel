@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.PistaService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,10 +33,13 @@ public class PistaController {
 	public String verDetallesPista (@PathVariable("numero") long numero, Model model) {
 		
 		Optional<Pista> pista = pistaService.buscarPorId(numero);
+		Reserva reservaVacia = new Reserva();
+        
 		
 
 		if (pista.isPresent()) {
 			
+			model.addAttribute("reserva", reservaVacia);
 			model.addAttribute("pista", pista.get());
 			
 			return "detallesPista";

@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const contenedor = document.getElementById('contenedorReserva');
-    const pBase = parseFloat(contenedor.getAttribute('data-precio-base'));
     const pLuz = parseFloat(contenedor.getAttribute('data-precio-luz'));
     const pPalas = parseFloat(contenedor.getAttribute('data-precio-raqueta'));
 
+    const selPista = document.getElementById('numero'); // Capturamos el select de pistas
     const selEntrada = document.getElementById('horaEntrada');
     const selSalida = document.getElementById('horaSalida');
     const chkLuz = document.getElementById('usaLuz');
@@ -17,6 +17,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function calcular() {
         if (!selEntrada.value || !selSalida.value) return;
+
+        let pBase = 0;
+        if (selPista && selPista.selectedIndex >= 0) {
+            const opcionSeleccionada = selPista.options[selPista.selectedIndex];
+            const textoOpcion = opcionSeleccionada.text;
+
+            const coincidencia = textoOpcion.match(/([\d.]+)(?=€\/h)/);
+            if (coincidencia) {
+                pBase = parseFloat(coincidencia[1]);
+            }
+        }
+
+        if (!pBase || isNaN(pBase)) {
+            pBase = parseFloat(contenedor.getAttribute('data-precio-base')) || 0.0;
+        }
 
         const [hE, mE] = selEntrada.value.split(':').map(Number);
         const [hS, mS] = selSalida.value.split(':').map(Number);
@@ -52,6 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
         seccion.classList.remove('d-none');
     }
 
+    if (selPista) {
+        selPista.addEventListener('change', calcular);
+    }
     selEntrada.addEventListener('change', calcular);
     selSalida.addEventListener('change', calcular);
     chkLuz.addEventListener('change', calcular);
