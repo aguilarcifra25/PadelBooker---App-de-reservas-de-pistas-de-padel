@@ -104,7 +104,9 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4">
-                    <a th:href="@{/panelAdmin}" class="btn btn-outline-danger">Cancelar</a>
+                    <a th:href="@{/panelAdmin}" class="btn btn-outline-danger"
+                        sec:authorize="hasRole('ADMIN')">Cancelar</a>
+                    <a th:href="@{/perfil}" class="btn btn-outline-danger" sec:authorize="hasRole('USER')">Cancelar</a>
                     <button type="submit" class="btn btn-success">Guardar cambios</button>
                 </div>
 
