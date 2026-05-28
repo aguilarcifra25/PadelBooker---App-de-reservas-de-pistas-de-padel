@@ -8,7 +8,6 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioServ
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -421,9 +420,9 @@ public class ControllerAdmin {
 	    return "redirect:/panelAdmin?tab=reservas";
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
+	
 	@GetMapping("/borrarReserva/{codigo}")
-	public String borrarReserva(@PathVariable("codigo") long codigo) {
+	public String borrarReserva(@PathVariable("codigo") long codigo, @AuthenticationPrincipal UserDetails uLogueado) {
 		
 		Optional<Reserva> rBorrar = reservaService.buscarPorId(codigo);	
 		
@@ -433,7 +432,22 @@ public class ControllerAdmin {
 			
 		} 
 		
-		return "redirect:/panelAdmin";		
+		if (uLogueado != null && uLogueado.getAuthorities().stream()
+				.filter(rol -> rol.getAuthority()
+				.equals("ROLE_ADMIN"))
+				.findFirst()
+				.isPresent())  {
+			
+			return "redirect:/panelAdmin";
+						
+		} else {
+			
+			return "redirect:/perfil";
+			
+		}
+		
+		
+				
 	}
 	
 	
