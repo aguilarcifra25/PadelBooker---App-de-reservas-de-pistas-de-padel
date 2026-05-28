@@ -385,7 +385,7 @@ public class ControllerAdmin {
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/editarReserva/submit")
 	public String procesarEdicionReserva(@ModelAttribute("reserva") Reserva r, @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
-											@RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas) {
+											@RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas, @AuthenticationPrincipal UserDetails uLogueado) {
 	    
 		boolean ocupada;
 		
@@ -436,7 +436,21 @@ public class ControllerAdmin {
 	    
 	    reservaService.editar(reservaExistente);
 	    
-	    return "redirect:/panelAdmin?tab=reservas";
+	    if (uLogueado != null && uLogueado.getAuthorities().stream()
+				.filter(rol -> rol.getAuthority()
+				.equals("ROLE_ADMIN"))
+				.findFirst()
+				.isPresent())  {
+			
+	    	return "redirect:/panelAdmin?tab=reservas";
+						
+		} else {
+			
+			return "redirect:/perfil";
+			
+		}
+	    
+	    
 	}
 	
 	
