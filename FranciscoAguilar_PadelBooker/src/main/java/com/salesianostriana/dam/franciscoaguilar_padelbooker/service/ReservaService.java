@@ -74,4 +74,22 @@ public class ReservaService extends ServiciosBaseImpl<Reserva, Long, ReservaRepo
 	            					.anyMatch(a -> seSolapan(inicioNueva, finNueva, a.getReserva().getHoraEntrada(), a.getReserva().getHoraSalida()));
 	    	    
 	}
+	
+	//Cambia en el return mirando que no sea la misma reserva
+	public boolean tieneConflictoHorarioEdicion(long numeroPista, LocalDate fechaNueva, LocalTime inicioNueva, LocalTime finNueva, Long codigoReservaActual) {
+	    
+	    DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    String fechaStr = fechaNueva.format(formato);
+	    LocalDate fecha = LocalDate.parse(fechaStr);
+	    
+	    List<Reserva> todasLasReservas = this.buscarTodos();
+
+	    return todasLasReservas.stream()
+	            
+	            .filter(r -> r.getCodigo() != null && !r.getCodigo().equals(codigoReservaActual))	            
+	            .filter(r -> r.getFecha() != null && r.getFecha().equals(fecha))
+	            .flatMap(r -> r.getAsignaciones().stream())	            
+	            				.filter(a -> a.getPista() != null && a.getPista().getNumero().equals(numeroPista))	           
+	            				.anyMatch(a -> seSolapan(inicioNueva, finNueva, a.getReserva().getHoraEntrada(), a.getReserva().getHoraSalida()));
+	}		
 }
