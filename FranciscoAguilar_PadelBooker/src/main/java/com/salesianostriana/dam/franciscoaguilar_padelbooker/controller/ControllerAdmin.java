@@ -127,6 +127,7 @@ public class ControllerAdmin {
 	        
 	    }
 	    
+	    u.setPassword(encoder.encode(u.getPassword()));
 	    usuarioService.editar(u);
 	    
 	    if (uLogueado.getAuthorities().stream()
