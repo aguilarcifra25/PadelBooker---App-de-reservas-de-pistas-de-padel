@@ -305,8 +305,7 @@ public class ControllerAdmin {
 		
 		if (horaEntrada.isBefore(LocalTime.now()) && fecha.getDayOfYear() == LocalDate.now().getDayOfYear()) {
 			
-			throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");			
-			
+			throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");						
 		}
 		
 		if (horaEntrada.isAfter(horaSalida)) {
@@ -362,8 +361,7 @@ public class ControllerAdmin {
 	    return "redirect:/panelAdmin";
 	}
 	
-	
-	@PreAuthorize("hasRole('ADMIN')")
+		
 	@GetMapping("/editarReserva/{codigo}")
 	public String mostrarFormularioEdicionReserva(@PathVariable("codigo") long codigo, Model model) {        
 		
@@ -381,17 +379,20 @@ public class ControllerAdmin {
 	        
 	    }           
 	}
-
-	@PreAuthorize("hasRole('ADMIN')")
+	
 	@PostMapping("/editarReserva/submit")
 	public String procesarEdicionReserva(@ModelAttribute("reserva") Reserva r, @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
-											@RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas) {
+											@RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas, @AuthenticationPrincipal UserDetails uLogueado) {
 	    
-		boolean ocupada;
+		boolean ocupada, haCambiadoHorario;
 		
 		Long numero = reservaService.buscarPorId(r.getCodigo()).get().getAsignaciones().getFirst().getPista().getNumero();
+		Reserva reservaExistente = reservaService.buscarPorId(r.getCodigo()).get();
 		
 		ocupada = reservaService.tieneConflictoHorario(numero, r.getFecha(), r.getHoraEntrada(), r.getHoraSalida());
+		haCambiadoHorario = !reservaExistente.getFecha().equals(r.getFecha()) 
+							|| !reservaExistente.getHoraEntrada().equals(r.getHoraEntrada()) 
+							|| !reservaExistente.getHoraSalida().equals(r.getHoraSalida());
 		
 		if (r.getHoraEntrada().isBefore(LocalTime.now()) && r.getFecha().getDayOfYear() == LocalDate.now().getDayOfYear()) {
 			
@@ -400,7 +401,7 @@ public class ControllerAdmin {
 		}
 		
 		
-		if (ocupada) {
+		if (ocupada && haCambiadoHorario) {
 	    	
 	        throw new ExcepcionTiempoReserva("La pista ya se encuentra reservada en el horario seleccionado.");
 	        
@@ -410,10 +411,7 @@ public class ControllerAdmin {
 	    	
 			throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
 		    		    	
-		}	
-		
-		
-	    Reserva reservaExistente = reservaService.buscarPorId(r.getCodigo()).get();
+		}			   
 	    
 	    reservaExistente.setFecha(r.getFecha());
 	    reservaExistente.setHoraEntrada(r.getHoraEntrada());
@@ -436,7 +434,21 @@ public class ControllerAdmin {
 	    
 	    reservaService.editar(reservaExistente);
 	    
-	    return "redirect:/panelAdmin?tab=reservas";
+	    if (uLogueado != null && uLogueado.getAuthorities().stream()
+				.filter(rol -> rol.getAuthority()
+				.equals("ROLE_ADMIN"))
+				.findFirst()
+				.isPresent())  {
+			
+	    	return "redirect:/panelAdmin?tab=reservas";
+						
+		} else {
+			
+			return "redirect:/perfil";
+			
+		}
+	    
+	    
 	}
 	
 	
