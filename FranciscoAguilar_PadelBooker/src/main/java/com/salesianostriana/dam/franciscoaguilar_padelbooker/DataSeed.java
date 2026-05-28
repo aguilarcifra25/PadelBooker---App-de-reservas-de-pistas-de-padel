@@ -1,6 +1,8 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.repository.AsignacionRepository;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 
@@ -93,7 +95,7 @@ public class DataSeed {
                 .build();
     
     Reserva r1 = Reserva.builder()
-                .fecha(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))
+                .fecha(LocalDate.now().plusDays(1))
                 .horaEntrada(LocalTime.of(9, 0, 0))
                 .horaSalida(LocalTime.of(10, 0, 0))
                 .precioTotal(12)

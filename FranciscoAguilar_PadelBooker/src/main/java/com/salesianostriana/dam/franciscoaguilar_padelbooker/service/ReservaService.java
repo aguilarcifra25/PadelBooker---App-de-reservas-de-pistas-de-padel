@@ -2,7 +2,9 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.service;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -55,15 +57,15 @@ public class ReservaService extends ServiciosBaseImpl<Reserva, Long, ReservaRepo
         return inicioA.isBefore(finB) && finA.isAfter(inicioB);
     }
 
-	public boolean tieneConflictoHorario(long numeroPista, Date fechaNueva, LocalTime inicioNueva, LocalTime finNueva) {
+	public boolean tieneConflictoHorario(long numeroPista, LocalDate fechaNueva, LocalTime inicioNueva, LocalTime finNueva) {
 	    
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	    String fechaNuevaStr = sdf.format(fechaNueva);
-
+	    DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    String fecha = fechaNueva.format(formato);
+	    
 	    List<Reserva> todasLasReservas = this.buscarTodos();
 
 	    return todasLasReservas.stream()
-	            .filter(r -> r.getFecha() != null && sdf.format(r.getFecha()).equals(fechaNuevaStr))
+	            .filter(r -> r.getFecha() != null && r.getFecha().equals(fecha))
 	            .flatMap(r -> r.getAsignaciones().stream())
 	            .filter(a -> a.getPista() != null && a.getPista().getNumero().equals(numeroPista))
 	            .anyMatch(a -> seSolapan(inicioNueva, finNueva, a.getReserva().getHoraEntrada(), a.getReserva().getHoraSalida()));

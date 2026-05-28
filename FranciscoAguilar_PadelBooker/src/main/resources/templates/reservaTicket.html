@@ -44,7 +44,7 @@
                         </p>
 
                         <p class="mb-1"><strong>Fecha: </strong> <span
-                                th:text="${#dates.format(reserva.fecha, 'dd/MM/yyyy')}"></span></p>
+                                th:text="${#temporals.format(reserva.fecha, 'dd/MM/yyyy')}"></span></p>
 
                         <p class="mb-0"><strong>Horario:</strong> <span th:text="${reserva.horaEntrada}"></span> a
                             <span th:text="${reserva.horaSalida}"></span>

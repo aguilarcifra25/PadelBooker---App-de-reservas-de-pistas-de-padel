@@ -2,6 +2,7 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -37,7 +38,7 @@ public class ReservaController {
 	@PreAuthorize("hasRole('USER')")
 	@PostMapping("/reservar/submit")
 	public String procesarReserva(
-			@RequestParam("fecha") @DateTimeFormat(pattern = "yyyy-MM-dd") java.util.Date fecha,
+			@RequestParam("fecha") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fecha,
 	        @RequestParam("horaEntrada") String horaEntradaStr,
 	        @RequestParam("horaSalida") String horaSalidaStr,
 	        @RequestParam("numeroPista") long numeroPista,

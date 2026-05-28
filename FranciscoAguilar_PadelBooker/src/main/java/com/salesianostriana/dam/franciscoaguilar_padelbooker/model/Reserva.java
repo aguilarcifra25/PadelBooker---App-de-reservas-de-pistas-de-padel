@@ -1,7 +1,7 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.model;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -40,7 +40,7 @@ public class Reserva {
 	@Column(nullable = false)
     @NotNull(message = "La fecha de la reserva es obligatoria.")
     @FutureOrPresent(message = "La fecha de la reserva no puede ser anterior a hoy.")
-	private Date fecha;
+	private LocalDate fecha;
 	
 	@Column(nullable = false)
     @NotNull(message = "La hora de entrada es obligatoria.")

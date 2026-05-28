@@ -90,7 +90,7 @@
                             <h5 class="card-title mb-0 d-flex align-items-center justify-content-between">
                                 <div>
                                     <i class="bi bi-calendar3 me-2"></i>
-                                    <span th:text="${#dates.format(reserva.fecha, 'dd-MM-yyyy')}"></span>
+                                    <span th:text="${#temporals.format(reserva.fecha, 'dd/MM/yyyy')}"></span>
                                 </div>
                                 <span class="badge bg-white text-primary fs-6"
                                     th:text="'Pista ' + ${reserva.asignaciones[0].pista.tipo} + ' ' + ${#numbers.formatInteger(reserva.asignaciones[0].pista.numero, 2)}">
