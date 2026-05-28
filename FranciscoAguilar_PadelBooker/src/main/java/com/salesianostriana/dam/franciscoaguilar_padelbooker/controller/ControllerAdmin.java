@@ -13,6 +13,7 @@ import java.util.Optional;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,8 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.security.RolUsuario;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
@@ -68,9 +71,8 @@ public class ControllerAdmin {
 	}
 	
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/borrarUsuario/{id}")
-	public String borrarUsuario(@PathVariable("id") long id) {
+	public String borrarUsuario(@PathVariable("id") long id, @AuthenticationPrincipal UserDetails uLogueado, HttpSession session) {
 		
 		Optional<Usuario> uBorrar = usuarioService.buscarPorId(id);	
 		
@@ -80,7 +82,26 @@ public class ControllerAdmin {
 			
 		} 
 		
-		return "redirect:/panelAdmin";		
+		
+		if (uLogueado.getAuthorities().stream()
+	    							.anyMatch(rol -> rol.getAuthority().equals("ROLE_ADMIN"))) {
+		
+			return "redirect:/panelAdmin";		
+		
+		} else {
+			
+			SecurityContextHolder.clearContext();
+	        
+	        if (session != null) {
+	        	
+	        
+	            session.invalidate();
+	        
+	        }     
+	            
+	        return "redirect:/login?logout";
+			
+		}
 	}
 		
 	
