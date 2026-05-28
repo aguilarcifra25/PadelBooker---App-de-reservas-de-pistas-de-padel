@@ -221,7 +221,7 @@
                                     <tr>
                                         <td th:text="${reserva.codigo}"></td>
                                         <td th:text="${reserva.usuario.username}"></td>
-                                        <td th:text="${#dates.format(reserva.fecha, 'dd/MM/yyyy')}"></td>
+                                        <td th:text="${#temporals.format(reserva.fecha, 'dd/MM/yyyy')}"></td>
                                         <td th:text="${reserva.horaEntrada}"></td>
                                         <td th:text="${reserva.horaSalida}"></td>
                                         <td>

@@ -4,6 +4,8 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionS
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.PistaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioService;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -294,7 +296,7 @@ public class ControllerAdmin {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/admin/reserva/crear")
-	public String guardarReserva( @RequestParam("fecha") @NotNull @FutureOrPresent @DateTimeFormat(pattern = "yyyy-MM-dd") Date fecha,
+	public String guardarReserva( @RequestParam("fecha") @NotNull @FutureOrPresent @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fecha,
 									@RequestParam("horaInicio") @NotNull LocalTime horaEntrada, @RequestParam("horaFin") @NotNull LocalTime horaSalida,        
 									@RequestParam("numero") @NotNull Long numero, @RequestParam("usuarioId") @NotNull Long usuarioId,
 									@RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz, @RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas,
