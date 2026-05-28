@@ -304,6 +304,12 @@ public class ControllerAdmin {
 	   
 		boolean ocupada;
 		
+		if (horaEntrada.isBefore(LocalTime.now()) && fecha.getDayOfYear() == LocalDate.now().getDayOfYear()) {
+			
+			throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");			
+			
+		}
+		
 		if (horaEntrada.isAfter(horaSalida)) {
 		    	
 			throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
