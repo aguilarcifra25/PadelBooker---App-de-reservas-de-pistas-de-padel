@@ -387,6 +387,25 @@ public class ControllerAdmin {
 	public String procesarEdicionReserva(@ModelAttribute("reserva") Reserva r, @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
 											@RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas) {
 	    
+		boolean ocupada;
+		
+		Long numero = reservaService.buscarPorId(r.getCodigo()).get().getAsignaciones().getFirst().getPista().getNumero();
+		
+		ocupada = reservaService.tieneConflictoHorario(numero, r.getFecha(), r.getHoraEntrada(), r.getHoraSalida());
+		
+		if (r.getHoraEntrada().isBefore(LocalTime.now()) && r.getFecha().getDayOfYear() == LocalDate.now().getDayOfYear()) {
+			
+			throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");			
+			
+		}
+		
+		
+		if (ocupada) {
+	    	
+	        throw new ExcepcionTiempoReserva("La pista ya se encuentra reservada en el horario seleccionado.");
+	        
+	    }
+		
 		if (r.getHoraEntrada().isAfter(r.getHoraSalida())) {
 	    	
 			throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
