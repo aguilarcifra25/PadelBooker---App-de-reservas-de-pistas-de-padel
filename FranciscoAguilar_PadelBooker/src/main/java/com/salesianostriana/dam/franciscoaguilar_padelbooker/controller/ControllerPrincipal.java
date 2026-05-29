@@ -16,4 +16,10 @@ public class ControllerPrincipal {
 		return "home";
 	}
 
+	@GetMapping("/nosotros")
+	public String paginaInfo () {
+			    		
+		return "nosotros";
+	}
+	
 }

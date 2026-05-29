@@ -19,10 +19,11 @@
                             <a class="nav-link" th:href="@{/home}"><i class="bi bi-house me-2"></i>Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link " href="javascript:void(0)"><i class="bi bi-people me-2"></i>Nosotros</a>
+                            <a class="nav-link " th:href="@{/nosotros}"><i class="bi bi-people me-2"></i>Nosotros</a>
                         </li>
                         <li class="nav-item mx-3">
-                            <a class="nav-link " href="javascript:void(0)"><i class="bi bi-chat me-2"></i>Contacto</a>
+                            <a class="nav-link " th:href="@{/nosotros#contacto}"><i
+                                    class="bi bi-chat me-2"></i>Contacto</a>
                         </li>
                         <li sec:authorize="hasRole('ADMIN')" class="nav-item">
                             <a class="nav-link" th:href="@{/panelAdmin}"><i
@@ -73,7 +74,7 @@
                     <h5 class="my-4 text-light">Navegación</h5>
                     <a class="nav-link" th:href="@{/home}"><i class="bi bi-house me-2"></i>Inicio</a>
                     <a class="nav-link my-3" th:href="@{/nosotros}"><i class="bi bi-people me-2"></i>Nosotros</a>
-                    <a class="nav-link mb-5" th:href="@{/contacto}"><i class="bi bi-chat me-2"></i>Contacto</a>
+                    <a class="nav-link mb-5" th:href="@{/nosotros#contacto}"><i class="bi bi-chat me-2"></i>Contacto</a>
                 </div>
 
                 <div class="col-6 col-lg-3 col-md-3">
