@@ -109,27 +109,36 @@ public class ControllerAdmin {
 	@GetMapping("/editarUsuario/{id}")
 	public String mostrarFormularioEdicionUsuario(@PathVariable("id") long id, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
 	    
-	    Optional<Usuario> uEditar = usuarioService.buscarPorId(id);
+	    Optional<Usuario> uEditarOpt = usuarioService.buscarPorId(id);
+	    boolean esUser = uLogueado.getAuthorities().stream()
+                .anyMatch(rol -> rol.getAuthority().equals("ROLE_USER"));
 	    
-	    if (uLogueado.getAuthorities().stream()
-				.anyMatch(rol -> rol.getAuthority().equals("ROLE_USER")) && !uLogueado.getUsername().equals(usuarioService.buscarPorId(id).get().getUsername())) {
-			
-			throw new ExcepcionEdicionOtroUser("No se pueden editar datos de un usuario que no es tuyo.");
-			
-		}
-	    
-	    
-	    if (uEditar.isPresent()) {
+	    if (uEditarOpt.isEmpty()) {
 	    	
-	        model.addAttribute("usuario", uEditar.get());
-	        
-	        return "admin/editarUsuario";
-	        
-	    } else {
+	    	if (esUser) {
+	    		
+	    		return "redirect:/perfil";
+	    		
+	    	} else {
 	    	
-	        return "redirect:/panelAdmin";
+	    		return "redirect:/panelAdmin"; 
 	        
-	    }           
+	    	}
+	    }
+	    
+	    Usuario uEditar = uEditarOpt.get();
+	        
+	                              
+	    if (esUser && !uLogueado.getUsername().equals(uEditar.getUsername())) {
+	    	
+	        throw new ExcepcionEdicionOtroUser("No se pueden editar datos de un usuario que no es tuyo.");
+	        
+	    }
+	    
+	   
+	    model.addAttribute("usuario", uEditar);
+	    
+	    return "admin/editarUsuario";
 	}
 
 	@PostMapping("/editarUsuario/submit")
@@ -395,28 +404,33 @@ public class ControllerAdmin {
 		
 	@GetMapping("/editarReserva/{codigo}")
 	public String mostrarFormularioEdicionReserva(@PathVariable("codigo") long codigo, Model model, @AuthenticationPrincipal UserDetails uLogueado) {        
-		
-	    Optional<Reserva> rEditar = reservaService.buscarPorId(codigo);
 	    
-	    if (uLogueado.getAuthorities().stream()
-				.anyMatch(rol -> rol.getAuthority().equals("ROLE_USER")) && !uLogueado.getUsername().equals(reservaService.buscarPorId(codigo).get().getUsuario().getUsername())) {
-			
-			throw new ExcepcionEdicionOtroUser("No se pueden editar datos de un usuario que no es tuyo.");
-			
-		}
+	    Optional<Reserva> rEditarOpt = reservaService.buscarPorId(codigo);
+	    boolean esUser = uLogueado.getAuthorities().stream()
+                .anyMatch(rol -> rol.getAuthority().equals("ROLE_USER"));
 	    
-	    
-	    if (rEditar.isPresent()) {
-	    			    		    		    	
-	        model.addAttribute("reserva", rEditar.get());
-	        
-	        return "admin/editarReserva";
-	        
-	    } else {
+	    if (rEditarOpt.isEmpty()) {
 	    	
-	        return "redirect:/panelAdmin";
+	    	if (esUser) {
+	    	
+	    		return "redirect:/perfil";	    		
 	        
-	    }           
+	    	} 
+	    	
+	    	return "redirect:/panelAdmin";
+	    	
+	    }
+	    
+	    Reserva rEditar = rEditarOpt.get();    
+	      
+	                              
+	    if (esUser && !uLogueado.getUsername().equals(rEditar.getUsuario().getUsername())) {
+	        throw new ExcepcionEdicionOtroUser("No se pueden editar datos de un usuario que no es tuyo.");
+	    }
+	    
+	    model.addAttribute("reserva", rEditar);
+	    
+	    return "admin/editarReserva";
 	}
 	
 	@PostMapping("/editarReserva/submit")
