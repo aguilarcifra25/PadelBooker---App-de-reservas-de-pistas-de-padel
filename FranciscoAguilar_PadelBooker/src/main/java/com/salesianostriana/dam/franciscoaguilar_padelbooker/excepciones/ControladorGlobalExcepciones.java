@@ -136,4 +136,16 @@ public class ControladorGlobalExcepciones {
 		}		
 					
 	}
+	
+	
+	@ExceptionHandler(ExcepcionEdicionOtroUser.class)
+	public String handleEdicionOtroUser(ExcepcionEdicionOtroUser eOtroUser, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
+				
+		model.addAttribute("errorMensaje", eOtroUser.getMessage());
+		model.addAttribute("usuario", usuarioService.buscarPorNombre(uLogueado.getUsername()).get());
+		
+		return "perfil";
+		
+		
+		}	
 }
