@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionEmailRepetido;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionOtroUser;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionNombreRepetido;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionNombreRepetido;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionPistaOcupada;
@@ -106,9 +107,17 @@ public class ControllerAdmin {
 		
 	
 	@GetMapping("/editarUsuario/{id}")
-	public String mostrarFormularioEdicionUsuario(@PathVariable("id") long id, Model model) {
+	public String mostrarFormularioEdicionUsuario(@PathVariable("id") long id, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
 	    
 	    Optional<Usuario> uEditar = usuarioService.buscarPorId(id);
+	    
+	    if (uLogueado.getAuthorities().stream()
+				.anyMatch(rol -> rol.getAuthority().equals("ROLE_USER")) && !uLogueado.getUsername().equals(usuarioService.buscarPorId(id).get().getUsername())) {
+			
+			throw new ExcepcionEdicionOtroUser("No se pueden editar datos de un usuario que no es tuyo.");
+			
+		}
+	    
 	    
 	    if (uEditar.isPresent()) {
 	    	
@@ -139,7 +148,7 @@ public class ControllerAdmin {
 			
 			throw new ExcepcionEdicionEmailRepetido("El email que intenta seleccionar está en uso.");
 			
-		}
+		}	
 		
 		
 	    if (bindingResult.hasErrors()) {
@@ -385,9 +394,17 @@ public class ControllerAdmin {
 	
 		
 	@GetMapping("/editarReserva/{codigo}")
-	public String mostrarFormularioEdicionReserva(@PathVariable("codigo") long codigo, Model model) {        
+	public String mostrarFormularioEdicionReserva(@PathVariable("codigo") long codigo, Model model, @AuthenticationPrincipal UserDetails uLogueado) {        
 		
 	    Optional<Reserva> rEditar = reservaService.buscarPorId(codigo);
+	    
+	    if (uLogueado.getAuthorities().stream()
+				.anyMatch(rol -> rol.getAuthority().equals("ROLE_USER")) && !uLogueado.getUsername().equals(reservaService.buscarPorId(codigo).get().getUsuario().getUsername())) {
+			
+			throw new ExcepcionEdicionOtroUser("No se pueden editar datos de un usuario que no es tuyo.");
+			
+		}
+	    
 	    
 	    if (rEditar.isPresent()) {
 	    			    		    		    	
