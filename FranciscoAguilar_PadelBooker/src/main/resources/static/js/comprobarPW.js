@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const error = document.getElementById('repetirError');
     const formulario = pw.closest('form');
 
+    const btnTogglePw = document.getElementById('togglePassword');
+
     function comprobar() {
         // Me sirve para que no se active si el campo de repetir la pw esta vacio
         if (pwRepe.value === "") {
@@ -36,6 +38,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 pwRepe.classList.add('is-invalid');
                 pwRepe.focus();
             }
+        });
+    }
+
+    if (btnTogglePw) {
+        btnTogglePw.addEventListener('click', function () {
+            const esPassword = pw.type === 'password';
+
+            // Cambia el tipo de ambos inputs en una sola línea
+            pw.type = pwRepe.type = esPassword ? 'text' : 'password';
+
         });
     }
 });
