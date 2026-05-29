@@ -58,7 +58,7 @@ public class ReservaController {
 	    boolean ocupada;
 	    
 	    Reserva reserva;
-	    double precioTotal;
+	    double precioTotal, precioLuz, precioPalas;
 	    
 	    
 	    if (pOpt.isEmpty()) {
@@ -92,7 +92,8 @@ public class ReservaController {
 	    }
 	                    	    	    
 	    precioTotal = reservaService.calcularPrecioTotal(horaEntrada, horaSalida, cantRaquetas, p.getPrecioHora(), usaLuz);
-
+	    
+	    
 	    reserva = Reserva.builder()
 	            .fecha(fecha)
 	            .horaEntrada(horaEntrada)
@@ -113,6 +114,9 @@ public class ReservaController {
 	    model.addAttribute("usaLuz", usaLuz);
 	    model.addAttribute("cantRaquetas", cantRaquetas);
 	    model.addAttribute("precioTotal", precioTotal);
+	    model.addAttribute("precioLuz", reservaService.calcularPrecioLuz(horaEntrada, horaSalida, usaLuz));
+	    model.addAttribute("precioPalas", reservaService.calcularPrecioPalas(cantRaquetas));
+	    model.addAttribute("costoPista", p.getPrecioHora() * reservaService.calcularHorasTotales(horaEntrada, horaSalida));
 
 	    return "reservaTicket"; 
 	}
