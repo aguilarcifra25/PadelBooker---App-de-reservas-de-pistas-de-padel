@@ -49,8 +49,13 @@
 
                     <div class="col-4">
                         <label for="password" class="form-label">Contraseña</label>
-                        <input type="password" th:field="*{password}" placeholder="Contraseña" id="password"
-                            class="form-control" th:errorclass="is-invalid" required />
+                        <div class="input-group">
+                            <input type="password" th:field="*{password}" placeholder="Contraseña" id="password"
+                                class="form-control" th:errorclass="is-invalid" required />
+                            <button class="btn btn-outline-primary" type="button" id="togglePassword">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
                         </div>
                     </div>
