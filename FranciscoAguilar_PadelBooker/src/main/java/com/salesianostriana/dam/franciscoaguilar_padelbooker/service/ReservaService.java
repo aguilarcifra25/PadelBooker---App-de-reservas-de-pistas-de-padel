@@ -23,7 +23,7 @@ public class ReservaService extends ServiciosBaseImpl<Reserva, Long, ReservaRepo
 
 	private final ReservaRepository reservaRepository;
 	private final double precioLuzHora = 4.5;
-	private final double precioRaqueta = 2;
+	private final double precioPala = 2;
 	
 	public double calcularHorasTotales (LocalTime horaEntrada, LocalTime horaSalida) {
 		    
@@ -37,19 +37,36 @@ public class ReservaService extends ServiciosBaseImpl<Reserva, Long, ReservaRepo
 		
 	}
 	
+	public double calcularPrecioLuz (LocalTime horaEntrada, LocalTime horaSalida, boolean usaLuz ) {
+		
+		double horas = calcularHorasTotales(horaEntrada, horaSalida);
+		
+		if (usaLuz) {
+			
+			return precioLuzHora * horas;
+			
+		} else {
+			
+			return 0;
+			
+		}
+				
+		
+	}
+	
+	public double calcularPrecioPalas(int cantidadRaquetas) {
+		
+		return cantidadRaquetas * precioPala;
+		
+	}
+	
 	public double calcularPrecioTotal(LocalTime horaEntrada, LocalTime horaSalida, int cantidadRaquetas, double precioBasePista, boolean usaLuz) {
 	    	    
 
-	    double precioExtra = 0;
+	    double precioExtra;
 	    double horas = calcularHorasTotales(horaEntrada, horaSalida);	   
-	    	
-	    if (usaLuz) {
 	    
-	    	precioExtra = (precioLuzHora * horas);
-	        	    
-	    }
-	    
-	    precioExtra = precioExtra + (cantidadRaquetas * precioRaqueta);
+	    precioExtra = calcularPrecioLuz(horaEntrada, horaSalida, usaLuz) + calcularPrecioPalas(cantidadRaquetas);
 
 	    return precioBasePista * horas + precioExtra;
 	}

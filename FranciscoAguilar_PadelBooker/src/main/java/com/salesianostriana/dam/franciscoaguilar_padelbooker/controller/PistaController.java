@@ -42,6 +42,7 @@ public class PistaController {
 			model.addAttribute("reserva", reservaVacia);
 			model.addAttribute("pista", pista.get());
 			
+			
 			return "detallesPista";
 			
 		} else {
