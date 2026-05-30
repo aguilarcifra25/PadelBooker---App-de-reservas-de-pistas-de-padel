@@ -50,12 +50,10 @@
 
                 <section class="container">
                     <div th:if="${errorMensaje}" class="mx-auto">
-
                         <p class="bg-danger text-white text-center p-3 mt-3 fw-bolder rounded">
                             <i class="bi bi-x-circle me-2 fs-5"></i>
                             <span class="fs-5" th:text="${errorMensaje}"></span>
                         </p>
-
                     </div>
                 </section>
 
@@ -71,7 +69,6 @@
                         <a th:href="@{/crearUsuario}" class="btn btn-outline-primary my-3">Crear nuevo usuario</a>
 
                         <table class="table table-striped">
-
                             <thead class="table-primary">
                                 <tr>
                                     <th>Id</th>
@@ -82,17 +79,16 @@
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
-
                             <tbody>
                                 <th:block th:each="usuario : ${listaUsuarios}">
                                     <tr>
-                                        <td th:text="${usuario.id}">ID</td>
-                                        <td th:text="${usuario.username}">Nombre</td>
-                                        <td th:text="${usuario.email}">Email</td>
-                                        <td th:text="${usuario.telefono}">Teléfono</td>
-                                        <td th:text="${usuario.rolUsuario}">Rol</td>
+                                        <td th:text="${usuario.id}"></td>
+                                        <td th:text="${usuario.username}"></td>
+                                        <td th:text="${usuario.email}"></td>
+                                        <td th:text="${usuario.telefono}"></td>
+                                        <td th:text="${usuario.rolUsuario}"></td>
                                         <td>
-                                            <a href="#" th:href="@{/editarUsuario/{id}(id=${usuario.id})}">Editar</a> |
+                                            <a th:href="@{/editarUsuario/{id}(id=${usuario.id})}">Editar</a> |
                                             <a th:href="@{/panelAdmin(borrarUsuario=${usuario.id})}"
                                                 class="btn btn-sm btn-outline-danger">
                                                 <i class="bi bi-trash"></i> Borrar
@@ -121,11 +117,9 @@
                                     </tr>
                                 </th:block>
                             </tbody>
-
                         </table>
 
                     </div>
-
                 </section>
 
                 <section class="tab-pane fade" id="seccion-pistas"
@@ -136,7 +130,6 @@
                         <a th:href="@{/crearPista}" class="btn btn-outline-primary my-3">Añadir nueva pista</a>
 
                         <table class="table table-striped">
-
                             <thead class="table-primary">
                                 <tr>
                                     <th>Número</th>
@@ -146,17 +139,15 @@
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
-
                             <tbody>
                                 <th:block th:each="pista : ${listaPistas}">
                                     <tr>
-                                        <td th:text="${pista.numero}">Número de pista</td>
-                                        <td th:text="${pista.tipo}">Tipo</td>
-                                        <td th:text="${pista.suelo}">Suelo</td>
-                                        <td th:text="${pista.precioHora}">Precio/Hora</td>
+                                        <td th:text="${pista.numero}"></td>
+                                        <td th:text="${pista.tipo}"></td>
+                                        <td th:text="${pista.suelo}"></td>
+                                        <td th:text="${pista.precioHora}"></td>
                                         <td>
-                                            <a href="#"
-                                                th:href="@{/editarPista/{numero}(numero=${pista.numero})}">Editar</a> |
+                                            <a th:href="@{/editarPista/{numero}(numero=${pista.numero})}">Editar</a> |
                                             <a th:href="@{/panelAdmin(tab='pistas', borrarPista=${pista.numero})}"
                                                 class="btn btn-sm btn-outline-danger">
                                                 <i class="bi bi-trash"></i> Borrar
@@ -185,11 +176,9 @@
                                     </tr>
                                 </th:block>
                             </tbody>
-
                         </table>
 
                     </div>
-
                 </section>
 
                 <section class="tab-pane fade" id="seccion-reservas"
@@ -200,22 +189,20 @@
                         <a th:href="@{/crearReserva}" class="btn btn-outline-primary my-3">Añadir nueva reserva</a>
 
                         <table class="table">
-
                             <thead class="table-primary">
                                 <tr>
                                     <th>Código</th>
                                     <th>Usuario</th>
                                     <th>Fecha</th>
-                                    <th>Hora de entrada</th>
-                                    <th>Hora de salida</th>
-                                    <th>Pista</th>
-                                    <th>Cant. Raquetas</th>
+                                    <th>Hora entrada</th>
+                                    <th>Hora salida</th>
+                                    <th>Pistas</th>
+                                    <th>Raquetas</th>
                                     <th>¿Usa Luz?</th>
                                     <th>Precio</th>
                                     <th>Opciones</th>
                                 </tr>
                             </thead>
-
                             <tbody>
                                 <th:block th:each="reserva : ${listaReservas}">
                                     <tr>
@@ -224,21 +211,20 @@
                                         <td th:text="${#temporals.format(reserva.fecha, 'dd/MM/yyyy')}"></td>
                                         <td th:text="${reserva.horaEntrada}"></td>
                                         <td th:text="${reserva.horaSalida}"></td>
+
                                         <td>
                                             <span th:each="asig : ${reserva.asignaciones}"
-                                                th:text="${asig.pista.numero} + ' '"></span>
+                                                th:text="${asig.pista.numero + ' '}"></span>
                                         </td>
-                                        <td>
-                                            <span th:each="asig : ${reserva.asignaciones}"
-                                                th:text="${asig.cantRaquetas} + ' '"></span>
+
+                                        <td
+                                            th:text="${not #lists.isEmpty(reserva.asignaciones) ? reserva.asignaciones[0].cantRaquetas : 0}">
                                         </td>
-                                        <td>
-                                            <span th:each="asig : ${reserva.asignaciones}"
-                                                th:text="${asig.usaLuz ? 'Sí ' : 'No '}"></span>
+                                        <td
+                                            th:text="${not #lists.isEmpty(reserva.asignaciones) ? (reserva.asignaciones[0].usaLuz ? 'Sí' : 'No') : 'No'}">
                                         </td>
-                                        <td>
-                                            <span th:text="${reserva.precioTotal} + '€'"></span>
-                                        </td>
+
+                                        <td th:text="${reserva.precioTotal} + '€'"></td>
                                         <td>
                                             <a th:href="@{/panelAdmin(tab='reservas', verObservaciones=${reserva.codigo})}"
                                                 class="btn btn-sm btn-outline-info me-1">
@@ -257,30 +243,18 @@
                                     <tr th:if="${param.verObservaciones != null and param.verObservaciones[0] == #strings.toString(reserva.codigo)}"
                                         class="table-info align-middle">
                                         <td colspan="10" class="p-3">
-                                            <div class="d-flex justify-content-between align-items-center"
-                                                th:with="textoUnido=${#strings.listJoin(reserva.asignaciones.![observaciones], '')}, 
-                                                           tieneContenido=${textoUnido != null and #strings.trim(textoUnido) != ''}">
+                                            <div class="d-flex justify-content-between align-items-center" th:with="obs=${not #lists.isEmpty(reserva.asignaciones) ? reserva.asignaciones[0].observaciones : null},
+                                                           tieneContenido=${obs != null and #strings.trim(obs) != ''}">
                                                 <div>
                                                     <i class="bi bi-info-circle-fill text-info me-2 fs-5"></i>
                                                     <strong>Observaciones de la reserva:</strong>
-
-                                                    <ul th:if="${tieneContenido}" class="mb-0 mt-2 list-unstyled ps-3">
-                                                        <th:block th:each="asig : ${reserva.asignaciones}">
-                                                            <li
-                                                                th:if="${asig.observaciones != null and #strings.trim(asig.observaciones) != ''}">
-                                                                <i
-                                                                    class="bi bi-caret-right-fill text-secondary small"></i>
-                                                                <span th:text="${asig.observaciones}"></span>
-                                                            </li>
-                                                        </th:block>
-                                                    </ul>
-
+                                                    <p th:if="${tieneContenido}" class="mb-0 mt-2 ps-3"
+                                                        th:text="${obs}"></p>
                                                     <div th:if="${!tieneContenido}" class="mt-2 ps-3">
                                                         <span class="text-muted fst-italic">Sin observaciones para esta
                                                             reserva.</span>
                                                     </div>
                                                 </div>
-
                                                 <div>
                                                     <a th:href="@{/panelAdmin(tab='reservas')}"
                                                         class="btn btn-sm btn-secondary">Cerrar</a>
@@ -288,6 +262,7 @@
                                             </div>
                                         </td>
                                     </tr>
+
 
                                     <tr th:if="${param.borrarReserva != null and param.borrarReserva[0] == #strings.toString(reserva.codigo)}"
                                         class="table-danger align-middle">
@@ -309,23 +284,21 @@
                                             </div>
                                         </td>
                                     </tr>
+
                                 </th:block>
                             </tbody>
-
                         </table>
 
                     </div>
-
                 </section>
 
                 <section class="tab-pane fade" id="estadisticas">
 
                     <div class="container mt-4">
-
                         <div class="row mx-auto">
 
                             <div class="card col-5 me-5">
-                                <p class="card-img-top display-4 text-center pt-5" th:text=" ${usuariosActivos}"></p>
+                                <p class="card-img-top display-4 text-center pt-5" th:text="${usuariosActivos}"></p>
                                 <div class="card-body">
                                     <h4 class="card-title text-center py-3">Usuarios activos</h4>
                                 </div>
@@ -345,13 +318,11 @@
                             </div>
 
                         </div>
-
                     </div>
 
                 </section>
 
             </div>
-
         </div>
     </main>
 
