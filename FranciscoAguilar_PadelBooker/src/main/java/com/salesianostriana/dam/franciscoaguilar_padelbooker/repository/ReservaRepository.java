@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
 
 public interface ReservaRepository extends JpaRepository<Reserva, Long>{
 
@@ -33,4 +34,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long>{
 		        @Param("fecha") LocalDate fecha,
 		        @Param("horaEntrada") LocalTime horaEntrada
 		);
+	
+	List<Reserva> findByUsuario(Usuario usuario);
+	
 }

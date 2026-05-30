@@ -29,6 +29,7 @@
                 <input type="hidden" th:field="*{codigo}" />
                 <input type="hidden" th:field="*{usuario.id}" th:if="*{usuario != null}" />
                 <input type="hidden" th:text="${pistaNumero}" />
+                <input type="hidden" name="porcentaje" th:value="${porcentaje}" />
 
                 <div class="row mb-3">
                     <div class="col-3">
@@ -41,9 +42,9 @@
                         <label for="horaEntrada" class="form-label small fw-bold mb-2">Hora de entrada:</label>
                         <select id="horaEntrada" name="horaEntrada" class="form-select form-select-lg fs-6" required>
                             <option value="" disabled hidden>--:--</option>
-                            <option
-                                th:each="hora : ${#strings.arraySplit('08:00,08:30,09:00,09:30,10:00,10:30,11:00,11:30,12:00,12:30,13:00,13:30,14:00,14:30,15:00,15:30,16:00,16:30,17:00,17:30,18:00,18:30,19:00,19:30,20:00,20:30,21:00,21:30,22:00', ',')}"
-                                th:value="${hora}" th:text="${hora}"
+                            <option th:each="hora : ${#strings.arraySplit('08:00,08:30,09:00,09:30,10:00,10:30,11:00,11:30,12:00,12:30,
+                                    13:00,13:30,14:00,14:30,15:00,15:30,16:00,16:30,17:00,17:30,18:00,18:30,19:00,19:30,20:00,20:30,21:00,
+                                    21:30,22:00', ',')}" th:value="${hora}" th:text="${hora}"
                                 th:selected="${reserva.horaEntrada != null and #strings.toString(reserva.horaEntrada).substring(0,5) == hora}">
                             </option>
                         </select>
@@ -53,9 +54,9 @@
                         <label for="horaSalida" class="form-label small fw-bold mb-2">Hora de salida:</label>
                         <select id="horaSalida" name="horaSalida" class="form-select form-select-lg fs-6" required>
                             <option value="" disabled hidden>--:--</option>
-                            <option
-                                th:each="hora : ${#strings.arraySplit('08:30,09:00,09:30,10:00,10:30,11:00,11:30,12:00,12:30,13:00,13:30,14:00,14:30,15:00,15:30,16:00,16:30,17:00,17:30,18:00,18:30,19:00,19:30,20:00,20:30,21:00,21:30,22:00,22:30', ',')}"
-                                th:value="${hora}" th:text="${hora}"
+                            <option th:each="hora : ${#strings.arraySplit('08:30,09:00,09:30,10:00,10:30,11:00,11:30,12:00,12:30,
+                                    13:00,13:30,14:00,14:30,15:00,15:30,16:00,16:30,17:00,17:30,18:00,18:30,19:00,19:30,20:00,20:30,21:00,
+                                    21:30,22:00,22:30', ',')}" th:value="${hora}" th:text="${hora}"
                                 th:selected="${reserva.horaSalida != null and #strings.toString(reserva.horaSalida).substring(0,5) == hora}">
                             </option>
                         </select>
@@ -97,10 +98,15 @@
 
                     <div
                         class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary-subtle">
-                        <span class="fw-bold text-dark fs-5">Precio Total:</span>
+                        <span class="fw-bold text-dark fs-5">**Precio Total:</span>
                         <span id="precioDinamico" class="fw-bold text-primary fs-3">0.00€</span>
                     </div>
 
+                </div>
+
+                <div>
+                    <span class="fw-bold text-dark small">**Si uso un cupón verá el precio real tras aplicar
+                        cambios</span>
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4">

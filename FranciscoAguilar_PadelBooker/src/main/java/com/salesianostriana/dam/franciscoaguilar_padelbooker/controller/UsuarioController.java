@@ -9,6 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.CuponService;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioService;
 
 import lombok.RequiredArgsConstructor;
@@ -17,20 +19,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UsuarioController {
 
-	private final UsuarioService usuarioService;
-		
-	@GetMapping("/perfil")
-	public String paginaMiPerfil (Model model, @AuthenticationPrincipal UserDetails usuario) {
-				
-		Optional<Usuario> u = usuarioService.buscarPorNombre(usuario.getUsername());
-				
-	    model.addAttribute("usuario", u.get());
-	    	
-		return "perfil";
-	}
-	
-	
-	
-	
-	
+    private final UsuarioService usuarioService;
+    private final CuponService cuponService;
+    private final ReservaService reservaService;
+
+    @GetMapping("/perfil")
+    public String paginaMiPerfil(Model model, @AuthenticationPrincipal UserDetails usuario) {
+
+        Optional<Usuario> u = usuarioService.buscarPorNombre(usuario.getUsername());
+
+        model.addAttribute("usuario", u.get());
+        model.addAttribute("listaReservas", reservaService.buscarPorUsuario(u.get()));
+        model.addAttribute("cupones", cuponService.buscarCuponesPersonalesDisponibles(u.get()));
+
+        return "perfil";
+    }
 }
+	
