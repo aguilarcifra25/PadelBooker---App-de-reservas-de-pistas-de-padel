@@ -145,7 +145,18 @@ public class ControladorGlobalExcepciones {
 		model.addAttribute("usuario", usuarioService.buscarPorNombre(uLogueado.getUsername()).get());
 		
 		return "perfil";
+				
+	}	
+	
+	@ExceptionHandler(ExcepcionCupon.class)
+	public String handleExcepcionCupon(ExcepcionCupon eCupon, Model model) {
+				
+		model.addAttribute("errorMensaje", eCupon.getMessage());
+		model.addAttribute("listaPistas", pistaService.buscarTodos());
 		
-		
-		}	
+		return "pistas";
+				
+	}
+	
+	
 }

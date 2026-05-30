@@ -1,6 +1,5 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
-import com.salesianostriana.dam.franciscoaguilar_padelbooker.repository.HistorialCuponesRepo;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.CuponService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.HistorialCuponesService;
@@ -29,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionCupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionEmailRepetido;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionOtroUser;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionNombreRepetido;
@@ -38,7 +38,6 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.Excepci
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Asignacion;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.AsignacionPK;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Cupon;
-import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.HistorialCupones;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
@@ -455,12 +454,17 @@ public class ControllerAdmin {
 
     
     if (codigoCupon != null && !codigoCupon.isBlank()) {
+    	
         try {
+        	
             historialCuponesService.aplicarCuponAReserva(r, codigoCupon, u);
-        } catch (IllegalArgumentException | ExcepcionEdicionOtroUser e) {
+            
+        } catch (IllegalArgumentException | ExcepcionCupon e) {
+        	
             model.addAttribute("errorCupon", e.getMessage());
             model.addAttribute("listaPistas", pistaService.buscarTodos());
             model.addAttribute("listaUsuarios", usuarioService.buscarPorRol(RolUsuario.USER));
+            
             return "admin/crearReserva";
         }
     }

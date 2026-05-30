@@ -2,7 +2,7 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.service;
 
 import org.springframework.stereotype.Service;
 
-import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionOtroUser;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionCupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Cupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.HistorialCupones;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
@@ -25,7 +25,7 @@ public class HistorialCuponesService extends ServiciosBaseImpl<HistorialCupones,
 	    	    
 	    if (historialCuponesRepo.existsByUsuarioAndCodigoCupon(usuarioLogueado, codigo)) {
 	    	
-	        throw new ExcepcionEdicionOtroUser("Ya has canjeado este cupón en una reserva anterior."); 
+	        throw new ExcepcionCupon("Ya has canjeado este cupón en una reserva anterior."); 
 	        
 	    }
 
