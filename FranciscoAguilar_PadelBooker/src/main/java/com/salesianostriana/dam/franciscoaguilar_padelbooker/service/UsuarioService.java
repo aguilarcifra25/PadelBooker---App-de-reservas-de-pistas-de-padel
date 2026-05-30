@@ -43,4 +43,39 @@ public class UsuarioService extends ServiciosBaseImpl<Usuario, Long, UsuarioRepo
 		
 	}
 	
+	public List<Usuario> buscarConFiltros(String logueado, String nombre, String email, String rol) {
+		
+	    String n = null;
+	    String e = null;
+	    RolUsuario r = null;
+
+	    if (nombre != null && !nombre.isBlank()) {
+	    	
+	    	n = nombre.trim();
+	    	
+	    }
+	    
+	    if (email != null && !email.isBlank()) {
+	    	
+	    	e = email.trim();
+	    	
+	    }
+	    
+	    
+	    if (rol != null && !rol.isBlank()) {
+	       
+	    	r = RolUsuario.valueOf(rol.trim());
+	       	        
+	    }
+
+	    if (r != null) {
+	    	
+	        return usuarioRepository.buscarConFiltrosConRol(logueado, n, e, r);
+	        
+	    } else {
+	    	
+	        return usuarioRepository.buscarConFiltrosSinRol(logueado, n, e);
+	    }
+	}
+	
 }

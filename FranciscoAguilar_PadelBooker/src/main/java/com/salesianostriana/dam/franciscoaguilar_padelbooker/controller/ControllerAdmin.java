@@ -60,22 +60,40 @@ public class ControllerAdmin {
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/panelAdmin")
-	public String paginaAdmin(
-	        Model model, 
-	        @AuthenticationPrincipal UserDetails usuario,
-	        @RequestParam(required = false) String usuarioFiltrar,
-	        @RequestParam(required = false) String fechaFiltrar,
-	        @RequestParam(required = false) String horaEntradaFiltrar) {
+	public String paginaAdmin( Model model, @AuthenticationPrincipal UserDetails usuario,
+	        @RequestParam(required = false) String usuarioFiltrarReserva,
+	        @RequestParam(required = false) String fechaFiltrarReserva,
+	        @RequestParam(required = false) String horaEntradaFiltrarReserva,
+			@RequestParam(required = false) String nombreFiltrarUsuario,
+			@RequestParam(required = false) String emailFiltrarUsuario,
+			@RequestParam(required = false) String rolFiltrarUsuario) {
 				
 	    model.addAttribute("listaUsuarios", usuarioService.buscarTodosMenosAdminYLogeado(usuario.getUsername()));
 	    model.addAttribute("listaPistas", pistaService.buscarTodos());
 	    
-	
-	    if ((usuarioFiltrar != null && !usuarioFiltrar.isBlank()) || 
-	        (fechaFiltrar != null && !fechaFiltrar.isBlank()) || 
-	        (horaEntradaFiltrar != null && !horaEntradaFiltrar.isBlank())) {
+	    // -- Filtrar usuarios --
+	    
+	    if ((nombreFiltrarUsuario != null && !nombreFiltrarUsuario.isBlank()) ||
+	            (emailFiltrarUsuario != null && !emailFiltrarUsuario.isBlank()) ||
+	            (rolFiltrarUsuario != null && !rolFiltrarUsuario.isBlank())) {
+
+	            model.addAttribute("listaUsuarios", usuarioService.buscarConFiltros(usuario.getUsername(), nombreFiltrarUsuario, emailFiltrarUsuario, rolFiltrarUsuario));
+	            
+	        } else {
+	        	
+	        	
+	            model.addAttribute("listaUsuarios", usuarioService.buscarTodosMenosAdminYLogeado(usuario.getUsername()));
+	            
+	        }
+	    
+	    
+	    // -- Filtrar reservas --
+	    
+	    if ((usuarioFiltrarReserva != null && !usuarioFiltrarReserva.isBlank()) || 
+	        (fechaFiltrarReserva != null && !fechaFiltrarReserva.isBlank()) || 
+	        (horaEntradaFiltrarReserva != null && !horaEntradaFiltrarReserva.isBlank())) {
 	        	        
-	        model.addAttribute("listaReservas", reservaService.buscarConFiltros(usuarioFiltrar, fechaFiltrar, horaEntradaFiltrar));
+	        model.addAttribute("listaReservas", reservaService.buscarConFiltros(usuarioFiltrarReserva, fechaFiltrarReserva, horaEntradaFiltrarReserva));
 	        
 	    } else {
 	        

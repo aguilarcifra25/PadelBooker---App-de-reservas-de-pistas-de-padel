@@ -26,7 +26,8 @@
                 <div class="list-group list-group-flush">
 
                     <button class="list-group-item list-group-item-action border rounded" data-bs-toggle="list"
-                        data-bs-target="#seccion-usuarios" th:classappend="${param.tab == null} ? 'active' : ''">
+                        data-bs-target="#seccion-usuarios"
+                        th:classappend="${param.tab == null or param.tab[0] == 'usuarios'} ? 'active' : ''">
                         Gestión de usuarios
                     </button>
 
@@ -62,11 +63,55 @@
             <div class="col-10 px-md-4 mb-5 tab-content">
 
                 <section class="tab-pane fade" id="seccion-usuarios"
-                    th:classappend="${param.tab == null} ? 'show active' : ''">
+                    th:classappend="${param.tab == null or param.tab[0] == 'usuarios'} ? 'show active' : ''">
 
                     <div class="container mt-4">
 
                         <a th:href="@{/crearUsuario}" class="btn btn-outline-primary my-3">Crear nuevo usuario</a>
+
+                        <div class="card-body">
+
+                            <form method="get" th:action="@{/panelAdmin}" class="row g-3 align-items-end mb-4">
+                                <input type="hidden" name="tab" value="usuarios" />
+
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">Buscar por Nombre</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                        <input type="text" class="form-control" name="nombreFiltrarUsuario"
+                                            placeholder="Nombre de usuario...">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">Buscar por Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input type="text" class="form-control" name="emailFiltrarUsuario"
+                                            placeholder="Correo electrónico...">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label fw-semibold">Rol</label>
+                                    <select class="form-select" name="rolFiltrarUsuario">
+                                        <option value="">Todos</option>
+                                        <option value="USER"> USER</option>
+                                        <option value="ADMIN"> ADMIN</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary flex-grow-1">
+                                        <i class="bi bi-funnel-fill"></i> Filtrar
+                                    </button>
+                                    <a th:href="@{/panelAdmin(tab='usuarios')}" class="btn btn-outline-secondary">
+                                        Limpiar
+                                    </a>
+                                </div>
+                            </form>
+
+                        </div>
 
                         <table class="table table-striped">
                             <thead class="table-primary">
@@ -188,7 +233,7 @@
 
                         <a th:href="@{/crearReserva}" class="btn btn-outline-primary my-3">Añadir nueva reserva</a>
 
-                        <div class="card bg-light mb-4 shadow-sm">
+                        <div class="card mb-4 shadow-sm">
                             <div class="card-body">
                                 <form th:action="@{/panelAdmin}" method="get" class="row g-3 align-items-end">
                                     <input type="hidden" name="tab" value="reservas" />
@@ -198,8 +243,8 @@
                                             Usuario</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                            <input type="text" class="form-control" id="filtroUsuario"
-                                                name="usuarioFiltrar" placeholder="Nombre de usuario...">
+                                            <input type="text" class="form-control" name="usuarioFiltrarReserva"
+                                                placeholder="Nombre de usuario...">
                                         </div>
                                     </div>
 
@@ -208,8 +253,7 @@
                                             Fecha</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
-                                            <input type="date" class="form-control" id="filtroFecha"
-                                                name="fechaFiltrar">
+                                            <input type="date" class="form-control" name="fechaFiltrarReserva">
                                         </div>
                                     </div>
 
@@ -218,8 +262,7 @@
                                             Entrada</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-clock"></i></span>
-                                            <select id="filtroHoraEntrada" name="horaEntradaFiltrar"
-                                                class="form-select fs-6">
+                                            <select name="horaEntradaFiltrarReserva" class="form-select fs-6">
                                                 <option value="">Cualquier hora</option>
                                                 <option value="08:00">08:00</option>
                                                 <option value="08:30">08:30</option>
