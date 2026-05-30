@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionCupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Cupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
@@ -119,7 +120,7 @@ public class CuponService extends ServiciosBaseImpl<Cupon, Long, CuponRepository
 
         if (cupon.getFechaExpiracion().isBefore(LocalDate.now())) {
         	
-            throw new IllegalArgumentException("El cupón ha expirado");
+            throw new ExcepcionCupon("El cupón ha expirado");
             
         }
 
@@ -127,12 +128,12 @@ public class CuponService extends ServiciosBaseImpl<Cupon, Long, CuponRepository
            
             if (!cupon.getUsuario().getId().equals(usuarioActual.getId())) {
             	
-                throw new IllegalArgumentException("Este cupón no te pertenece");
+                throw new ExcepcionCupon("Este cupón no te pertenece");
                 
             }
             if (cupon.isUsado()) {
             	
-                throw new IllegalArgumentException("Este cupón ya ha sido usado");
+                throw new ExcepcionCupon("Este cupón ya ha sido usado");
                 
             }
             
@@ -140,7 +141,7 @@ public class CuponService extends ServiciosBaseImpl<Cupon, Long, CuponRepository
         	
             if (cupon.getUsoMaximo() != null && cupon.getUsoActual() >= cupon.getUsoMaximo()) {
             	
-                throw new IllegalArgumentException("Este cupón ha alcanzado su límite de usos");
+                throw new ExcepcionCupon("Este cupón ha alcanzado su límite de usos");
                 
             }
         }

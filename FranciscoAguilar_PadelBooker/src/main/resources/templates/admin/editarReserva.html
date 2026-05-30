@@ -10,7 +10,11 @@
     <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <script th:src="@{/js/precioDinamico.js}" defer></script>
-    <script th:src="@{/js/controlHoraSalida.js}" defer></script>
+    <script th:inline="javascript">
+        const reservasOcupadas = [[${ reservasOcupadas }]];
+    </script>
+    <script th:src="@{/js/controlHorasEditar.js}" defer></script>
+
 </head>
 
 <body class="d-flex flex-column min-vh-100">
