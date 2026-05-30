@@ -60,16 +60,33 @@ public class ControllerAdmin {
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/panelAdmin")
-	public String paginaAdmin (Model model, @AuthenticationPrincipal UserDetails usuario) {
+	public String paginaAdmin(
+	        Model model, 
+	        @AuthenticationPrincipal UserDetails usuario,
+	        @RequestParam(required = false) String usuarioFiltrar,
+	        @RequestParam(required = false) String fechaFiltrar,
+	        @RequestParam(required = false) String horaEntradaFiltrar) {
 				
 	    model.addAttribute("listaUsuarios", usuarioService.buscarTodosMenosAdminYLogeado(usuario.getUsername()));
 	    model.addAttribute("listaPistas", pistaService.buscarTodos());
-	    model.addAttribute("listaReservas", reservaService.buscarTodos());
+	    
+	
+	    if ((usuarioFiltrar != null && !usuarioFiltrar.isBlank()) || 
+	        (fechaFiltrar != null && !fechaFiltrar.isBlank()) || 
+	        (horaEntradaFiltrar != null && !horaEntradaFiltrar.isBlank())) {
+	        	        
+	        model.addAttribute("listaReservas", reservaService.buscarConFiltros(usuarioFiltrar, fechaFiltrar, horaEntradaFiltrar));
+	        
+	    } else {
+	        
+	        model.addAttribute("listaReservas", reservaService.buscarTodos());
+	        
+	    }
 	    
 	    model.addAttribute("usuariosActivos", usuarioService.contarUsuariosNormales(RolUsuario.USER));	    
 	    model.addAttribute("pistaMasUsada", asignacionService.buscarPistaMasReservada());
 	    	    
-		return "admin/panelAdmin";
+	    return "admin/panelAdmin";
 	}
 	
 	

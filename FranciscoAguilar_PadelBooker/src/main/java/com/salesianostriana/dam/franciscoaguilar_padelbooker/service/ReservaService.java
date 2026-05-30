@@ -1,12 +1,9 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.service;
 
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -108,5 +105,34 @@ public class ReservaService extends ServiciosBaseImpl<Reserva, Long, ReservaRepo
 	            .flatMap(r -> r.getAsignaciones().stream())	            
 	            				.filter(a -> a.getPista() != null && a.getPista().getNumero().equals(numeroPista))	           
 	            				.anyMatch(a -> seSolapan(inicioNueva, finNueva, a.getReserva().getHoraEntrada(), a.getReserva().getHoraSalida()));
-	}		
-}
+	}
+
+	public List<Reserva> buscarConFiltros(String usuario, String fecha, String horaEntrada) {
+		
+	    String u = null;
+	    LocalDate f = null;
+	    LocalTime h = null;
+	    
+	    
+	    if (usuario != null && !usuario.isBlank()) {
+	    	
+	    	u = usuario.trim();
+	    	
+	    }	    		    	   	
+	    
+	    if (fecha != null && !fecha.isBlank()) {
+	    	
+	        f = LocalDate.parse(fecha.trim()); //"yyyy-MM-dd"
+	        
+	    }
+
+	    
+	    if (horaEntrada != null && !horaEntrada.isBlank()) {
+	    	
+	        h = LocalTime.parse(horaEntrada.trim()); //"HH:mm"
+	        
+	    }
+
+	    return reservaRepository.buscarConFiltros(u, f, h);
+	}
+}	
