@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -377,6 +378,18 @@ public class ControllerAdmin {
 	    model.addAttribute("listaPistas", pistaService.buscarTodos());
 	    model.addAttribute("listaUsuarios", usuarioService.buscarPorRol(RolUsuario.USER));
 	    
+	    List<Map<String, String>> todasReservas = reservaService.buscarTodos().stream()
+	            .flatMap(r -> r.getAsignaciones().stream()
+	                    .map(a -> Map.of(
+	                            "fecha", r.getFecha().toString(),
+	                            "entrada", r.getHoraEntrada().toString(),
+	                            "salida", r.getHoraSalida().toString(),
+	                            "pista", a.getPista().getNumero().toString()
+	                    )))
+	            .toList();
+
+	    model.addAttribute("todasReservas", todasReservas);
+	    
 	    return "admin/crearReserva";
 	}
 
@@ -478,51 +491,41 @@ public class ControllerAdmin {
 	
 		
 	@GetMapping("/editarReserva/{codigo}")
-	public String mostrarFormularioEdicionReserva(@PathVariable("codigo") long codigo, Model model, @AuthenticationPrincipal UserDetails uLogueado) {        
-	    
-	    Optional<Reserva> rEditarOpt = reservaService.buscarPorId(codigo);
-	    double porcentajeDescuento = 0.0;
-	    
-	    boolean esUser = uLogueado.getAuthorities().stream()
-                .anyMatch(rol -> rol.getAuthority().equals("ROLE_USER"));
-	    
-	    if (rEditarOpt.isEmpty()) {
-	    	
-	    	if (esUser) {
-	    	
-	    		return "redirect:/perfil";	    		
-	        
-	    	} 
-	    	
-	    	return "redirect:/panelAdmin";
-	    	
-	    }
-	    
-	    Reserva rEditar = rEditarOpt.get();    
-	      
-	                              
-	    if (esUser && !uLogueado.getUsername().equals(rEditar.getUsuario().getUsername())) {
-	    	
-	        throw new ExcepcionEdicionOtroUser("No se pueden editar datos de un usuario que no es tuyo.");
-	        
-	    }
-	    
-	  
-	    double precioBaseReal = reservaService.calcularPrecioTotal(rEditarOpt.get().getHoraEntrada(), rEditarOpt.get().getHoraSalida(), 
-	    									rEditarOpt.get().getAsignaciones().getFirst().getCantRaquetas(),
-	    									rEditarOpt.get().getAsignaciones().getFirst().getPista().getPrecioHora(), 
-	    									rEditarOpt.get().getAsignaciones().getFirst().isUsaLuz());
+	public String mostrarFormularioEdicionReserva(@PathVariable("codigo") long codigo, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
 
-	    	    
-	    if (rEditar.getPrecioTotal() < precioBaseReal && precioBaseReal > 0) {
-	    	
-	        porcentajeDescuento = (precioBaseReal - rEditar.getPrecioTotal()) / precioBaseReal;
-	        
+	    Optional<Reserva> rEditarOpt = reservaService.buscarPorId(codigo);
+	    boolean esUser = uLogueado.getAuthorities().stream().anyMatch(rol -> rol.getAuthority().equals("ROLE_USER"));
+
+	    if (rEditarOpt.isEmpty()) {
+	        return esUser ? "redirect:/perfil" : "redirect:/panelAdmin";
 	    }
-	    
-	    model.addAttribute("porcentaje", porcentajeDescuento);
+
+	    Reserva rEditar = rEditarOpt.get();
+
+	    if (esUser && !uLogueado.getUsername().equals(rEditar.getUsuario().getUsername())) {
+	        throw new ExcepcionEdicionOtroUser("No se pueden editar datos de un usuario que no es tuyo.");
+	    }
+
+	    // Pistas de esta reserva
+	    List<Long> pistasReserva = rEditar.getAsignaciones().stream()
+	            .map(a -> a.getPista().getNumero())
+	            .toList();
+
+	    // Reservas ocupadas de esas pistas excluyendo la actual
+	    List<Map<String, String>> reservasOcupadas = reservaService.buscarTodos().stream()
+	            .filter(r -> !r.getCodigo().equals(codigo))
+	            .flatMap(r -> r.getAsignaciones().stream()
+	                    .filter(a -> pistasReserva.contains(a.getPista().getNumero()))
+	                    .map(a -> Map.of(
+	                            "fecha", r.getFecha().toString(),
+	                            "entrada", r.getHoraEntrada().toString(),
+	                            "salida", r.getHoraSalida().toString()
+	                    )))
+	            .toList();
+
 	    model.addAttribute("reserva", rEditar);
-	    
+	    model.addAttribute("reservasOcupadas", reservasOcupadas);
+
 	    return "admin/editarReserva";
 	}
 	
@@ -531,7 +534,7 @@ public class ControllerAdmin {
 	        @ModelAttribute("reserva") Reserva r,
 	        @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
 	        @RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas,
-	        @RequestParam(value = "porcentajeporcentaje", defaultValue = "0.0") double porcentaje,
+	        @RequestParam(value = "porcentaje", defaultValue = "0.0") double porcentaje,
 	        @AuthenticationPrincipal UserDetails uLogueado) {
 
 	    Reserva reservaExistente = reservaService.buscarPorId(r.getCodigo()).get();
