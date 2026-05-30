@@ -239,6 +239,15 @@
                                 </div>
                             </div>
 
+                            <div class="mb-4 pt-3 border-top">
+                                <label class="form-label small fw-bold mb-2">
+                                    <i class="bi bi-ticket-perforated text-success me-2"></i> Cupón de descuento
+                                </label>
+                                <input type="text" name="codigoCupon" class="form-control"
+                                    placeholder="Ej: P4D3L - A3F9K">
+                                <div th:if="${errorCupon}" class="text-danger small mt-1" th:text="${errorCupon}"></div>
+                            </div>
+
                             <button type="submit" class="btn btn-warning w-100 fw-bold text-dark py-3 mt-2 shadow-sm">
                                 Confirmar reserva <i class="bi bi-chevron-right"></i>
                             </button>

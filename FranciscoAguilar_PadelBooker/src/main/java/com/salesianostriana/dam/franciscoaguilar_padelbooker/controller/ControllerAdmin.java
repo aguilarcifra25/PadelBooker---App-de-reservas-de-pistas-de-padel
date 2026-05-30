@@ -1,6 +1,8 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.CuponService;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.HistorialCuponesService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.PistaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioService;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionCupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionEmailRepetido;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionOtroUser;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionNombreRepetido;
@@ -34,12 +37,12 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.Excepci
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionTiempoReserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Asignacion;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.AsignacionPK;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Cupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.security.RolUsuario;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -52,12 +55,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ControllerAdmin {
 
+	private final HistorialCuponesService historialCuponesService;
 	private final PistaService pistaService;
 	private final UsuarioService usuarioService;
 	private final ReservaService reservaService;
 	private final AsignacionService asignacionService;
+	private final CuponService cuponService;
 	private final PasswordEncoder encoder;
-	
+
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/panelAdmin")
 	public String paginaAdmin( Model model, @AuthenticationPrincipal UserDetails usuario,
@@ -104,6 +110,11 @@ public class ControllerAdmin {
 	    model.addAttribute("usuariosActivos", usuarioService.contarUsuariosNormales(RolUsuario.USER));	    
 	    model.addAttribute("pistaMasUsada", asignacionService.buscarPistaMasReservada());
 	    	    
+	    model.addAttribute("cuponesPromocionales", cuponService.buscarPromocionalesActivos());
+	    model.addAttribute("cuponesPersonales", cuponService.buscarTodos().stream()
+	            		.filter(c -> c.getUsuario() != null)
+	            		.toList());
+	    
 	    return "admin/panelAdmin";
 	}
 	
@@ -372,17 +383,19 @@ public class ControllerAdmin {
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/admin/reserva/crear")
 	public String guardarReserva(
-        @RequestParam("fecha")      @NotNull @FutureOrPresent
+        @RequestParam("fecha") @NotNull @FutureOrPresent
         @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fecha,
         @RequestParam("horaInicio") @NotNull LocalTime horaEntrada,
-        @RequestParam("horaFin")    @NotNull LocalTime horaSalida,
-        @RequestParam("numeros")        List<Long>  numeros,
-        @RequestParam("cantRaquetas")   int         cantRaquetas,
+        @RequestParam("horaFin") @NotNull LocalTime horaSalida,
+        @RequestParam("numeros") List<Long> numeros,
+        @RequestParam("cantRaquetas") int cantRaquetas,
         @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
         @RequestParam(value = "observaciones", required = false) String observaciones,
         @RequestParam("usuarioId") @NotNull Long usuarioId,
+        @RequestParam(value = "codigoCupon", required = false) String codigoCupon,
         Model model) {
 
+    
     if (horaEntrada.isBefore(LocalTime.now()) && fecha.isEqual(LocalDate.now())) {
         throw new ExcepcionTiempoReserva(
                 "No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");
@@ -400,6 +413,7 @@ public class ControllerAdmin {
         }
     }
 
+   
     Usuario u = usuarioService.buscarPorId(usuarioId).get();
 
     Reserva r = Reserva.builder()
@@ -412,14 +426,13 @@ public class ControllerAdmin {
             .build();
 
     double precioTotal = 0.0;
-    
     precioTotal += reservaService.calcularPrecioPalas(cantRaquetas);
 
     for (Long numero : numeros) {
+
         Pista p = pistaService.buscarPorId(numero).get();
 
         double precioPista = reservaService.calcularPrecioTotal(horaEntrada, horaSalida, 0, p.getPrecioHora(), usaLuz);
-
         precioTotal += precioPista;
 
         AsignacionPK aPK = new AsignacionPK();
@@ -435,12 +448,28 @@ public class ControllerAdmin {
 
         a.agregarEnReserva(r);
         a.agregarEnPista(p);
-        
     }
 
     r.setPrecioTotal(precioTotal);
+
     
-    reservaService.guardar(r);
+    if (codigoCupon != null && !codigoCupon.isBlank()) {
+    	
+        try {
+        	
+            historialCuponesService.aplicarCuponAReserva(r, codigoCupon, u);
+            
+        } catch (IllegalArgumentException | ExcepcionCupon e) {
+        	
+            model.addAttribute("errorCupon", e.getMessage());
+            model.addAttribute("listaPistas", pistaService.buscarTodos());
+            model.addAttribute("listaUsuarios", usuarioService.buscarPorRol(RolUsuario.USER));
+            
+            return "admin/crearReserva";
+        }
+    }
+
+    reservaService.crearReserva(r, u);
 
     return "redirect:/panelAdmin";
     
@@ -452,6 +481,8 @@ public class ControllerAdmin {
 	public String mostrarFormularioEdicionReserva(@PathVariable("codigo") long codigo, Model model, @AuthenticationPrincipal UserDetails uLogueado) {        
 	    
 	    Optional<Reserva> rEditarOpt = reservaService.buscarPorId(codigo);
+	    double porcentajeDescuento = 0.0;
+	    
 	    boolean esUser = uLogueado.getAuthorities().stream()
                 .anyMatch(rol -> rol.getAuthority().equals("ROLE_USER"));
 	    
@@ -471,9 +502,25 @@ public class ControllerAdmin {
 	      
 	                              
 	    if (esUser && !uLogueado.getUsername().equals(rEditar.getUsuario().getUsername())) {
+	    	
 	        throw new ExcepcionEdicionOtroUser("No se pueden editar datos de un usuario que no es tuyo.");
+	        
 	    }
 	    
+	  
+	    double precioBaseReal = reservaService.calcularPrecioTotal(rEditarOpt.get().getHoraEntrada(), rEditarOpt.get().getHoraSalida(), 
+	    									rEditarOpt.get().getAsignaciones().getFirst().getCantRaquetas(),
+	    									rEditarOpt.get().getAsignaciones().getFirst().getPista().getPrecioHora(), 
+	    									rEditarOpt.get().getAsignaciones().getFirst().isUsaLuz());
+
+	    	    
+	    if (rEditar.getPrecioTotal() < precioBaseReal && precioBaseReal > 0) {
+	    	
+	        porcentajeDescuento = (precioBaseReal - rEditar.getPrecioTotal()) / precioBaseReal;
+	        
+	    }
+	    
+	    model.addAttribute("porcentaje", porcentajeDescuento);
 	    model.addAttribute("reserva", rEditar);
 	    
 	    return "admin/editarReserva";
@@ -484,6 +531,7 @@ public class ControllerAdmin {
 	        @ModelAttribute("reserva") Reserva r,
 	        @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
 	        @RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas,
+	        @RequestParam(value = "porcentajeporcentaje", defaultValue = "0.0") double porcentaje,
 	        @AuthenticationPrincipal UserDetails uLogueado) {
 
 	    Reserva reservaExistente = reservaService.buscarPorId(r.getCodigo()).get();
@@ -522,7 +570,6 @@ public class ControllerAdmin {
 	    reservaExistente.setHoraEntrada(r.getHoraEntrada());
 	    reservaExistente.setHoraSalida(r.getHoraSalida());
 
-	    
 	    precioTotal = reservaService.calcularPrecioPalas(cantRaquetas);
 	    
 	    for (Asignacion a : reservaExistente.getAsignaciones()) {
@@ -530,10 +577,16 @@ public class ControllerAdmin {
 	        a.setUsaLuz(usaLuz);
 	        a.setCantRaquetas(cantRaquetas);
 
-	        precioPista = reservaService.calcularPrecioTotal(reservaExistente.getHoraEntrada(),reservaExistente.getHoraSalida(),
-	        										0, a.getPrecio(), usaLuz);
-
+	        precioPista = reservaService.calcularPrecioTotal(reservaExistente.getHoraEntrada(), reservaExistente.getHoraSalida(),
+	                                                0, a.getPrecio(), usaLuz);
 	        precioTotal += precioPista;
+	    }
+
+	    if (porcentaje > 0.0) {
+	    	
+	        double ahorro = precioTotal * porcentaje;
+	        
+	        precioTotal = precioTotal - ahorro;
 	        
 	    }
 
@@ -581,6 +634,41 @@ public class ControllerAdmin {
 		
 		
 				
+	}
+	
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/crearCuponPromo")
+	public String mostrarFormularioCrearCuponPromo(Model model) {
+
+	    model.addAttribute("cupon", new Cupon());
+
+	    return "admin/crearCuponPromo";
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@PostMapping("/crearCuponPromo/submit")
+	public String procesarCreacionCuponPromo(
+	        @RequestParam int descuento,
+	        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaExpiracion,
+	        @RequestParam(required = false) Integer usoMaximo) {
+
+	    cuponService.crearCuponPromocional(descuento, fechaExpiracion, usoMaximo);
+
+	    return "redirect:/panelAdmin?tab=cupones";
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/borrarCupon/{id}")
+	public String borrarCupon(@PathVariable Long id) {
+
+	    Optional<Cupon> c = cuponService.buscarPorId(id);
+
+	    if (c.isPresent()) {
+	        cuponService.borrar(c.get());
+	    }
+
+	    return "redirect:/panelAdmin?tab=cupones";
 	}
 	
 	

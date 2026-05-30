@@ -8,7 +8,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Cupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.repository.ReservaRepository;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.base.ServiciosBaseImpl;
 
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class ReservaService extends ServiciosBaseImpl<Reserva, Long, ReservaRepository>{
 
 	private final ReservaRepository reservaRepository;
+	private final CuponService cuponService;
 	private final double precioLuzHora = 4.5;
 	private final double precioPala = 2;
 	
@@ -135,4 +138,22 @@ public class ReservaService extends ServiciosBaseImpl<Reserva, Long, ReservaRepo
 
 	    return reservaRepository.buscarConFiltros(u, f, h);
 	}
+		
+	
+	public void crearReserva(Reserva reserva, Usuario usuario) {
+		
+		List<Reserva> reservasUsuario = reservaRepository.findByUsuario(usuario);
+		
+	    reservaRepository.save(reserva);	      
+	    
+	    cuponService.comprobarYGenerarCuponFidelizacion(usuario, reservasUsuario);
+	}
+	
+	
+	public List<Reserva> buscarPorUsuario(Usuario usuario) {
+		
+	    return reservaRepository.findByUsuario(usuario);
+	    
+	}
+	
 }	

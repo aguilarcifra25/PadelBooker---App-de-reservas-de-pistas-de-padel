@@ -2,6 +2,8 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.CuponService;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.HistorialCuponesService;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -16,7 +18,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionOtroUser;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionTiempoReserva;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Cupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
@@ -30,95 +34,86 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReservaController {
 	
+	private final HistorialCuponesService historialCuponesService;
+	private final CuponService cuponService;
 	private final ReservaService reservaService;
 	private final PistaService pistaService;
 	private final AsignacionService asignacionService;
 	private final UsuarioService usuarioService;
-	
+
+		
 	@PreAuthorize("hasRole('USER')")
 	@PostMapping("/reservar/submit")
 	public String procesarReserva(
-			@RequestParam("fecha") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fecha,
+	        @RequestParam("fecha") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fecha,
 	        @RequestParam("horaEntrada") String horaEntradaStr,
 	        @RequestParam("horaSalida") String horaSalidaStr,
 	        @RequestParam("numeroPista") long numeroPista,
 	        @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
 	        @RequestParam(value = "cantRaquetas", defaultValue = "0") int cantRaquetas,
+	        @RequestParam(value = "codigoCupon", required = false) String codigoCupon,
 	        @AuthenticationPrincipal UserDetails uLogueado,
 	        Model model) {
-	    
-		
-		LocalTime horaEntrada = LocalTime.parse(horaEntradaStr);
-	    LocalTime horaSalida = LocalTime.parse(horaSalidaStr);		
-	    
+
+	    LocalTime horaEntrada = LocalTime.parse(horaEntradaStr);
+	    LocalTime horaSalida = LocalTime.parse(horaSalidaStr);
+
 	    Optional<Pista> pOpt = pistaService.buscarPorId(numeroPista);
 	    Optional<Usuario> uOpt = usuarioService.buscarPorNombre(uLogueado.getUsername());
-	    
+
+	    if (pOpt.isEmpty() || uOpt.isEmpty()) return "redirect:/home";
+
 	    Pista p = pOpt.get();
-	    boolean ocupada;
-	    
-	    Reserva reserva;
-	    double precioTotal, precioLuz, precioPalas;
-	    
-	    
-	    if (pOpt.isEmpty()) {
-	    	
-	        return "redirect:/home";
-	        
-	    } else if (uOpt.isEmpty()) {
-	    	
-	    	return "redirect:/home";
-	    	
-	    }  
-	    
+	    Usuario u = uOpt.get();
+
 	    if (horaEntrada.isBefore(LocalTime.now()) && fecha.getDayOfYear() == LocalDate.now().getDayOfYear()) {
-			
-			throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");			
-			
-		}
-	    
+	        throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");
+	    }
+
 	    if (horaEntrada.isAfter(horaSalida)) {
-	    	
-	    	throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
-	    		    	
+	        throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
 	    }
-	    
-	    ocupada = reservaService.tieneConflictoHorario(p.getNumero(), fecha, horaEntrada, horaSalida);
-	    
-	    if (ocupada) {
-	    	
+
+	    if (reservaService.tieneConflictoHorario(p.getNumero(), fecha, horaEntrada, horaSalida)) {
 	        throw new ExcepcionTiempoReserva("La pista ya se encuentra reservada en el horario seleccionado.");
-	        
 	    }
-	                    	    	    
-	    precioTotal = reservaService.calcularPrecioTotal(horaEntrada, horaSalida, cantRaquetas, p.getPrecioHora(), usaLuz);
-	    
-	    
-	    reserva = Reserva.builder()
+
+	    double precioTotal = reservaService.calcularPrecioTotal(horaEntrada, horaSalida, cantRaquetas, p.getPrecioHora(), usaLuz);
+
+	    Reserva reserva = Reserva.builder()
 	            .fecha(fecha)
 	            .horaEntrada(horaEntrada)
 	            .horaSalida(horaSalida)
 	            .precioTotal(precioTotal)
-	            .usuario(uOpt.get())
+	            .usuario(u)
 	            .asignaciones(new ArrayList<>())
 	            .build();
-	    
-	    reservaService.guardar(reserva);
-	    	    
-	    asignacionService.registrarAsignacionCompleta(reserva, p, usaLuz, cantRaquetas, precioTotal);
-	    
-	    
+
+	    if (codigoCupon != null && !codigoCupon.isBlank()) {
+	        try {
+	            historialCuponesService.aplicarCuponAReserva(reserva, codigoCupon, u);
+	        } catch (IllegalArgumentException | ExcepcionEdicionOtroUser e) {
+	            model.addAttribute("errorCupon", e.getMessage());
+	            model.addAttribute("pista", p);
+	            return "detallesPista";
+	        }
+	    }
+
+	    reservaService.crearReserva(reserva, u);
+	    asignacionService.registrarAsignacionCompleta(reserva, p, usaLuz, cantRaquetas, reserva.getPrecioTotal());
+
 	    model.addAttribute("reserva", reserva);
 	    model.addAttribute("pista", p);
 	    model.addAttribute("usuario", uLogueado);
 	    model.addAttribute("usaLuz", usaLuz);
 	    model.addAttribute("cantRaquetas", cantRaquetas);
-	    model.addAttribute("precioTotal", precioTotal);
+	    model.addAttribute("precioTotal", reserva.getPrecioTotal());
 	    model.addAttribute("precioLuz", reservaService.calcularPrecioLuz(horaEntrada, horaSalida, usaLuz));
 	    model.addAttribute("precioPalas", reservaService.calcularPrecioPalas(cantRaquetas));
 	    model.addAttribute("costoPista", p.getPrecioHora() * reservaService.calcularHorasTotales(horaEntrada, horaSalida));
 
-	    return "reservaTicket"; 
+	    return "reservaTicket";
+	    
 	}
 	
 }

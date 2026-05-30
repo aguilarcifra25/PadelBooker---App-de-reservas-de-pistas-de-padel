@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club DamPadel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/base :: header}"></div>
+    <main>
+        <div class="container my-5 p-3 mx-auto card shadow-lg bg-secondary">
+            <form th:action="@{/crearCuponPromo/submit}" method="post">
+                <div class="row">
+                    <div class="col-4">
+                        <label for="descuento" class="form-label">Descuento (%) entre 1% y 50%</label>
+                        <input type="number" id="descuento" name="descuento" class="form-control" min="1" max="50"
+                            placeholder="Ej: 20" required />
+                    </div>
+                    <div class="col-4">
+                        <label for="fechaExpiracion" class="form-label">Fecha de expiración</label>
+                        <input type="date" id="fechaExpiracion" name="fechaExpiracion" class="form-control" required />
+                    </div>
+                    <div class="col-4">
+                        <label for="usoMaximo" class="form-label">Límite de usos</label>
+                        <input type="number" id="usoMaximo" name="usoMaximo" class="form-control" min="1"
+                            placeholder="Vacío = ilimitado" />
+                        <div class="form-text text-white">Déjalo vacío para usos ilimitados</div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a th:href="@{/panelAdmin(tab='cupones')}" class="btn btn-outline-danger">Cancelar</a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-plus-circle me-1"></i> Crear cupón
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+    <div th:replace="~{fragments/base :: footer}"></div>
+</body>
+
+</html>

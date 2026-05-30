@@ -44,6 +44,12 @@
                     </button>
 
                     <button class="list-group-item list-group-item-action border rounded my-2" data-bs-toggle="list"
+                        data-bs-target="#seccion-cupones"
+                        th:classappend="${param.tab != null and param.tab[0] == 'cupones'} ? 'active' : ''">
+                        Gestión de cupones
+                    </button>
+
+                    <button class="list-group-item list-group-item-action border rounded " data-bs-toggle="list"
                         data-bs-target="#estadisticas"> Estadísticas
                     </button>
 
@@ -407,6 +413,98 @@
                                     </tr>
 
                                 </th:block>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </section>
+
+                <section class="tab-pane fade" id="seccion-cupones"
+                    th:classappend="${param.tab != null and param.tab[0] == 'cupones'} ? 'show active' : ''">
+
+                    <div class="container mt-4">
+
+                        <div class="d-flex justify-content-between align-items-center my-3">
+                            <a th:href="@{/crearCuponPromo}" class="btn btn-outline-primary"> Crear cupón </a>
+                        </div>
+
+                        <h5 class="fw-semibold mt-4 mb-2">Cupones promocionales</h5>
+                        <table class="table table-striped mb-5">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Descuento</th>
+                                    <th>Usos</th>
+                                    <th>Expira</th>
+                                    <th>Opciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(cuponesPromocionales)}">
+                                    <td colspan="5" class="text-muted fst-italic text-center">No hay cupones
+                                        promocionales activos</td>
+                                </tr>
+                                <tr th:each="cupon : ${cuponesPromocionales}">
+                                    <td><code th:text="${cupon.codigo}"></code></td>
+                                    <td th:text="${cupon.descuento} + '%'"></td>
+                                    <td
+                                        th:text="${cupon.usoActual} + ' / ' + (${cupon.usoMaximo != null ? cupon.usoMaximo : '∞'})">
+                                    </td>
+                                    <td th:text="${#temporals.format(cupon.fechaExpiracion, 'dd/MM/yyyy')}"></td>
+                                    <td>
+                                        <a th:href="@{/panelAdmin(tab='cupones', borrarCupon=${cupon.id})}"
+                                            class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i> Borrar
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${param.borrarCupon != null and param.borrarCupon[0] == #strings.toString(cupon.id)}"
+                                    th:each="cupon : ${cuponesPromocionales}" class="table-danger align-middle">
+                                    <td colspan="5" class="p-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="bi bi-exclamation-triangle-fill text-danger me-2 fs-5"></i>
+                                                <span>¿Eliminar el cupón <strong
+                                                        th:text="${cupon.codigo}"></strong>?</span>
+                                            </div>
+                                            <div>
+                                                <a th:href="@{/panelAdmin(tab='cupones')}"
+                                                    class="btn btn-sm btn-secondary me-2">Cancelar</a>
+                                                <a th:href="@{/borrarCupon/{id}(id=${cupon.id})}"
+                                                    class="btn btn-sm btn-danger fw-bold">Eliminar</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h5 class="fw-semibold mb-2">Cupones de fidelización</h5>
+                        <table class="table table-striped">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Usuario</th>
+                                    <th>Descuento</th>
+                                    <th>Estado</th>
+                                    <th>Expira</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(cuponesPersonales)}">
+                                    <td colspan="5" class="text-muted fst-italic text-center">No hay cupones de
+                                        fidelización</td>
+                                </tr>
+                                <tr th:each="cupon : ${cuponesPersonales}">
+                                    <td><code th:text="${cupon.codigo}"></code></td>
+                                    <td th:text="${cupon.usuario.username}"></td>
+                                    <td th:text="${cupon.descuento} + '%'"></td>
+                                    <td>
+                                        <span th:if="${cupon.usado}" class="badge bg-secondary">Usado</span>
+                                        <span th:if="${!cupon.usado}" class="badge bg-success">Disponible</span>
+                                    </td>
+                                    <td th:text="${#temporals.format(cupon.fechaExpiracion, 'dd/MM/yyyy')}"></td>
+                                </tr>
                             </tbody>
                         </table>
 
