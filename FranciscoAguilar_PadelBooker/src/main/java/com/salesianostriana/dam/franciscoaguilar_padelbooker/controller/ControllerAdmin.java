@@ -8,6 +8,7 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioServ
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -335,71 +336,81 @@ public class ControllerAdmin {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/admin/reserva/crear")
-	public String guardarReserva( @RequestParam("fecha") @NotNull @FutureOrPresent @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fecha,
-									@RequestParam("horaInicio") @NotNull LocalTime horaEntrada, @RequestParam("horaFin") @NotNull LocalTime horaSalida,        
-									@RequestParam("numero") @NotNull Long numero, @RequestParam("usuarioId") @NotNull Long usuarioId,
-									@RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz, @RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas,
-									@RequestParam(value = "observaciones", required = false) String observaciones, Model model) {
-	   
-		boolean ocupada;
-		
-		if (horaEntrada.isBefore(LocalTime.now()) && fecha.getDayOfYear() == LocalDate.now().getDayOfYear()) {
-			
-			throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");						
-		}
-		
-		if (horaEntrada.isAfter(horaSalida)) {
-		    	
-			throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
-		    		    	
-		}
-		
-		ocupada = reservaService.tieneConflictoHorario(numero, fecha, horaEntrada, horaSalida);
-	    
-	    if (ocupada) {
-	    	
-	        throw new ExcepcionTiempoReserva("La pista ya se encuentra reservada en el horario seleccionado.");
-	        
-	    }
-		
-	    Pista p = pistaService.buscarPorId(numero).get();
-	    Usuario u = usuarioService.buscarPorId(usuarioId).get();
-	    
-	    double precioReserva = reservaService.calcularPrecioTotal(
-	            horaEntrada, 
-	            horaSalida, 
-	            cantRaquetas, 
-	            p.getPrecioHora(),
-	            usaLuz
-	        );
-	    
-	    Reserva r = Reserva.builder()
-	            .fecha(fecha)
-	            .horaEntrada(horaEntrada)
-	            .horaSalida(horaSalida)
-	            .precioTotal(precioReserva)
-	            .usuario(u)
-	            .asignaciones(new ArrayList<>())
-	            .build();
-	    
-	    AsignacionPK aPK = new AsignacionPK();
-	    aPK.setPista_id(p.getNumero());
-	    
-	    Asignacion a = Asignacion.builder()
-	            .asignacionPK(aPK)
-	            .usaLuz(usaLuz)
-	            .cantRaquetas(cantRaquetas)
-	            .precio(p.getPrecioHora())
-	            .observaciones(observaciones)
-	            .build();
-	            
-	    a.agregarEnReserva(r);
-	    a.agregarEnPista(p);
-	            
-	    reservaService.guardar(r);
-	    
-	    return "redirect:/panelAdmin";
+	public String guardarReserva(
+        @RequestParam("fecha")      @NotNull @FutureOrPresent
+        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fecha,
+        @RequestParam("horaInicio") @NotNull LocalTime horaEntrada,
+        @RequestParam("horaFin")    @NotNull LocalTime horaSalida,
+        @RequestParam("numeros")        List<Long>  numeros,
+        @RequestParam("cantRaquetas")   int         cantRaquetas,
+        @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
+        @RequestParam(value = "observaciones", required = false) String observaciones,
+        @RequestParam("usuarioId") @NotNull Long usuarioId,
+        Model model) {
+
+    if (horaEntrada.isBefore(LocalTime.now()) && fecha.isEqual(LocalDate.now())) {
+        throw new ExcepcionTiempoReserva(
+                "No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");
+    }
+
+    if (!horaEntrada.isBefore(horaSalida)) {
+        throw new ExcepcionTiempoReserva(
+                "No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
+    }
+
+    for (Long numero : numeros) {
+        if (reservaService.tieneConflictoHorario(numero, fecha, horaEntrada, horaSalida)) {
+            throw new ExcepcionTiempoReserva(
+                    "La pista " + numero + " ya se encuentra reservada en el horario seleccionado.");
+        }
+    }
+
+    Usuario u = usuarioService.buscarPorId(usuarioId).get();
+
+    Reserva r = Reserva.builder()
+            .fecha(fecha)
+            .horaEntrada(horaEntrada)
+            .horaSalida(horaSalida)
+            .precioTotal(0.0)
+            .usuario(u)
+            .asignaciones(new ArrayList<>())
+            .build();
+
+    double precioTotal = 0.0;
+    
+    precioTotal += reservaService.calcularPrecioPalas(cantRaquetas);
+
+    for (Long numero : numeros) {
+        Pista p = pistaService.buscarPorId(numero).get();
+
+        double precioPista = reservaService.calcularPrecioTotal(horaEntrada, horaSalida, 0, p.getPrecioHora(), usaLuz);
+
+        precioTotal += precioPista;
+
+        AsignacionPK aPK = new AsignacionPK();
+        aPK.setPista_id(p.getNumero());
+
+        Asignacion a = Asignacion.builder()
+                .asignacionPK(aPK)
+                .usaLuz(usaLuz)
+                .cantRaquetas(cantRaquetas)
+                .precio(p.getPrecioHora())
+                .observaciones(observaciones)
+                .build();
+
+        a.agregarEnReserva(r);
+        a.agregarEnPista(p);
+        
+    }
+
+    r.setPrecioTotal(precioTotal);
+    
+    reservaService.guardar(r);
+
+    return "redirect:/panelAdmin";
+    
 	}
+
 	
 		
 	@GetMapping("/editarReserva/{codigo}")
@@ -434,71 +445,78 @@ public class ControllerAdmin {
 	}
 	
 	@PostMapping("/editarReserva/submit")
-	public String procesarEdicionReserva(@ModelAttribute("reserva") Reserva r, @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
-										@RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas, @AuthenticationPrincipal UserDetails uLogueado) {
-    
-	
-	boolean ocupada;
-	
-	Long numero = reservaService.buscarPorId(r.getCodigo()).get().getAsignaciones().getFirst().getPista().getNumero();
-	Reserva reservaExistente = reservaService.buscarPorId(r.getCodigo()).get();
-	
-	
-	ocupada = reservaService.tieneConflictoHorarioEdicion(numero, r.getFecha(), r.getHoraEntrada(), r.getHoraSalida(), r.getCodigo());
-	
-	if (r.getHoraEntrada().isBefore(LocalTime.now()) && r.getFecha().getDayOfYear() == LocalDate.now().getDayOfYear()) {
-		
-		throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");			
-		
-	}
-				
-	
-	if (ocupada) {	  
-		
-		throw new ExcepcionTiempoReserva("La pista ya se encuentra reservada en el horario seleccionado.");	
-		
-	}
-	
-	if (r.getHoraEntrada().isAfter(r.getHoraSalida())) {
-    	
-		throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
-	    		    	
-	}			   
-    
-    reservaExistente.setFecha(r.getFecha());
-    reservaExistente.setHoraEntrada(r.getHoraEntrada());
-    reservaExistente.setHoraSalida(r.getHoraSalida());
+	public String procesarEdicionReserva(
+	        @ModelAttribute("reserva") Reserva r,
+	        @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
+	        @RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas,
+	        @AuthenticationPrincipal UserDetails uLogueado) {
 
-    Asignacion asignacionExistente = reservaExistente.getAsignaciones().getFirst();
-    
-    asignacionExistente.setUsaLuz(usaLuz);
-    asignacionExistente.setCantRaquetas(cantRaquetas);
-    
-    double precioReservaExistente = reservaService.calcularPrecioTotal(
-        reservaExistente.getHoraEntrada(), 
-        reservaExistente.getHoraSalida(), 
-        asignacionExistente.getCantRaquetas(), 
-        asignacionExistente.getPrecio(),
-        asignacionExistente.isUsaLuz());
-    
-    reservaExistente.setPrecioTotal(precioReservaExistente);
-    
-    reservaService.editar(reservaExistente);
-    
-    if (uLogueado != null && uLogueado.getAuthorities().stream()
-			.filter(rol -> rol.getAuthority()
-			.equals("ROLE_ADMIN"))
-			.findFirst()
-			.isPresent())  {
-		
-    	return "redirect:/panelAdmin?tab=reservas";
-					
-	} else {
-		
-		return "redirect:/perfil";
-		
+	    Reserva reservaExistente = reservaService.buscarPorId(r.getCodigo()).get();
+
+	    boolean ocupada;
+	    double precioTotal;
+	    double precioPista;
+	    
+	    for (Asignacion a : reservaExistente.getAsignaciones()) {
+	    	
+	        Long numero = a.getPista().getNumero();
+	        
+	        ocupada = reservaService.tieneConflictoHorarioEdicion(
+	                numero, r.getFecha(), r.getHoraEntrada(), r.getHoraSalida(), r.getCodigo());
+	        
+	        if (ocupada) {
+	        	
+	            throw new ExcepcionTiempoReserva("La pista " + numero + " ya se encuentra reservada en el horario seleccionado.");
+	            
+	        }
+	    }
+
+	    if (r.getHoraEntrada().isBefore(LocalTime.now()) && r.getFecha().isEqual(LocalDate.now())) {
+	    	
+	        throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");
+	        
+	    }
+
+	    if (!r.getHoraEntrada().isBefore(r.getHoraSalida())) {
+	    	
+	        throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
+	        
+	    }
+
+	    reservaExistente.setFecha(r.getFecha());
+	    reservaExistente.setHoraEntrada(r.getHoraEntrada());
+	    reservaExistente.setHoraSalida(r.getHoraSalida());
+
+	    
+	    precioTotal = reservaService.calcularPrecioPalas(cantRaquetas);
+	    
+	    for (Asignacion a : reservaExistente.getAsignaciones()) {
+	    	
+	        a.setUsaLuz(usaLuz);
+	        a.setCantRaquetas(cantRaquetas);
+
+	        precioPista = reservaService.calcularPrecioTotal(reservaExistente.getHoraEntrada(),reservaExistente.getHoraSalida(),
+	        										0, a.getPrecio(), usaLuz);
+
+	        precioTotal += precioPista;
+	        
+	    }
+
+	    reservaExistente.setPrecioTotal(precioTotal);
+	    
+	    reservaService.editar(reservaExistente);
+
+	    if (uLogueado.getAuthorities().stream()
+	            .anyMatch(rol -> rol.getAuthority().equals("ROLE_ADMIN"))) {
+	    	
+	        return "redirect:/panelAdmin?tab=reservas";
+	        
+	    } else {
+	    	
+	        return "redirect:/perfil";
+	        
+	    }
 	}
-}
 	
 	
 	@GetMapping("/borrarReserva/{codigo}")
