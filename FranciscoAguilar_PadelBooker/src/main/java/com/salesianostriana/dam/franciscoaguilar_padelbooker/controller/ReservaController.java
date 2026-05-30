@@ -3,6 +3,7 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.CuponService;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.HistorialCuponesService;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionOtroUser;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionTiempoReserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Cupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
@@ -32,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReservaController {
 	
+	private final HistorialCuponesService historialCuponesService;
 	private final CuponService cuponService;
 	private final ReservaService reservaService;
 	private final PistaService pistaService;
@@ -77,22 +80,6 @@ public class ReservaController {
 
 	    double precioTotal = reservaService.calcularPrecioTotal(horaEntrada, horaSalida, cantRaquetas, p.getPrecioHora(), usaLuz);
 
-	    
-	    Cupon cuponAplicado = null;
-	    if (codigoCupon != null && !codigoCupon.isBlank()) {
-	    	
-	        try {
-	        	
-	            cuponAplicado = cuponService.validarCupon(codigoCupon, u);
-	            precioTotal = cuponService.aplicarDescuento(precioTotal, cuponAplicado);
-	            
-	        } catch (IllegalArgumentException e) {
-	        	
-	            model.addAttribute("errorCupon", e.getMessage());
-	            model.addAttribute("pista", p);
-	        }
-	    }
-
 	    Reserva reserva = Reserva.builder()
 	            .fecha(fecha)
 	            .horaEntrada(horaEntrada)
@@ -102,25 +89,31 @@ public class ReservaController {
 	            .asignaciones(new ArrayList<>())
 	            .build();
 
-	    reservaService.crearReserva(reserva, u);
-
-	    if (cuponAplicado != null) {
-	        cuponService.gastarCupon(cuponAplicado);
+	    if (codigoCupon != null && !codigoCupon.isBlank()) {
+	        try {
+	            historialCuponesService.aplicarCuponAReserva(reserva, codigoCupon, u);
+	        } catch (IllegalArgumentException | ExcepcionEdicionOtroUser e) {
+	            model.addAttribute("errorCupon", e.getMessage());
+	            model.addAttribute("pista", p);
+	            return "detallesPista";
+	        }
 	    }
 
-	    asignacionService.registrarAsignacionCompleta(reserva, p, usaLuz, cantRaquetas, precioTotal);
+	    reservaService.crearReserva(reserva, u);
+	    asignacionService.registrarAsignacionCompleta(reserva, p, usaLuz, cantRaquetas, reserva.getPrecioTotal());
 
 	    model.addAttribute("reserva", reserva);
 	    model.addAttribute("pista", p);
 	    model.addAttribute("usuario", uLogueado);
 	    model.addAttribute("usaLuz", usaLuz);
 	    model.addAttribute("cantRaquetas", cantRaquetas);
-	    model.addAttribute("precioTotal", precioTotal);
+	    model.addAttribute("precioTotal", reserva.getPrecioTotal());
 	    model.addAttribute("precioLuz", reservaService.calcularPrecioLuz(horaEntrada, horaSalida, usaLuz));
 	    model.addAttribute("precioPalas", reservaService.calcularPrecioPalas(cantRaquetas));
 	    model.addAttribute("costoPista", p.getPrecioHora() * reservaService.calcularHorasTotales(horaEntrada, horaSalida));
 
 	    return "reservaTicket";
+	    
 	}
 	
 }

@@ -1,7 +1,9 @@
 package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.repository.HistorialCuponesRepo;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.CuponService;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.HistorialCuponesService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.PistaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioService;
@@ -36,6 +38,7 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.Excepci
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Asignacion;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.AsignacionPK;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Cupon;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.HistorialCupones;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
@@ -53,13 +56,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ControllerAdmin {
 
+	private final HistorialCuponesService historialCuponesService;
 	private final PistaService pistaService;
 	private final UsuarioService usuarioService;
 	private final ReservaService reservaService;
 	private final AsignacionService asignacionService;
 	private final CuponService cuponService;
 	private final PasswordEncoder encoder;
-	
+
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/panelAdmin")
 	public String paginaAdmin( Model model, @AuthenticationPrincipal UserDetails usuario,
@@ -450,19 +455,12 @@ public class ControllerAdmin {
 
     
     if (codigoCupon != null && !codigoCupon.isBlank()) {
-    	
         try {
-        	
-            Cupon cupon = cuponService.validarCupon(codigoCupon, u);
-            r.setPrecioTotal(cuponService.aplicarDescuento(r.getPrecioTotal(), cupon));
-            cuponService.gastarCupon(cupon);
-            
-        } catch (IllegalArgumentException e) {
-        	
+            historialCuponesService.aplicarCuponAReserva(r, codigoCupon, u);
+        } catch (IllegalArgumentException | ExcepcionEdicionOtroUser e) {
             model.addAttribute("errorCupon", e.getMessage());
             model.addAttribute("listaPistas", pistaService.buscarTodos());
             model.addAttribute("listaUsuarios", usuarioService.buscarPorRol(RolUsuario.USER));
-            
             return "admin/crearReserva";
         }
     }
@@ -470,7 +468,8 @@ public class ControllerAdmin {
     reservaService.crearReserva(r, u);
 
     return "redirect:/panelAdmin";
-}
+    
+	}
 
 	
 		

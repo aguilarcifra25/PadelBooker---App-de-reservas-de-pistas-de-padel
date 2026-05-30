@@ -1,0 +1,14 @@
+package com.salesianostriana.dam.franciscoaguilar_padelbooker.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.HistorialCupones;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
+
+@Repository
+public interface HistorialCuponesRepo extends JpaRepository<HistorialCupones, Long> {
+
+    boolean existsByUsuarioAndCodigoCupon(Usuario usuario, String codigoCupon);
+    
+}
