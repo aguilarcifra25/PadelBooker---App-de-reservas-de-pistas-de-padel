@@ -2,6 +2,7 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,5 +24,13 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long>{
 		    @Param("codigoReservaActual") Long codigoReservaActual
 		);
 	
-	
+	@Query("SELECT r FROM Reserva r WHERE " +
+		       "(:usuario IS NULL OR LOWER(r.usuario.username) LIKE LOWER(CONCAT('%', :usuario, '%'))) AND " +
+		       "(:fecha IS NULL OR r.fecha = :fecha) AND " +
+		       "(:horaEntrada IS NULL OR r.horaEntrada = :horaEntrada)")
+		List<Reserva> buscarConFiltros(
+		        @Param("usuario") String usuario,
+		        @Param("fecha") LocalDate fecha,
+		        @Param("horaEntrada") LocalTime horaEntrada
+		);
 }
