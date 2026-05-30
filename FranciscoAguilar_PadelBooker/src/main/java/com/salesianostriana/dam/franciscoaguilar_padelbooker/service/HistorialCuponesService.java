@@ -16,30 +16,29 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class HistorialCuponesService extends ServiciosBaseImpl<HistorialCupones, Long, HistorialCuponesRepo>{
 
-	private final HistorialCuponesRepo historialCuponesRepo;
-	private final CuponService cuponService;
+    private final HistorialCuponesRepo historialCuponesRepo;
+    private final CuponService cuponService;
 
-	public void aplicarCuponAReserva(Reserva nuevaReserva, String codigoIntroducido, Usuario usuarioLogueado) {
-	    
-	    String codigo = codigoIntroducido.toUpperCase();
-	    	    
-	    if (historialCuponesRepo.existsByUsuarioAndCodigoCupon(usuarioLogueado, codigo)) {
-	    	
-	        throw new ExcepcionCupon("Ya has canjeado este cupón en una reserva anterior."); 
-	        
-	    }
+    public void aplicarCuponAReserva(Reserva nuevaReserva, String codigoIntroducido, Usuario usuarioLogueado) {
+        
+        String codigo = codigoIntroducido.toUpperCase();
+                
+        if (historialCuponesRepo.existsByUsuarioAndCodigoCupon(usuarioLogueado, codigo)) {
+            throw new ExcepcionCupon("Ya has canjeado este cupón en una reserva anterior."); 
+        }
 
-	    Cupon cupon = cuponService.validarCupon(codigo, usuarioLogueado);
+        Cupon cupon = cuponService.validarCupon(codigo, usuarioLogueado);
 
-	    double precioConDescuento = cuponService.aplicarDescuento(nuevaReserva.getPrecioTotal(), cupon);
-	    
-	    nuevaReserva.setPrecioTotal(precioConDescuento);
+        nuevaReserva.setCupon(cupon); 
 
-	    cuponService.gastarCupon(cupon);
+        double precioConDescuento = cuponService.aplicarDescuento(nuevaReserva.getPrecioTotal(), cupon);
+        
+        nuevaReserva.setPrecioTotal(precioConDescuento);
 
-	    HistorialCupones historial = new HistorialCupones(usuarioLogueado, codigo);	  
-	    
-	    historialCuponesRepo.save(historial);
-	}
-	
+        cuponService.gastarCupon(cupon);
+
+        HistorialCupones historial = new HistorialCupones(usuarioLogueado, codigo);      
+        
+        historialCuponesRepo.save(historial);
+    }
 }

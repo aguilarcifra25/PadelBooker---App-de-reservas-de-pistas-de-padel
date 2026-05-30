@@ -64,4 +64,8 @@ public class Reserva {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_reserva_usuario"))
     private Usuario usuario;
 	
+	@ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_reserva_cupon"))
+	private Cupon cupon;
+	
 }

@@ -116,7 +116,7 @@ public class CuponService extends ServiciosBaseImpl<Cupon, Long, CuponRepository
     
     public Cupon validarCupon(String codigo, Usuario usuarioActual) {
 
-        Cupon cupon = cuponRepository.findByCodigo(codigo).orElseThrow(() -> new IllegalArgumentException("Cupón no encontrado"));
+        Cupon cupon = cuponRepository.findByCodigo(codigo).orElseThrow(() -> new ExcepcionCupon("Cupón no encontrado"));
 
         if (cupon.getFechaExpiracion().isBefore(LocalDate.now())) {
         	

@@ -526,6 +526,10 @@ public class ControllerAdmin {
 	    model.addAttribute("reserva", rEditar);
 	    model.addAttribute("reservasOcupadas", reservasOcupadas);
 
+	    double porcentajeOriginal = (rEditar.getCupon() != null) ? rEditar.getCupon().getDescuento() : 0.0;
+
+	    model.addAttribute("porcentaje", porcentajeOriginal);
+
 	    return "admin/editarReserva";
 	}
 	
@@ -544,68 +548,69 @@ public class ControllerAdmin {
 	    double precioPista;
 	    
 	    for (Asignacion a : reservaExistente.getAsignaciones()) {
-	    	
 	        Long numero = a.getPista().getNumero();
 	        
 	        ocupada = reservaService.tieneConflictoHorarioEdicion(
 	                numero, r.getFecha(), r.getHoraEntrada(), r.getHoraSalida(), r.getCodigo());
 	        
 	        if (ocupada) {
-	        	
 	            throw new ExcepcionTiempoReserva("La pista " + numero + " ya se encuentra reservada en el horario seleccionado.");
-	            
 	        }
 	    }
 
 	    if (r.getHoraEntrada().isBefore(LocalTime.now()) && r.getFecha().isEqual(LocalDate.now())) {
-	    	
 	        throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");
-	        
 	    }
 
 	    if (!r.getHoraEntrada().isBefore(r.getHoraSalida())) {
-	    	
 	        throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
-	        
 	    }
 
 	    reservaExistente.setFecha(r.getFecha());
 	    reservaExistente.setHoraEntrada(r.getHoraEntrada());
 	    reservaExistente.setHoraSalida(r.getHoraSalida());
 
-	    precioTotal = reservaService.calcularPrecioPalas(cantRaquetas);
+	   
+	    precioTotal = 0.0;
 	    
 	    for (Asignacion a : reservaExistente.getAsignaciones()) {
-	    	
 	        a.setUsaLuz(usaLuz);
 	        a.setCantRaquetas(cantRaquetas);
 
-	        precioPista = reservaService.calcularPrecioTotal(reservaExistente.getHoraEntrada(), reservaExistente.getHoraSalida(),
-	                                                0, a.getPrecio(), usaLuz);
+	        precioPista = reservaService.calcularPrecioTotal(
+	                reservaExistente.getHoraEntrada(), 
+	                reservaExistente.getHoraSalida(),
+	                cantRaquetas, 
+	                a.getPista().getPrecioHora(), 
+	                usaLuz
+	        );
+	        
+	        a.setPrecio(precioPista);
 	        precioTotal += precioPista;
 	    }
 
 	    if (porcentaje > 0.0) {
-	    	
-	        double ahorro = precioTotal * porcentaje;
+	        double porcentajeReal = (porcentaje > 1.0) ? (porcentaje / 100.0) : porcentaje;
 	        
-	        precioTotal = precioTotal - ahorro;
-	        
-	    }
+	        double ahorroTotal = precioTotal * porcentajeReal; 
+	        precioTotal = precioTotal - ahorroTotal; 
 
+	        for (Asignacion a : reservaExistente.getAsignaciones()) {
+	            double precioConDescuento = a.getPrecio() - (a.getPrecio() * porcentajeReal);
+	            a.setPrecio(Math.round(precioConDescuento * 100.0) / 100.0);
+	        }
+	    }
+	    
+	    precioTotal = Math.round(precioTotal * 100.0) / 100.0;
 	    reservaExistente.setPrecioTotal(precioTotal);
 	    
 	    reservaService.editar(reservaExistente);
 
 	    if (uLogueado.getAuthorities().stream()
 	            .anyMatch(rol -> rol.getAuthority().equals("ROLE_ADMIN"))) {
-	    	
 	        return "redirect:/panelAdmin?tab=reservas";
-	        
 	    } else {
-	    	
 	        return "redirect:/perfil";
-	        
 	    }
 	}
 	

@@ -43,7 +43,7 @@ public class Cupon {
     @Max(value = 50, message = "El descuento no puede superar el 50%.")
     private int descuento;
         
-    private boolean usado = false;;
+    private boolean usado = false;
         
     @NotNull(message = "Debes asignar una fecha de expiración.")
     @FutureOrPresent(message = "La fecha de expiración debe ser de hoy en adelante.")
