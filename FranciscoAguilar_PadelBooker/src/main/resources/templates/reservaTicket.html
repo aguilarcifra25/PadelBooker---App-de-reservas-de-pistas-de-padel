@@ -83,7 +83,7 @@
                                     class="list-group-item d-flex justify-content-between align-items-center py-2">
                                     <span th:text="|- Descuento cupón (${reserva.cupon.descuento}%)|"></span>
                                     <span class="fw-bold text-danger"
-                                        th:text="${#numbers.formatDecimal(cupon, 1, 2, 'COMMA')} + ' €'"> </span>
+                                        th:text="'- ' + ${#numbers.formatDecimal(cupon, 1, 2, 'COMMA')} + ' €'"> </span>
                                 </li>
                             </ul>
                         </div>

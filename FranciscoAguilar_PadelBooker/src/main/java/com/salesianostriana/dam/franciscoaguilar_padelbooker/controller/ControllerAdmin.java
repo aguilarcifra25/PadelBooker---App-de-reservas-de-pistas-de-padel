@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionBorrarAdmin;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionCrearCupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionCupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionEmailRepetido;
@@ -128,24 +129,34 @@ public class ControllerAdmin {
 		
 		Optional<Usuario> uBorrar = usuarioService.buscarPorId(id);	
 		
+		if (!uBorrar.isPresent()) {
+			
+			return "home";
+			
+		} 
+		
 		boolean esAdmin = uLogueado.getAuthorities().stream()
 		        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 		    
 		boolean esSuPropiacuenta = uBorrar.get().getUsername().equals(uLogueado.getUsername());
-		 
+				
 		
 	    if (!esAdmin && !esSuPropiacuenta) {
 	    	
-	        return "redirect:/perfil";
+	        return "home";
 	        
 	    }
 		
 	    
-		if (uBorrar.isPresent()) {
-			
-			usuarioService.borrar(uBorrar.get());
-			
-		} 
+	    if (esAdmin && uBorrar.get().getUsername().equals("admin")) {
+	    	
+	        throw new ExcepcionBorrarAdmin("No se puede borrar al admin por defecto.");
+	        
+	    }
+	    
+					
+		usuarioService.borrar(uBorrar.get());
+					
 		
 		
 		if (usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.ADMIN)) {
@@ -367,6 +378,12 @@ public class ControllerAdmin {
 		
 		Optional<Pista> pBorrar = pistaService.buscarPorId(numero);	
 		
+		if (!pBorrar.isPresent()) {
+			
+			return "home";
+			
+		}
+		
 		boolean asignada = asignacionService.buscarTodos().stream()
 										.anyMatch(a -> a.getPista() == pBorrar.get());
 		
@@ -375,12 +392,10 @@ public class ControllerAdmin {
 			throw new ExcepcionPistaOcupada("No se puede borrar la pista. Debe eliminar las reservas asociadas a ellas y avisar a los usuarios.");
 			
 		}
-		
-		if (pBorrar.isPresent()) {
+				
 			
-			pistaService.borrar(pBorrar.get());
+		pistaService.borrar(pBorrar.get());
 			
-		}
 		
 		return "redirect:/panelAdmin";		
 	}

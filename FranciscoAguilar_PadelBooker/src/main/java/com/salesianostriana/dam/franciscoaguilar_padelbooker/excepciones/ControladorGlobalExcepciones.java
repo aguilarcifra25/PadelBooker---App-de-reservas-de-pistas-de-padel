@@ -192,4 +192,24 @@ public class ControladorGlobalExcepciones {
 		return "admin/panelAdmin";
 				
 	}
+	
+	
+	@ExceptionHandler(ExcepcionBorrarAdmin.class)
+	public String handleExcepcionBorrarAdmin(ExcepcionBorrarAdmin e, Model model) {
+				
+		model.addAttribute("errorMensaje", e.getMessage());
+		model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
+		model.addAttribute("listaPistas", pistaService.buscarTodos());
+		model.addAttribute("listaReservas", reservaService.buscarTodos());
+		model.addAttribute("cuponesPromocionales", cuponService.buscarPromocionalesActivos());
+	    model.addAttribute("cuponesPersonales", cuponService.buscarTodos().stream()
+	            		.filter(c -> c.getUsuario() != null)
+	            		.toList());
+	    model.addAttribute("usuariosActivos", usuarioService.contarUsuariosNormales(RolUsuario.USER));	    
+	    model.addAttribute("pistaMasUsada", asignacionService.buscarPistaMasReservada());
+	    
+		return "admin/panelAdmin";
+				
+	}
+	
 }

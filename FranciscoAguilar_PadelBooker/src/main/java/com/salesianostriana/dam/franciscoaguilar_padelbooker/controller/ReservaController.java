@@ -78,6 +78,13 @@ public class ReservaController {
 	        throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");
 	        
 	    }
+	    
+	    if (fecha.isAfter(LocalDate.of(LocalDate.now().getYear(), 12, 31))) {
+	    	
+	        throw new ExcepcionTiempoReserva("No se puede reservar la pista para después de este año.");
+	        
+	    }
+	    
 
 	    if (horaEntrada.isAfter(horaSalida)) {
 	    	
