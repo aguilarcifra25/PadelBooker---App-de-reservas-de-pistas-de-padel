@@ -22,22 +22,24 @@ public class HistorialCuponesService extends ServiciosBaseImpl<HistorialCupones,
     public void aplicarCuponAReserva(Reserva nuevaReserva, String codigoIntroducido, Usuario usuarioLogueado) {
         
         String codigo = codigoIntroducido.toUpperCase();
-                
-        if (historialCuponesRepo.existsByUsuarioAndCodigoCupon(usuarioLogueado, codigo)) {
-            throw new ExcepcionCupon("Ya has canjeado este cupón en una reserva anterior."); 
-        }
-
         Cupon cupon = cuponService.validarCupon(codigo, usuarioLogueado);
-
+        HistorialCupones historial = new HistorialCupones(usuarioLogueado, codigo);
+        
+        double precioConDescuento;
+        
+        if (historialCuponesRepo.existsByUsuarioAndCodigoCupon(usuarioLogueado, codigo)) {
+        	
+            throw new ExcepcionCupon("Ya has canjeado este cupón en una reserva anterior."); 
+            
+        }
+        
         nuevaReserva.setCupon(cupon); 
 
-        double precioConDescuento = cuponService.aplicarDescuento(nuevaReserva.getPrecioTotal(), cupon);
+        precioConDescuento = cuponService.aplicarDescuento(nuevaReserva.getPrecioTotal(), cupon);
         
         nuevaReserva.setPrecioTotal(precioConDescuento);
 
-        cuponService.gastarCupon(cupon);
-
-        HistorialCupones historial = new HistorialCupones(usuarioLogueado, codigo);      
+        cuponService.gastarCupon(cupon);            
         
         historialCuponesRepo.save(historial);
     }

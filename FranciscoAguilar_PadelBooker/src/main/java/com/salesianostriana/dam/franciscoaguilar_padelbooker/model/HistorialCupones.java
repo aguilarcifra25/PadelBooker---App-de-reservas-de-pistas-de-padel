@@ -30,7 +30,8 @@ public class HistorialCupones {
     @Column(nullable = false)
     private String codigoCupon;
 
-    private LocalDateTime fechaUso = LocalDateTime.now();
+    private LocalDateTime fechaUso;
+    
     
     public HistorialCupones(Usuario usuario, String codigoCupon) {
         this.usuario = usuario;

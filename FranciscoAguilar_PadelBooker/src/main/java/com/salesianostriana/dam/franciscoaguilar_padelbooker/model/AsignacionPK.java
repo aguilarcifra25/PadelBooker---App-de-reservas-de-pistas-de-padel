@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class AsignacionPK implements Serializable{
 
-	private static final Long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	
 	private long pista_id;
 	private long reserva_id;

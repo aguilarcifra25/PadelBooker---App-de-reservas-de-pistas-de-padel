@@ -32,7 +32,7 @@
 
                 <input type="hidden" th:field="*{codigo}" />
                 <input type="hidden" th:field="*{usuario.id}" th:if="*{usuario != null}" />
-                <input type="hidden" th:text="${pistaNumero}" />
+                <input type="hidden" name="pistaNumero" th:value="${pistaNumero}" />
                 <input type="hidden" name="porcentaje" th:value="${porcentaje}" />
 
                 <div class="row mb-3">

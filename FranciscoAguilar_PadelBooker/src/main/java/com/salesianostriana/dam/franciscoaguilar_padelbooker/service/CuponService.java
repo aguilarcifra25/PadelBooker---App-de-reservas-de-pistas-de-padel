@@ -131,6 +131,7 @@ public class CuponService extends ServiciosBaseImpl<Cupon, Long, CuponRepository
                 throw new ExcepcionCupon("Este cupón no te pertenece");
                 
             }
+            
             if (cupon.isUsado()) {
             	
                 throw new ExcepcionCupon("Este cupón ya ha sido usado");

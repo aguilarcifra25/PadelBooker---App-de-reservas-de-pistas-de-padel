@@ -30,8 +30,7 @@ public class ControladorGlobalExcepciones {
 	    model.addAttribute("listaPistas", pistaService.buscarTodos());
 	    model.addAttribute("listaReservas", reservaService.buscarTodos());	
         
-        if (uLogueado.getAuthorities().stream()
-	    							.anyMatch(rol -> rol.getAuthority().equals("ROLE_ADMIN"))) {
+        if (usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.ADMIN)) {
         
         	return "admin/panelAdmin";
         
@@ -88,11 +87,7 @@ public class ControladorGlobalExcepciones {
 				
 		model.addAttribute("errorMensaje", eNombreRepe.getMessage());
 					
-		if (uLogueado.getAuthorities().stream()
-				.filter(rol -> rol.getAuthority()
-				.equals("ROLE_ADMIN"))
-				.findFirst()
-				.isPresent()) {			
+		if (usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.ADMIN)) {			
 			
 		    model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
 		    model.addAttribute("listaPistas", pistaService.buscarTodos());
@@ -101,9 +96,7 @@ public class ControladorGlobalExcepciones {
 			return "admin/panelAdmin";
 			
 		} else {
-			
-			model.addAttribute("usuario", usuarioService.buscarPorNombre(uLogueado.getUsername()).get());
-			
+						
 			return "perfil";
 			
 		}		
@@ -115,11 +108,7 @@ public class ControladorGlobalExcepciones {
 				
 		model.addAttribute("errorMensaje", eEmailRepe.getMessage());
 					
-		if (uLogueado.getAuthorities().stream()
-				.filter(rol -> rol.getAuthority()
-				.equals("ROLE_ADMIN"))
-				.findFirst()
-				.isPresent()) {			
+		if (usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.ADMIN)) {			
 			
 		    model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
 		    model.addAttribute("listaPistas", pistaService.buscarTodos());
@@ -128,8 +117,6 @@ public class ControladorGlobalExcepciones {
 			return "admin/panelAdmin";
 			
 		} else {
-			
-			model.addAttribute("usuario", usuarioService.buscarPorNombre(uLogueado.getUsername()).get());
 			
 			return "perfil";
 			

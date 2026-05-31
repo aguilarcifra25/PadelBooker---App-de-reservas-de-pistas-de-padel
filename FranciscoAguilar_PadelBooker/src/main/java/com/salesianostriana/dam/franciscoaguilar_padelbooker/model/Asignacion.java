@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class Asignacion {
 
 	@EmbeddedId
-	private AsignacionPK asignacionPK = new AsignacionPK();
+	private AsignacionPK asignacionPK;
 	
 	private boolean usaLuz;
 	
@@ -35,6 +35,8 @@ public class Asignacion {
 		
     private String observaciones;
 	
+    // -- Asociaciones --
+    
     @ManyToOne
     @MapsId("reserva_id")
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_asignacion_reserva"))
@@ -47,7 +49,7 @@ public class Asignacion {
     @NotNull(message = "La asignación debe estar vinculada obligatoriamente a una pista.")
     private Pista pista;
     
-    
+    // -- Helpers --
     
     public void agregarEnPista(Pista p) {
 		p.getAsignaciones().add(this);

@@ -120,11 +120,26 @@ public class ControllerAdmin {
 	}
 	
 	
+	// ---- Usuarios ----	
+	
 	@GetMapping("/borrarUsuario/{id}")
 	public String borrarUsuario(@PathVariable("id") long id, @AuthenticationPrincipal UserDetails uLogueado, HttpSession session) {
 		
 		Optional<Usuario> uBorrar = usuarioService.buscarPorId(id);	
 		
+		boolean esAdmin = uLogueado.getAuthorities().stream()
+		        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+		    
+		boolean esSuPropiacuenta = uBorrar.get().getUsername().equals(uLogueado.getUsername());
+		 
+		
+	    if (!esAdmin && !esSuPropiacuenta) {
+	    	
+	        return "redirect:/perfil";
+	        
+	    }
+		
+	    
 		if (uBorrar.isPresent()) {
 			
 			usuarioService.borrar(uBorrar.get());
@@ -132,12 +147,13 @@ public class ControllerAdmin {
 		} 
 		
 		
-		if (uLogueado.getAuthorities().stream()
-	    							.anyMatch(rol -> rol.getAuthority().equals("ROLE_ADMIN"))) {
+		if (usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.ADMIN)) {
 		
 			return "redirect:/panelAdmin";		
 		
 		} else {
+			
+			//Destruye los datos de la sesión
 			
 			SecurityContextHolder.clearContext();
 	        
@@ -158,8 +174,9 @@ public class ControllerAdmin {
 	public String mostrarFormularioEdicionUsuario(@PathVariable("id") long id, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
 	    
 	    Optional<Usuario> uEditarOpt = usuarioService.buscarPorId(id);
-	    boolean esUser = uLogueado.getAuthorities().stream()
-                .anyMatch(rol -> rol.getAuthority().equals("ROLE_USER"));
+	    Usuario uEditar;
+	    
+	    boolean esUser = usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.USER);
 	    
 	    if (uEditarOpt.isEmpty()) {
 	    	
@@ -174,7 +191,7 @@ public class ControllerAdmin {
 	    	}
 	    }
 	    
-	    Usuario uEditar = uEditarOpt.get();
+	    uEditar = uEditarOpt.get();
 	        
 	                              
 	    if (esUser && !uLogueado.getUsername().equals(uEditar.getUsername())) {
@@ -182,8 +199,7 @@ public class ControllerAdmin {
 	        throw new ExcepcionEdicionOtroUser("No se pueden editar datos de un usuario que no es tuyo.");
 	        
 	    }
-	    
-	   
+	    	   
 	    model.addAttribute("usuario", uEditar);
 	    
 	    return "admin/editarUsuario";
@@ -193,15 +209,11 @@ public class ControllerAdmin {
 	public String procesarEdicionUsuario(@Valid @ModelAttribute("usuario") Usuario u,BindingResult bindingResult, 
 											Model model, @AuthenticationPrincipal UserDetails uLogueado) {
 	    
-		if (usuarioService.buscarTodos().stream()
-				.anyMatch(user -> user.getUsername().equals(u.getUsername()) 
-						&& !user.getId().equals(u.getId()))) {
+		if (usuarioService.comprobarUsernameEnOtro(u.getUsername(), u.getId())) {
 
 			throw new ExcepcionEdicionNombreRepetido("El nombre de usuario que intenta seleccionar está en uso.");
 
-		} else if (usuarioService.buscarTodos().stream()
-				.anyMatch(user -> user.getEmail().equals(u.getEmail()) 
-						&& !user.getId().equals(u.getId()))) {
+		} else if (usuarioService.comprobarEmailEnOtro(u.getEmail(), u.getId())) {
 			
 			throw new ExcepcionEdicionEmailRepetido("El email que intenta seleccionar está en uso.");
 			
@@ -215,10 +227,10 @@ public class ControllerAdmin {
 	    }
 	    
 	    u.setPassword(encoder.encode(u.getPassword()));
+	    
 	    usuarioService.editar(u);
 	    
-	    if (uLogueado.getAuthorities().stream()
-	    							.anyMatch(rol -> rol.getAuthority().equals("ROLE_ADMIN"))) {
+	    if (usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.ADMIN)) {
 	    	
 	    	return "redirect:/panelAdmin";
 	    	
@@ -248,13 +260,11 @@ public class ControllerAdmin {
 	public String procesarCreacionUsuario(@Valid @ModelAttribute("usuario") Usuario u,
 										BindingResult bindingResult, @AuthenticationPrincipal UserDetails uLogueado, Model model) {
 		
-		if (usuarioService.buscarTodos().stream()
-										.anyMatch(user -> user.getUsername().equals(u.getUsername()))) {
+		if (usuarioService.comprobarUsernameEnOtro(u.getUsername(), u.getId())) {
 	    	
 	    	throw new ExcepcionNombreRepetido("El nombre de usuario que intenta seleccionar está en uso.");
 	    		    	
-	    } else if (usuarioService.buscarTodos().stream()
-				.anyMatch(user -> user.getEmail().equals(u.getEmail()))) {
+	    } else if (usuarioService.comprobarEmailEnOtro(u.getEmail(), u.getId())) {
 
 			throw new ExcepcionNombreRepetido("El correo que intenta seleccionar está en uso.");
 
@@ -266,15 +276,18 @@ public class ControllerAdmin {
 	        
 	    }
 		
+		if (!uLogueado.getAuthorities().stream()
+	            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+			
+	        u.setRolUsuario(RolUsuario.USER);
+	        
+	    }
+		
 		u.setPassword(encoder.encode(u.getPassword()));
 		
 		usuarioService.guardar(u);
 		
-		if (uLogueado != null && uLogueado.getAuthorities().stream()
-						.filter(rol -> rol.getAuthority()
-						.equals("ROLE_ADMIN"))
-						.findFirst()
-						.isPresent())  {
+		if (uLogueado != null && usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.ADMIN)) {
 			
 			return "redirect:/panelAdmin";
 			
@@ -284,6 +297,8 @@ public class ControllerAdmin {
 		
 	}
 	
+	
+	// ---- Pistas ----
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/editarPista/{numero}")
@@ -371,13 +386,13 @@ public class ControllerAdmin {
 	
 	
 	
+	// ---- Reservas ----
+	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/crearReserva")
 	public String crearReserva(Model model) {
-	    
-	    model.addAttribute("listaPistas", pistaService.buscarTodos());
-	    model.addAttribute("listaUsuarios", usuarioService.buscarPorRol(RolUsuario.USER));
-	    
+	     
+	    // Crea una lista de los datos de las reservas para el js
 	    List<Map<String, String>> todasReservas = reservaService.buscarTodos().stream()
 	            .flatMap(r -> r.getAsignaciones().stream()
 	                    .map(a -> Map.of(
@@ -388,6 +403,8 @@ public class ControllerAdmin {
 	                    )))
 	            .toList();
 
+	    model.addAttribute("listaPistas", pistaService.buscarTodos());
+	    model.addAttribute("listaUsuarios", usuarioService.buscarPorRol(RolUsuario.USER));
 	    model.addAttribute("todasReservas", todasReservas);
 	    
 	    return "admin/crearReserva";
@@ -408,83 +425,98 @@ public class ControllerAdmin {
         @RequestParam(value = "codigoCupon", required = false) String codigoCupon,
         Model model) {
 
-    
-    if (horaEntrada.isBefore(LocalTime.now()) && fecha.isEqual(LocalDate.now())) {
-        throw new ExcepcionTiempoReserva(
-                "No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");
-    }
-
-    if (!horaEntrada.isBefore(horaSalida)) {
-        throw new ExcepcionTiempoReserva(
-                "No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
-    }
-
-    for (Long numero : numeros) {
-        if (reservaService.tieneConflictoHorario(numero, fecha, horaEntrada, horaSalida)) {
-            throw new ExcepcionTiempoReserva(
-                    "La pista " + numero + " ya se encuentra reservada en el horario seleccionado.");
-        }
-    }
-
-   
-    Usuario u = usuarioService.buscarPorId(usuarioId).get();
-
-    Reserva r = Reserva.builder()
-            .fecha(fecha)
-            .horaEntrada(horaEntrada)
-            .horaSalida(horaSalida)
-            .precioTotal(0.0)
-            .usuario(u)
-            .asignaciones(new ArrayList<>())
-            .build();
-
-    double precioTotal = 0.0;
-    precioTotal += reservaService.calcularPrecioPalas(cantRaquetas);
-
-    for (Long numero : numeros) {
-
-        Pista p = pistaService.buscarPorId(numero).get();
-
-        double precioPista = reservaService.calcularPrecioTotal(horaEntrada, horaSalida, 0, p.getPrecioHora(), usaLuz);
-        precioTotal += precioPista;
-
-        AsignacionPK aPK = new AsignacionPK();
-        aPK.setPista_id(p.getNumero());
-
-        Asignacion a = Asignacion.builder()
-                .asignacionPK(aPK)
-                .usaLuz(usaLuz)
-                .cantRaquetas(cantRaquetas)
-                .precio(p.getPrecioHora())
-                .observaciones(observaciones)
-                .build();
-
-        a.agregarEnReserva(r);
-        a.agregarEnPista(p);
-    }
-
-    r.setPrecioTotal(precioTotal);
-
-    
-    if (codigoCupon != null && !codigoCupon.isBlank()) {
-    	
-        try {
-        	
-            historialCuponesService.aplicarCuponAReserva(r, codigoCupon, u);
-            
-        } catch (IllegalArgumentException | ExcepcionCupon e) {
-        	
-            model.addAttribute("errorCupon", e.getMessage());
-            model.addAttribute("listaPistas", pistaService.buscarTodos());
-            model.addAttribute("listaUsuarios", usuarioService.buscarPorRol(RolUsuario.USER));
-            
-            return "admin/crearReserva";
-        }
-    }
-
-    reservaService.crearReserva(r, u);
-
-    return "redirect:/panelAdmin";
+		Usuario u;
+		Reserva r;
+		Pista p;
+		Asignacion a;
+		AsignacionPK aPK;
+		
+		double precioTotal = 0.0;
+		double precioPista;
+		
+	    if (horaEntrada.isBefore(LocalTime.now()) && fecha.isEqual(LocalDate.now())) {
+	    	
+	        throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");
+	        
+	    }
+	
+	    if (!horaEntrada.isBefore(horaSalida)) {
+	    	
+	        throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
+	        
+	    }
+	
+	    for (Long numero : numeros) {
+	    	
+	        if (reservaService.tieneConflictoHorario(numero, fecha, horaEntrada, horaSalida)) {
+	        	
+	            throw new ExcepcionTiempoReserva("La pista " + numero + " ya se encuentra reservada en el horario seleccionado.");
+	            
+	        }
+	    }
+	
+	   
+	    u = usuarioService.buscarPorId(usuarioId).get();
+	
+	    r = Reserva.builder()
+	            .fecha(fecha)
+	            .horaEntrada(horaEntrada)
+	            .horaSalida(horaSalida)
+	            .precioTotal(0.0)
+	            .usuario(u)
+	            .asignaciones(new ArrayList<>())
+	            .build();
+	
+	    
+	    precioTotal += reservaService.calcularPrecioPalas(cantRaquetas);
+	
+	    
+	    // -- Guarda cada asignacion con las pista en la misma reserva --
+	    for (Long numero : numeros) {
+	
+	        p = pistaService.buscarPorId(numero).get();
+	
+	        precioPista = reservaService.calcularPrecioTotal(horaEntrada, horaSalida, cantRaquetas, p.getPrecioHora(), usaLuz);
+	        
+	        precioTotal += precioPista;
+	
+	        aPK = new AsignacionPK();
+	        aPK.setPista_id(p.getNumero());
+	
+	        a = Asignacion.builder()
+	                .asignacionPK(aPK)
+	                .usaLuz(usaLuz)
+	                .cantRaquetas(cantRaquetas)
+	                .precio(precioPista)
+	                .observaciones(observaciones)
+	                .build();
+	
+	        a.agregarEnReserva(r);
+	        a.agregarEnPista(p);
+	    }
+	
+	    r.setPrecioTotal(precioTotal);
+	
+	    // -- Aplicar cupón --
+	    if (codigoCupon != null && !codigoCupon.isBlank()) {
+	    	
+	        try {
+	        	
+	            historialCuponesService.aplicarCuponAReserva(r, codigoCupon, u);
+	            
+	        } catch (IllegalArgumentException | ExcepcionCupon e) {
+	        	
+	            model.addAttribute("errorCupon", e.getMessage());
+	            model.addAttribute("listaPistas", pistaService.buscarTodos());
+	            model.addAttribute("listaUsuarios", usuarioService.buscarPorRol(RolUsuario.USER));
+	            
+	            return "admin/crearReserva";
+	        }
+	    }
+	
+	    reservaService.crearReserva(r, u);
+	
+	    return "redirect:/panelAdmin";
     
 	}
 
@@ -495,38 +527,45 @@ public class ControllerAdmin {
 
 	    Optional<Reserva> rEditarOpt = reservaService.buscarPorId(codigo);
 	    boolean esUser = uLogueado.getAuthorities().stream().anyMatch(rol -> rol.getAuthority().equals("ROLE_USER"));
-
+	    double porcentajeOriginal;
+	    
 	    if (rEditarOpt.isEmpty()) {
+	    	
 	        return esUser ? "redirect:/perfil" : "redirect:/panelAdmin";
+	        
 	    }
 
 	    Reserva rEditar = rEditarOpt.get();
 
 	    if (esUser && !uLogueado.getUsername().equals(rEditar.getUsuario().getUsername())) {
+	    	
 	        throw new ExcepcionEdicionOtroUser("No se pueden editar datos de un usuario que no es tuyo.");
+	        
 	    }
 
-	    // Pistas de esta reserva
+	    // -- Pistas de esta reserva --
+	    
 	    List<Long> pistasReserva = rEditar.getAsignaciones().stream()
-	            .map(a -> a.getPista().getNumero())
-	            .toList();
+	    					.map(a -> a.getPista().getNumero())
+	    					.toList();
 
-	    // Reservas ocupadas de esas pistas excluyendo la actual
+	    // -- Reservas ocupadas de esas pistas excluyendo la actual --
+	    
 	    List<Map<String, String>> reservasOcupadas = reservaService.buscarTodos().stream()
-	            .filter(r -> !r.getCodigo().equals(codigo))
-	            .flatMap(r -> r.getAsignaciones().stream()
-	                    .filter(a -> pistasReserva.contains(a.getPista().getNumero()))
-	                    .map(a -> Map.of(
-	                            "fecha", r.getFecha().toString(),
-	                            "entrada", r.getHoraEntrada().toString(),
-	                            "salida", r.getHoraSalida().toString()
-	                    )))
-	            .toList();
+	    							.filter(r -> !r.getCodigo().equals(codigo))
+	    							.flatMap(r -> r.getAsignaciones().stream()
+	    									.filter(a -> pistasReserva.contains(a.getPista().getNumero()))
+	    									.map(a -> Map.of(
+	    										"fecha", r.getFecha().toString(),
+	    										"entrada", r.getHoraEntrada().toString(),
+	    										"salida", r.getHoraSalida().toString()
+	    									)))
+	    							.toList();
 
 	    model.addAttribute("reserva", rEditar);
 	    model.addAttribute("reservasOcupadas", reservasOcupadas);
 
-	    double porcentajeOriginal = (rEditar.getCupon() != null) ? rEditar.getCupon().getDescuento() : 0.0;
+	    porcentajeOriginal = (rEditar.getCupon() != null) ? rEditar.getCupon().getDescuento() : 0.0;
 
 	    model.addAttribute("porcentaje", porcentajeOriginal);
 
@@ -546,24 +585,37 @@ public class ControllerAdmin {
 	    boolean ocupada;
 	    double precioTotal;
 	    double precioPista;
+	    Long numero;
+	    
+	    double precioConDescuento;
+	    
+	    // -- Comprueba que no hay solapamiento con ninguna pista distinta a las de la reserva --
 	    
 	    for (Asignacion a : reservaExistente.getAsignaciones()) {
-	        Long numero = a.getPista().getNumero();
+	    	
+	    	numero = a.getPista().getNumero();
 	        
 	        ocupada = reservaService.tieneConflictoHorarioEdicion(
 	                numero, r.getFecha(), r.getHoraEntrada(), r.getHoraSalida(), r.getCodigo());
 	        
 	        if (ocupada) {
+	        	
 	            throw new ExcepcionTiempoReserva("La pista " + numero + " ya se encuentra reservada en el horario seleccionado.");
+	            
 	        }
 	    }
 
+	    
 	    if (r.getHoraEntrada().isBefore(LocalTime.now()) && r.getFecha().isEqual(LocalDate.now())) {
+	    	
 	        throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");
+	        
 	    }
 
 	    if (!r.getHoraEntrada().isBefore(r.getHoraSalida())) {
+	    	
 	        throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
+	        
 	    }
 
 	    reservaExistente.setFecha(r.getFecha());
@@ -574,6 +626,7 @@ public class ControllerAdmin {
 	    precioTotal = 0.0;
 	    
 	    for (Asignacion a : reservaExistente.getAsignaciones()) {
+	    	
 	        a.setUsaLuz(usaLuz);
 	        a.setCantRaquetas(cantRaquetas);
 
@@ -589,28 +642,32 @@ public class ControllerAdmin {
 	        precioTotal += precioPista;
 	    }
 
-	    if (porcentaje > 0.0) {
-	        double porcentajeReal = (porcentaje > 1.0) ? (porcentaje / 100.0) : porcentaje;
-	        
-	        double ahorroTotal = precioTotal * porcentajeReal; 
-	        precioTotal = precioTotal - ahorroTotal; 
+	    if (porcentaje > 0) {
+	    	  	        
+	        precioTotal = precioTotal - precioTotal * porcentaje; 
 
 	        for (Asignacion a : reservaExistente.getAsignaciones()) {
-	            double precioConDescuento = a.getPrecio() - (a.getPrecio() * porcentajeReal);
+	        	
+	        	precioConDescuento = a.getPrecio() - (a.getPrecio() * porcentaje);
+	        	
 	            a.setPrecio(Math.round(precioConDescuento * 100.0) / 100.0);
+	            
 	        }
 	    }
 	    
-	    precioTotal = Math.round(precioTotal * 100.0) / 100.0;
+	    precioTotal = Math.round(precioTotal * 100.0) / 100.0;  // -- Esto me deja dos decimales --
 	    reservaExistente.setPrecioTotal(precioTotal);
 	    
 	    reservaService.editar(reservaExistente);
 
-	    if (uLogueado.getAuthorities().stream()
-	            .anyMatch(rol -> rol.getAuthority().equals("ROLE_ADMIN"))) {
+	    if (usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.ADMIN)) {
+	    	
 	        return "redirect:/panelAdmin?tab=reservas";
+	        
 	    } else {
+	    	
 	        return "redirect:/perfil";
+	        
 	    }
 	}
 	
@@ -626,11 +683,7 @@ public class ControllerAdmin {
 			
 		} 
 		
-		if (uLogueado != null && uLogueado.getAuthorities().stream()
-				.filter(rol -> rol.getAuthority()
-				.equals("ROLE_ADMIN"))
-				.findFirst()
-				.isPresent())  {
+		if (uLogueado != null && usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.ADMIN))  {
 			
 			return "redirect:/panelAdmin";
 						
@@ -645,6 +698,8 @@ public class ControllerAdmin {
 	}
 	
 
+	// ---- Cupones ----
+	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/crearCuponPromo")
 	public String mostrarFormularioCrearCuponPromo(Model model) {
@@ -656,8 +711,7 @@ public class ControllerAdmin {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/crearCuponPromo/submit")
-	public String procesarCreacionCuponPromo(
-	        @RequestParam int descuento,
+	public String procesarCreacionCuponPromo(@RequestParam int descuento,
 	        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaExpiracion,
 	        @RequestParam(required = false) Integer usoMaximo) {
 
@@ -673,7 +727,9 @@ public class ControllerAdmin {
 	    Optional<Cupon> c = cuponService.buscarPorId(id);
 
 	    if (c.isPresent()) {
+	    	
 	        cuponService.borrar(c.get());
+	        
 	    }
 
 	    return "redirect:/panelAdmin?tab=cupones";

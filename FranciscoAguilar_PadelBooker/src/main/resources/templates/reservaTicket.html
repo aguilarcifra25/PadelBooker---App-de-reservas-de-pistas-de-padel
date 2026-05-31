@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -76,6 +76,11 @@
                                     <span th:text="|+ Alquiler de palas (${cantRaquetas} ud)|"></span>
                                     <span class="fw-bold"
                                         th:text="${#numbers.formatDecimal(precioPalas, 1, 2, 'COMMA')} + ' €'"></span>
+                                </li>
+
+                                <li th:if="${reserva.cupon != null}" class="list-group-item ...">
+                                    <span th:text="|Descuento cupón (${reserva.cupon.descuento}%)|"></span>
+                                    <span class="fw-bold text-success">- ...</span>
                                 </li>
                             </ul>
                         </div>

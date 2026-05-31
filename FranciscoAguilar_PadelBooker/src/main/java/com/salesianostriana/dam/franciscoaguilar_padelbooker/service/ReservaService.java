@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Cupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.repository.ReservaRepository;
@@ -75,13 +74,8 @@ public class ReservaService extends ServiciosBaseImpl<Reserva, Long, ReservaRepo
         return inicioA.isBefore(finB) && finA.isAfter(inicioB);
     }
 
-	public boolean tieneConflictoHorario(long numeroPista, LocalDate fechaNueva, LocalTime inicioNueva, LocalTime finNueva) {
-	    
-	    DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	    String fechaStr = fechaNueva.format(formato);
-	    
-	    LocalDate fecha = LocalDate.parse(fechaStr);
-	    
+	public boolean tieneConflictoHorario(long numeroPista, LocalDate fecha, LocalTime inicioNueva, LocalTime finNueva) {
+	    		    
 	    List<Reserva> todasLasReservas = this.buscarTodos();
 
 	    return todasLasReservas.stream()
@@ -142,9 +136,9 @@ public class ReservaService extends ServiciosBaseImpl<Reserva, Long, ReservaRepo
 	
 	public void crearReserva(Reserva reserva, Usuario usuario) {
 		
-		List<Reserva> reservasUsuario = reservaRepository.findByUsuario(usuario);
+		reservaRepository.save(reserva);
 		
-	    reservaRepository.save(reserva);	      
+		List<Reserva> reservasUsuario = reservaRepository.findByUsuario(usuario);  	      
 	    
 	    cuponService.comprobarYGenerarCuponFidelizacion(usuario, reservasUsuario);
 	}

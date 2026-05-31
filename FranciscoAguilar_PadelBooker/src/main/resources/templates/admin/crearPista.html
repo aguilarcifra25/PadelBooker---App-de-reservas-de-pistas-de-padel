@@ -29,6 +29,7 @@
                             <option value="Indoor">Indoor</option>
                             <option value="Outdoor">Outdoor</option>
                             <option value="Frontón">Frontón</option>
+                            <option value="Mini 1vs1">Mini 1vs1</option>
                         </select>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></div>
                     </div>
@@ -69,11 +70,13 @@
                     <a th:href="@{/panelAdmin}" class="btn btn-outline-danger">Cancelar</a>
                     <button type="submit" class="btn btn-success">Crear pista</button>
                 </div>
+
+            </form>
+
         </div>
 
-        </form>
 
-        </div>
+
     </main>
 
     <div th:replace="~{fragments/base :: footer}"></div>

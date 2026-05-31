@@ -30,7 +30,7 @@ public class Pista {
 	private Long numero;
 	
 	@NotBlank(message = "El tipo de pista no puede estar vacío.")
-	@Pattern(regexp = "^(Indoor|Outdoor|Frontón)$", message = "El tipo de pista debe ser Indoor, Outdoor o Frontón.")
+	@Pattern(regexp = "^(Indoor|Outdoor|Frontón|Mini 1vs1)$", message = "El tipo de pista debe ser Indoor, Outdoor, Frontón o Mini 1vs1.")
 	private String tipo;
 	
 	@NotBlank(message = "El tipo de suelo no puede estar vacío.")
@@ -43,6 +43,8 @@ public class Pista {
 	
 	@URL(message = "El formato de la imagen debe ser una URL válida")
 	private String imagen;
+	
+	// -- Asociaciones --
 	
 	@OneToMany(mappedBy = "pista")
     @Builder.Default

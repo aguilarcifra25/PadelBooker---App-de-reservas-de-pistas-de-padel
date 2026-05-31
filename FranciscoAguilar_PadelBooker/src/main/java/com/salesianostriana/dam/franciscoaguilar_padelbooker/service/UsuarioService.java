@@ -78,4 +78,23 @@ public class UsuarioService extends ServiciosBaseImpl<Usuario, Long, UsuarioRepo
 	    }
 	}
 	
+	public boolean comprobarRol (String username, RolUsuario rol) {
+		
+		return usuarioRepository.existsByUsernameAndRolUsuario(username, rol);
+		
+	}
+	
+	
+	public boolean comprobarUsernameEnOtro (String username, Long id) {
+		
+		return usuarioRepository.existsByUsernameAndIdNot(username, id);
+		
+	}
+	
+	
+	public boolean comprobarEmailEnOtro (String email, Long id) {
+		
+		return usuarioRepository.existsByUsernameAndIdNot(email, id);
+		
+	}
 }

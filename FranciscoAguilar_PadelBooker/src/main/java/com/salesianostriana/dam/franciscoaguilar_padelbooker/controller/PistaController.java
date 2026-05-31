@@ -40,7 +40,7 @@ public class PistaController {
 
 	    if (pista.isPresent()) {
 
-	        // Reservas de esta pista con fecha y horas
+	        // -- Reservas de esta pista con fecha y horas --
 	        List<Map<String, String>> reservasPista = reservaService.buscarTodos().stream()
 	                .flatMap(r -> r.getAsignaciones().stream()
 	                        .filter(a -> a.getPista().getNumero().equals(numero))

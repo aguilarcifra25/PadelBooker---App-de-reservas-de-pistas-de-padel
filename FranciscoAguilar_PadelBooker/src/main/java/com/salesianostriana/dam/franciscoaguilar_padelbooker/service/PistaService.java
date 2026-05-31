@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PistaService extends ServiciosBaseImpl<Pista, Long, PistaRepository>{
 
-	private final PistaRepository pistaRepository;	
+	//private final PistaRepository pistaRepository;	
 	
 	
 }

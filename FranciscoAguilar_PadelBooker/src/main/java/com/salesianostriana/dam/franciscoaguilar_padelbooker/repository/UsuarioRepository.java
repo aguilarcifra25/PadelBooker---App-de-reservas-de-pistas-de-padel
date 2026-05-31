@@ -38,4 +38,10 @@ public interface UsuarioRepository  extends JpaRepository<Usuario, Long>{
 	
 	Integer countByRolUsuario (RolUsuario rolUsuario);
 	
+	boolean existsByUsernameAndRolUsuario(String username, RolUsuario rolUsuario);
+	
+	boolean existsByUsernameAndIdNot(String username, Long id);
+	
+	boolean existsByEmailAndIdNot(String email, Long id);
+	
 }

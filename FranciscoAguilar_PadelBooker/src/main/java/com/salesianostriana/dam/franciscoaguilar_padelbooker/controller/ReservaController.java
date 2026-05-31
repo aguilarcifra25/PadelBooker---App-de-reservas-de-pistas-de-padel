@@ -2,7 +2,6 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
 
-import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.CuponService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.HistorialCuponesService;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,9 +17,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionOtroUser;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionCupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionTiempoReserva;
-import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Cupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
@@ -35,7 +33,6 @@ import lombok.RequiredArgsConstructor;
 public class ReservaController {
 	
 	private final HistorialCuponesService historialCuponesService;
-	private final CuponService cuponService;
 	private final ReservaService reservaService;
 	private final PistaService pistaService;
 	private final AsignacionService asignacionService;
@@ -61,26 +58,42 @@ public class ReservaController {
 	    Optional<Pista> pOpt = pistaService.buscarPorId(numeroPista);
 	    Optional<Usuario> uOpt = usuarioService.buscarPorNombre(uLogueado.getUsername());
 
-	    if (pOpt.isEmpty() || uOpt.isEmpty()) return "redirect:/home";
+	    Pista p;
+	    Usuario u;
+	    Reserva r;
+	    
+	    double precioTotal;
+	    
+	    if (pOpt.isEmpty() || uOpt.isEmpty()) {
 
-	    Pista p = pOpt.get();
-	    Usuario u = uOpt.get();
+	    	return "redirect:/home";
+
+	    }
+	    	
+	    p = pOpt.get();
+	    u = uOpt.get();
 
 	    if (horaEntrada.isBefore(LocalTime.now()) && fecha.getDayOfYear() == LocalDate.now().getDayOfYear()) {
+	    	
 	        throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");
+	        
 	    }
 
 	    if (horaEntrada.isAfter(horaSalida)) {
+	    	
 	        throw new ExcepcionTiempoReserva("No se puede reservar la pista. La hora de salida debe ser posterior a la de entrada");
+	        
 	    }
 
 	    if (reservaService.tieneConflictoHorario(p.getNumero(), fecha, horaEntrada, horaSalida)) {
+	    	
 	        throw new ExcepcionTiempoReserva("La pista ya se encuentra reservada en el horario seleccionado.");
+	        
 	    }
 
-	    double precioTotal = reservaService.calcularPrecioTotal(horaEntrada, horaSalida, cantRaquetas, p.getPrecioHora(), usaLuz);
+	    precioTotal = reservaService.calcularPrecioTotal(horaEntrada, horaSalida, cantRaquetas, p.getPrecioHora(), usaLuz);
 
-	    Reserva reserva = Reserva.builder()
+	    r = Reserva.builder()
 	            .fecha(fecha)
 	            .horaEntrada(horaEntrada)
 	            .horaSalida(horaSalida)
@@ -90,24 +103,29 @@ public class ReservaController {
 	            .build();
 
 	    if (codigoCupon != null && !codigoCupon.isBlank()) {
+	    	
 	        try {
-	            historialCuponesService.aplicarCuponAReserva(reserva, codigoCupon, u);
-	        } catch (IllegalArgumentException | ExcepcionEdicionOtroUser e) {
+	        	
+	            historialCuponesService.aplicarCuponAReserva(r, codigoCupon, u);
+	            
+	        } catch (ExcepcionCupon e) {
+	        	
 	            model.addAttribute("errorCupon", e.getMessage());
 	            model.addAttribute("pista", p);
+	            
 	            return "detallesPista";
 	        }
 	    }
 
-	    reservaService.crearReserva(reserva, u);
-	    asignacionService.registrarAsignacionCompleta(reserva, p, usaLuz, cantRaquetas, reserva.getPrecioTotal());
+	    reservaService.crearReserva(r, u);
+	    asignacionService.registrarAsignacionCompleta(r, p, usaLuz, cantRaquetas, r.getPrecioTotal());
 
-	    model.addAttribute("reserva", reserva);
+	    model.addAttribute("reserva", r);
 	    model.addAttribute("pista", p);
 	    model.addAttribute("usuario", uLogueado);
 	    model.addAttribute("usaLuz", usaLuz);
 	    model.addAttribute("cantRaquetas", cantRaquetas);
-	    model.addAttribute("precioTotal", reserva.getPrecioTotal());
+	    model.addAttribute("precioTotal", r.getPrecioTotal());
 	    model.addAttribute("precioLuz", reservaService.calcularPrecioLuz(horaEntrada, horaSalida, usaLuz));
 	    model.addAttribute("precioPalas", reservaService.calcularPrecioPalas(cantRaquetas));
 	    model.addAttribute("costoPista", p.getPrecioHora() * reservaService.calcularHorasTotales(horaEntrada, horaSalida));

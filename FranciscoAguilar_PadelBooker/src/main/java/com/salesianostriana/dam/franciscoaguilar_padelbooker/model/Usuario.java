@@ -62,6 +62,12 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
 	private RolUsuario rolUsuario;
 	
+	@Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + rolUsuario.name()));
+    }
+	
+	// -- Asociaciones --
 	
 	@OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @Builder.Default
@@ -69,9 +75,13 @@ public class Usuario implements UserDetails {
     @ToString.Exclude
     private List<Reserva> reservas = new ArrayList<>(); 
 	
-	@Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + rolUsuario.name()));
-    }
+	
+	@OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @Builder.Default
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Cupon> cupones = new ArrayList<>(); 
+	
+	
 		
 }

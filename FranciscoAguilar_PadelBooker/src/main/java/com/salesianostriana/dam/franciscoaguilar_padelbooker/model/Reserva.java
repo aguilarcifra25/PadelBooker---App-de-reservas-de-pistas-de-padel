@@ -54,6 +54,8 @@ public class Reserva {
     @PositiveOrZero(message = "El precio total no puede ser negativo")
     private double precioTotal;
 	
+    // -- Asociaciones --
+    
 	@OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL)
 	@Builder.Default
 	@EqualsAndHashCode.Exclude

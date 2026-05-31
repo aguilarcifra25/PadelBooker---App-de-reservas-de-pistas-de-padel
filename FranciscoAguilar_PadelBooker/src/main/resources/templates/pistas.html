@@ -36,109 +36,6 @@
         </section>
 
         <section>
-
-            <div class="container mx-auto border border-3 my-4 p-3 shadow-lg rounded">
-                <form action="/" name="filtrarPista" novalidate>
-
-                    <div class="mb-3 mt-3 input-group">
-                        <span class="input-group-text">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input type="text" class="form-control" id="nombrePista" placeholder="Buscar por nombre"
-                            name="nombrePista">
-                    </div>
-
-                    <div class="container mx-auto my-4">
-                        <div class="row">
-
-                            <div class="col-6">
-
-                                <label for="fecha"><i class="bi bi-calendar-check me-2"></i>Fecha</label>
-                                <input type="date" name="fecha" id="fecha" class="form-control mt-2">
-
-                            </div>
-
-                            <div class="col-6">
-
-                                <label for="horario"><i class="bi bi-clock me-2"></i>Horario</label>
-                                <select id="horario" name="horario" class="form-select mt-2">
-                                    <option value="none">Elegir</option>
-                                    <optgroup label="Mañana">
-                                        <option value="08:00">08:00</option>
-                                        <option value="09:00">09:00</option>
-                                        <option value="10:00">10:00</option>
-                                        <option value="11:00">11:00</option>
-                                        <option value="12:00">12:00</option>
-                                    </optgroup>
-                                    <optgroup label="Tarde">
-                                        <option value="13:00">13:00</option>
-                                        <option value="14:00">14:00</option>
-                                        <option value="15:00">15:00</option>
-                                        <option value="16:00">16:00</option>
-                                        <option value="17:00">17:00</option>
-                                        <option value="18:00">18:00</option>
-                                        <option value="19:00">19:00</option>
-                                        <option value="20:00">20:00</option>
-                                    </optgroup>
-                                    <optgroup label="Noche">
-                                        <option value="21:00">21:00</option>
-                                        <option value="22:00">22:00</option>
-                                        <option value="23:00">23:00</option>
-                                    </optgroup>
-                                </select>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="container mx-auto my-4">
-                        <div class="row">
-
-                            <div class="col-4">
-
-                                <label for="tipoPista">Tipo de pista: </label>
-                                <select id="tipoPista" name="tipoPista" class="form-select mt-2">
-                                    <option value="none">Elegir</option>
-                                    <option value="indoor">Indoor</option>
-                                    <option value="outdoor">Outdoor</option>
-                                </select>
-
-                            </div>
-
-                            <div class="col-4">
-
-                                <label for="tipoSuelo">Tipo de suelo: </label>
-                                <select id="tipoSuelo" name="tipoSuelo" class="form-select mt-2">
-                                    <option value="none">Elegir</option>
-                                    <option value="cesped">Césped artificial</option>
-                                    <option value="cemento">Cemento Poroso</option>
-                                </select>
-
-                            </div>
-
-                            <div class="col-4">
-
-                                <label for="tamano">Tamaño: </label>
-                                <select id="tamano" name="tamano" class="form-select mt-2">
-                                    <option value="none">Elegir</option>
-                                    <option value="estandar">Estándar</option>
-                                    <option value="mini">Mini 1vs1</option>
-                                    <option value="fonton">Frontón</option>
-                                </select>
-
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary mt-2">Buscar</button>
-
-                </form>
-            </div>
-
-        </section>
-
-        <section>
             <div class="container my-5">
                 <div class="row g-4">
 
@@ -153,13 +50,7 @@
                                     class="card-title">Pista</h4>
                                 <p th:text="${pista.suelo}" class="card-text">Césped artificial</p>
 
-                                <div class="d-grid" sec:authorize="isAnonymous()">
-                                    <a class="btn btn-primary"
-                                        th:href="@{/detallesPista/{numero}(numero=${pista.numero})}">Ver
-                                        disponibilidad</a>
-                                </div>
-
-                                <div class="d-grid" sec:authorize="hasRole('USER')">
+                                <div class="d-grid" sec:authorize="!hasRole('ADMIN')">
                                     <a class="btn btn-primary"
                                         th:href="@{/detallesPista/{numero}(numero=${pista.numero})}">Ver
                                         disponibilidad</a>
