@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
     <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -23,8 +24,8 @@
 
                 <div class="row">
 
-                    <div class="col-4">
-                        <label for="tipo" class="form-label">Tipo de pista</label>
+                    <div class="col-12 col-md-4">
+                        <label for="tipo" class="form-label">Tipo de pista*</label>
                         <select id="tipo" class="form-select" th:field="*{tipo}" th:errorclass="is-invalid">
                             <option value="Indoor">Indoor</option>
                             <option value="Outdoor">Outdoor</option>
@@ -34,8 +35,8 @@
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></div>
                     </div>
 
-                    <div class="col-4">
-                        <label for="suelo" class="form-label">Tipo de suelo</label>
+                    <div class="col-12 col-md-4">
+                        <label for="suelo" class="form-label">Tipo de suelo*</label>
                         <select id="suelo" class="form-select" th:field="*{suelo}" th:errorclass="is-invalid">
                             <option value="Césped artificial">Césped artificial</option>
                             <option value="Cemento poroso">Cemento poroso</option>
@@ -47,15 +48,15 @@
 
                 <div class="row my-5">
 
-                    <div class="col-2">
-                        <label for="precioHora" class="form-label">Precio por hora</label>
+                    <div class="col-12 col-md-2">
+                        <label for="precioHora" class="form-label">Precio por hora*</label>
                         <input type="number" step="0.01" min="5" th:field="*{precioHora}" placeholder="Mínimo 5"
                             id="precioHora" class="form-control" th:errorclass="is-invalid" required />
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('precioHora')}"
                             th:errors="*{precioHora}"></div>
                     </div>
 
-                    <div class="col-10">
+                    <div class="col-12 col-md-10">
                         <label for="imagen" class="form-label">Imagen</label>
                         <input type="url" placeholder="Pega aquí la URL de la imagen" th:field="*{imagen}"
                             th:errorclass="is-invalid" id="imagen" class="form-control" />

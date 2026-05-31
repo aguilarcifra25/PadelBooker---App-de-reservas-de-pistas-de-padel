@@ -2,6 +2,8 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.security.RolUsuario;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.CuponService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.PistaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.ReservaService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.UsuarioService;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @RequiredArgsConstructor
 public class ControladorGlobalExcepciones {
 
+	private final AsignacionService asignacionService;
+	private final CuponService cuponService;
 	private final ReservaService reservaService;
 	private final UsuarioService usuarioService;
 	private final PistaService pistaService;
@@ -26,12 +30,21 @@ public class ControladorGlobalExcepciones {
     public String handleTiempoReserva(ExcepcionTiempoReserva eTiempoReserva, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
 		       
         model.addAttribute("errorMensaje", eTiempoReserva.getMessage());
-        model.addAttribute("listaUsuarios", usuarioService.buscarTodosMenosAdminYLogeado(uLogueado.getUsername()));
-	    model.addAttribute("listaPistas", pistaService.buscarTodos());
-	    model.addAttribute("listaReservas", reservaService.buscarTodos());	
+       
+	    model.addAttribute("listaPistas", pistaService.buscarTodos());	
         
         if (usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.ADMIN)) {
-        
+        	
+
+    	    model.addAttribute("listaReservas", reservaService.buscarTodos());
+        	model.addAttribute("listaUsuarios", usuarioService.buscarTodosMenosAdminYLogeado(uLogueado.getUsername()));
+        	model.addAttribute("cuponesPromocionales", cuponService.buscarPromocionalesActivos());
+    	    model.addAttribute("cuponesPersonales", cuponService.buscarTodos().stream()
+    	            		.filter(c -> c.getUsuario() != null)
+    	            		.toList());
+    	    model.addAttribute("usuariosActivos", usuarioService.contarUsuariosNormales(RolUsuario.USER));	    
+    	    model.addAttribute("pistaMasUsada", asignacionService.buscarPistaMasReservada());
+    	    
         	return "admin/panelAdmin";
         
         } else {
@@ -48,7 +61,13 @@ public class ControladorGlobalExcepciones {
         model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
 	    model.addAttribute("listaPistas", pistaService.buscarTodos());
 	    model.addAttribute("listaReservas", reservaService.buscarTodos());
-        
+	    model.addAttribute("cuponesPromocionales", cuponService.buscarPromocionalesActivos());
+	    model.addAttribute("cuponesPersonales", cuponService.buscarTodos().stream()
+	            		.filter(c -> c.getUsuario() != null)
+	            		.toList());
+	    model.addAttribute("usuariosActivos", usuarioService.contarUsuariosNormales(RolUsuario.USER));	    
+	    model.addAttribute("pistaMasUsada", asignacionService.buscarPistaMasReservada());
+	    
         return "admin/panelAdmin";
     }
 	
@@ -92,7 +111,13 @@ public class ControladorGlobalExcepciones {
 		    model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
 		    model.addAttribute("listaPistas", pistaService.buscarTodos());
 		    model.addAttribute("listaReservas", reservaService.buscarTodos());
-			
+		    model.addAttribute("cuponesPromocionales", cuponService.buscarPromocionalesActivos());
+    	    model.addAttribute("cuponesPersonales", cuponService.buscarTodos().stream()
+    	            		.filter(c -> c.getUsuario() != null)
+    	            		.toList());
+    	    model.addAttribute("usuariosActivos", usuarioService.contarUsuariosNormales(RolUsuario.USER));	    
+    	    model.addAttribute("pistaMasUsada", asignacionService.buscarPistaMasReservada());
+    	    
 			return "admin/panelAdmin";
 			
 		} else {
@@ -113,7 +138,12 @@ public class ControladorGlobalExcepciones {
 		    model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
 		    model.addAttribute("listaPistas", pistaService.buscarTodos());
 		    model.addAttribute("listaReservas", reservaService.buscarTodos());
-			
+		    model.addAttribute("cuponesPromocionales", cuponService.buscarPromocionalesActivos());
+    	    model.addAttribute("cuponesPersonales", cuponService.buscarTodos().stream()
+    	            		.filter(c -> c.getUsuario() != null)
+    	            		.toList());
+    	    model.addAttribute("usuariosActivos", usuarioService.contarUsuariosNormales(RolUsuario.USER));	    
+    	    
 			return "admin/panelAdmin";
 			
 		} else {
@@ -145,5 +175,21 @@ public class ControladorGlobalExcepciones {
 				
 	}
 	
-	
+	@ExceptionHandler(ExcepcionCrearCupon.class)
+	public String handleExcepcionCrearCupon(ExcepcionCrearCupon eCupon, Model model) {
+				
+		model.addAttribute("errorMensaje", eCupon.getMessage());
+		model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
+		model.addAttribute("listaPistas", pistaService.buscarTodos());
+		model.addAttribute("listaReservas", reservaService.buscarTodos());
+		model.addAttribute("cuponesPromocionales", cuponService.buscarPromocionalesActivos());
+	    model.addAttribute("cuponesPersonales", cuponService.buscarTodos().stream()
+	            		.filter(c -> c.getUsuario() != null)
+	            		.toList());
+	    model.addAttribute("usuariosActivos", usuarioService.contarUsuariosNormales(RolUsuario.USER));	    
+	    model.addAttribute("pistaMasUsada", asignacionService.buscarPistaMasReservada());
+	    
+		return "admin/panelAdmin";
+				
+	}
 }

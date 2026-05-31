@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
     <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -78,9 +79,11 @@
                                         th:text="${#numbers.formatDecimal(precioPalas, 1, 2, 'COMMA')} + ' €'"></span>
                                 </li>
 
-                                <li th:if="${reserva.cupon != null}" class="list-group-item ...">
-                                    <span th:text="|Descuento cupón (${reserva.cupon.descuento}%)|"></span>
-                                    <span class="fw-bold text-success">- ...</span>
+                                <li th:if="${reserva.cupon != null}"
+                                    class="list-group-item d-flex justify-content-between align-items-center py-2">
+                                    <span th:text="|- Descuento cupón (${reserva.cupon.descuento}%)|"></span>
+                                    <span class="fw-bold text-danger"
+                                        th:text="${#numbers.formatDecimal(cupon, 1, 2, 'COMMA')} + ' €'"> </span>
                                 </li>
                             </ul>
                         </div>

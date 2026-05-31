@@ -193,9 +193,9 @@ public class CuponService extends ServiciosBaseImpl<Cupon, Long, CuponRepository
     public List<Cupon> buscarPromocionalesActivos() {
     	
         return cuponRepository.findByUsuarioIsNull().stream()
-        							.filter(c -> c.getFechaExpiracion().isAfter(LocalDate.now()))
-        							.filter(c -> c.getUsoMaximo() == null || c.getUsoActual() < c.getUsoMaximo())
-        							.toList();
+        		.filter(c -> !c.getFechaExpiracion().isBefore(LocalDate.now()))
+                .filter(c -> c.getUsoMaximo() == null || c.getUsoActual() < c.getUsoMaximo())
+                .toList();
     }
     
     

@@ -1,0 +1,11 @@
+.tarjetaInfo {
+
+    transition: transform 0.3s ease;
+
+}
+
+.tarjetaInfo:hover {
+
+    transform: translateY(-7px);
+
+}

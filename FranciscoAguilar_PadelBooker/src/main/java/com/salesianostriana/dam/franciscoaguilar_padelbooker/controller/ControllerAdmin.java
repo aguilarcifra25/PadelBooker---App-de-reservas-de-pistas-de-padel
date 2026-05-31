@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionCrearCupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionCupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionEmailRepetido;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionOtroUser;
@@ -715,6 +716,26 @@ public class ControllerAdmin {
 	        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaExpiracion,
 	        @RequestParam(required = false) Integer usoMaximo) {
 
+		
+		if (fechaExpiracion.isBefore(LocalDate.now())) {
+			
+		    throw new ExcepcionCrearCupon("La fecha de expiración debe ser como mínimo el día de hoy.");
+		    
+		}
+		
+		if (descuento < 0 || descuento > 50) {
+			
+		    throw new ExcepcionCrearCupon("El descuento debe estar entre el 1 y 50 %");
+		    
+		}
+		
+		if (usoMaximo != null && usoMaximo <= 0) {
+			
+		    throw new ExcepcionCrearCupon("El cupon se debe poder usar al menos una vez.");
+		    
+		}
+		
+		
 	    cuponService.crearCuponPromocional(descuento, fechaExpiracion, usoMaximo);
 
 	    return "redirect:/panelAdmin?tab=cupones";

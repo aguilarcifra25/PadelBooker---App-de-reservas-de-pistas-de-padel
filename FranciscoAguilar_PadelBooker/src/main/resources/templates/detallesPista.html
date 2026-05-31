@@ -7,6 +7,7 @@
     <title>Club DamPadel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
     <link rel="stylesheet" href="../static/css/detallesPista.css" th:href="@{/css/detallesPista.css}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
@@ -26,12 +27,12 @@
 
             <div class="row g-4">
 
-                <div class="col-lg-8 mb-5">
+                <div class="col-12 col-lg-8 mb-5">
 
                     <div class="border border-3 border-primary rounded shadow-lg overflow-hidden">
 
                         <div class="text-center d-flex align-items-center justify-content-center" id="fotoPista">
-                            <img th:if="${pista.imagen != null}" th:src="${pista.imagen}"
+                            <img th:if="${pista.imagen != null}" th:src="${pista.imagen}" alt="Pista a reservar"
                                 class="w-100 h-100 object-fit-cover">
                             <i th:if="${pista.imagen == null}" class="bi bi-x-circle display-1"></i>
                         </div>
@@ -75,9 +76,15 @@
 
                     </div>
 
+                    <div class="text-center mt-4 pt-2">
+                        <a th:href="@{/pistas}" class="btn btn-primary">
+                            <i class="bi bi-arrow-left"></i> Volver al listado de pistas
+                        </a>
+                    </div>
+
                 </div>
 
-                <div class="col-lg-4 mb-5">
+                <div class="col-12 col-lg-4 mb-5">
 
                     <div class="border border-2 border-primary rounded shadow-lg p-4" id="contenedorReserva"
                         th:data-precio-base="${pista.precioHora}"
@@ -95,7 +102,7 @@
 
                             <div class="mb-4">
                                 <label class="form-label small fw-bold mb-2">
-                                    <i class="bi bi-calendar-event text-primary me-2"></i> Selecciona fecha
+                                    <i class="bi bi-calendar-event text-primary me-2"></i> Selecciona fecha*
                                 </label>
                                 <input type="date" name="fecha" class="form-control form-control-lg fs-6" required
                                     th:min="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" />
@@ -103,9 +110,9 @@
 
                             <div class="mb-4">
                                 <div class="row g-3">
-                                    <div class="col-6">
+                                    <div class="col-12 col-sm-6">
                                         <label class="form-label small fw-bold mb-2">
-                                            <i class="bi bi-box-arrow-in-right text-success me-2"></i> Hora entrada
+                                            <i class="bi bi-box-arrow-in-right text-success me-2"></i> Hora entrada*
                                         </label>
                                         <select id="horaEntrada" name="horaEntrada"
                                             class="form-select form-select-lg fs-6" required>
@@ -142,9 +149,9 @@
                                         </select>
                                     </div>
 
-                                    <div class="col-6">
+                                    <div class="col-12 col-sm-6">
                                         <label class="form-label small fw-bold mb-2">
-                                            <i class="bi bi-box-arrow-left text-danger me-2"></i> Hora salida
+                                            <i class="bi bi-box-arrow-left text-danger me-2"></i> Hora salida*
                                         </label>
                                         <select id="horaSalida" name="horaSalida"
                                             class="form-select form-select-lg fs-6" required>
@@ -257,12 +264,6 @@
 
                         </form>
 
-                    </div>
-
-                    <div class="text-center mt-4 pt-2">
-                        <a th:href="@{/pistas}" class="btn btn-primary">
-                            <i class="bi bi-arrow-left"></i> Volver al listado de pistas
-                        </a>
                     </div>
 
                 </div>

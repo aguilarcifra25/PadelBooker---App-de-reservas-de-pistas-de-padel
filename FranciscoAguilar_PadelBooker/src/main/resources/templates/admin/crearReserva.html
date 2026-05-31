@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Club DamPadel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
     <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
@@ -28,8 +29,8 @@
 
                 <h5 class="border-bottom pb-2 mb-3">Datos del cliente</h5>
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="usuarioId" class="form-label">Seleccionar usuario / Cliente:</label>
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="usuarioId" class="form-label">Seleccionar usuario / Cliente:*</label>
                         <select id="usuarioId" name="usuarioId" class="form-select" required>
                             <option value="" disabled selected hidden>-- Elige el cliente que realiza la reserva --
                             </option>
@@ -43,14 +44,14 @@
 
                 <h5 class="border-bottom pb-2 mt-3 mb-3">Datos de horario</h5>
                 <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label for="fecha" class="form-label">Fecha de la reserva:</label>
+                    <div class="col-12 col-md-3 mb-3">
+                        <label for="fecha" class="form-label">Fecha de la reserva:*</label>
                         <input type="date" id="fecha" name="fecha" class="form-control"
                             th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required />
                     </div>
 
-                    <div class="col-md-2 mb-3">
-                        <label for="horaEntrada" class="form-label">Hora de entrada:</label>
+                    <div class="col-12 col-md-2 mb-3">
+                        <label for="horaEntrada" class="form-label">Hora de entrada:*</label>
                         <select id="horaEntrada" name="horaInicio" class="form-select fs-6" required>
                             <option value="" disabled selected hidden>--:--</option>
                             <option value="08:00">08:00</option>
@@ -85,8 +86,8 @@
                         </select>
                     </div>
 
-                    <div class="col-md-2 mb-3">
-                        <label for="horaSalida" class="form-label">Hora de salida:</label>
+                    <div class="col-12 col-md-2 mb-3">
+                        <label for="horaSalida" class="form-label">Hora de salida:*</label>
                         <select id="horaSalida" name="horaFin" class="form-select fs-6" required>
                             <option value="" disabled selected hidden>--:--</option>
                             <option value="08:30">08:30</option>
@@ -126,10 +127,10 @@
                 <h5 class="border-bottom pb-2 mt-3 mb-3">Pistas y equipamiento</h5>
                 <div class="row g-3 align-items-start">
 
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-4">
 
                         <label for="numeros" class="form-label">Seleccionar pistas:
-                            <span class="small ms-1">(Ctrl+Click para varias)</span>
+                            <span class="small ms-1">(Ctrl+Click para varias)*</span>
                         </label>
 
                         <select id="numeros" name="numeros" class="form-select" multiple size="5" required>
@@ -140,13 +141,13 @@
 
                     </div>
 
-                    <div class="col-md-2">
+                    <div class="col-12 col-md-2">
                         <label for="cantRaquetas" class="form-label">Raquetas (0-4):</label>
                         <input type="number" id="cantRaquetas" name="cantRaquetas" class="form-control" min="0" max="4"
                             value="0" required />
                     </div>
 
-                    <div class="col-md-3 pt-4">
+                    <div class="col-12 col-md-3 pt-4">
                         <div class="form-check form-switch mt-2">
                             <input type="hidden" name="usaLuz" value="false" />
                             <input class="form-check-input" type="checkbox" id="usaLuz" name="usaLuz" value="true" />
@@ -154,7 +155,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-12 col-md-3">
                         <label for="observaciones" class="form-label">Observaciones:</label>
                         <input type="text" id="observaciones" name="observaciones" class="form-control"
                             placeholder="Ej. El usuario pagará con tarjeta…" />

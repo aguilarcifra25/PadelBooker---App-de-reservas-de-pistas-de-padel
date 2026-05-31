@@ -2,6 +2,7 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
 
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.CuponService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.HistorialCuponesService;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -37,7 +38,6 @@ public class ReservaController {
 	private final PistaService pistaService;
 	private final AsignacionService asignacionService;
 	private final UsuarioService usuarioService;
-
 		
 	@PreAuthorize("hasRole('USER')")
 	@PostMapping("/reservar/submit")
@@ -129,6 +129,7 @@ public class ReservaController {
 	    model.addAttribute("precioLuz", reservaService.calcularPrecioLuz(horaEntrada, horaSalida, usaLuz));
 	    model.addAttribute("precioPalas", reservaService.calcularPrecioPalas(cantRaquetas));
 	    model.addAttribute("costoPista", p.getPrecioHora() * reservaService.calcularHorasTotales(horaEntrada, horaSalida));
+	    model.addAttribute("cupon", reservaService.calcularPrecioTotal(horaEntrada, horaSalida, cantRaquetas, precioTotal, usaLuz) - r.getPrecioTotal());
 
 	    return "reservaTicket";
 	    
