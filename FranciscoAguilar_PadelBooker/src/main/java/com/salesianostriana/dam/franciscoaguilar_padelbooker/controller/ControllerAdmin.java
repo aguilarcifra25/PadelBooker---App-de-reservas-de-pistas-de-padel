@@ -34,6 +34,7 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.Excepci
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionCupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionEmailRepetido;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionOtroUser;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionPropioAdmin;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionNombreRepetido;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionNombreRepetido;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionPistaOcupada;
@@ -204,7 +205,13 @@ public class ControllerAdmin {
 	    }
 	    
 	    uEditar = uEditarOpt.get();
-	        
+	    
+	    if (!esUser && uEditar.getUsername().equals(uLogueado.getUsername())) {
+	    	
+	    	throw new ExcepcionEdicionPropioAdmin("Un admin no puede editar su propia cuenta.");
+	    	
+	    }  
+	    	        
 	                              
 	    if (esUser && !uLogueado.getUsername().equals(uEditar.getUsername())) {
 	    	
@@ -660,11 +667,11 @@ public class ControllerAdmin {
 
 	    if (porcentaje > 0) {
 	    	  	        
-	        precioTotal = precioTotal - precioTotal * porcentaje; 
+	        precioTotal = precioTotal - precioTotal * porcentaje/100; 
 
 	        for (Asignacion a : reservaExistente.getAsignaciones()) {
 	        	
-	        	precioConDescuento = a.getPrecio() - (a.getPrecio() * porcentaje);
+	        	precioConDescuento = a.getPrecio() - (a.getPrecio() * porcentaje/100);
 	        	
 	            a.setPrecio(Math.round(precioConDescuento * 100.0) / 100.0);
 	            

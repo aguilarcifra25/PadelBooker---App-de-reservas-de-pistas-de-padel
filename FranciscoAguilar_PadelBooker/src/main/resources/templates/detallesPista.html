@@ -220,6 +220,7 @@
                                                 </label>
                                                 <span class="input-group-text bg-white text-muted small">Cant:</span>
                                                 <input type="number" name="cantRaquetas" id="cantRaquetas"
+                                                    onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 109"
                                                     class="form-control" value="0" min="0" max="4">
                                             </div>
                                         </div>

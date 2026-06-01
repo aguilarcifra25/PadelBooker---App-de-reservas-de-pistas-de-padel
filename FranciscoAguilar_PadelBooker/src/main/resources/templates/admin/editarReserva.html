@@ -73,7 +73,8 @@
                         <label for="cantRaquetas" class="form-label small fw-bold mb-2">Cantidad de raquetas</label>
                         <input type="number" id="cantRaquetas" name="cantRaquetas" class="form-control" min="0" max="4"
                             th:value="${reserva.asignaciones != null and !reserva.asignaciones.isEmpty() ? reserva.asignaciones[0].cantRaquetas : 0}"
-                            required />
+                            required
+                            onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 109" />
                     </div>
                     <div class="col-3 d-flex align-items-center mt-3">
                         <div class="form-check form-switch">

@@ -212,4 +212,16 @@ public class ControladorGlobalExcepciones {
 				
 	}
 	
+	
+	@ExceptionHandler(ExcepcionEdicionPropioAdmin.class)
+	public String handleExcepcionEdicionPropioAdmin(ExcepcionEdicionPropioAdmin e, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
+				
+		model.addAttribute("errorMensaje", e.getMessage());
+		model.addAttribute("usuario", usuarioService.buscarPorNombre(uLogueado.getUsername()).get());
+		
+		return "perfil";
+				
+	}
+	
+	
 }

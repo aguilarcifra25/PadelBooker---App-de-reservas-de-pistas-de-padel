@@ -144,7 +144,8 @@
                     <div class="col-12 col-md-2">
                         <label for="cantRaquetas" class="form-label">Raquetas (0-4):</label>
                         <input type="number" id="cantRaquetas" name="cantRaquetas" class="form-control" min="0" max="4"
-                            value="0" required />
+                            value="0" required
+                            onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 109" />
                     </div>
 
                     <div class="col-12 col-md-3 pt-4">
