@@ -2,7 +2,6 @@ package com.salesianostriana.dam.franciscoaguilar_padelbooker.controller;
 
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.AsignacionService;
 
-import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.CuponService;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.service.HistorialCuponesService;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -73,7 +72,7 @@ public class ReservaController {
 	    p = pOpt.get();
 	    u = uOpt.get();
 
-	    if (horaEntrada.isBefore(LocalTime.now()) && fecha.getDayOfYear() == LocalDate.now().getDayOfYear()) {
+	    if (horaEntrada.isBefore(LocalTime.now()) && fecha.isEqual(LocalDate.now())) {
 	    	
 	        throw new ExcepcionTiempoReserva("No se puede reservar la pista para hoy si la hora de entrada no es posterior a la actual");
 	        

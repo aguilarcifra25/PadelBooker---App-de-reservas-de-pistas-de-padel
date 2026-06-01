@@ -335,7 +335,7 @@
                                         <th>Hora entrada</th>
                                         <th>Hora salida</th>
                                         <th>Pistas</th>
-                                        <th>Raquetas</th>
+                                        <th>Palas</th>
                                         <th>¿Usa Luz?</th>
                                         <th>Precio</th>
                                         <th>Opciones</th>
@@ -445,7 +445,7 @@
 
                         <h5 class="fw-semibold mt-4 mb-3">Cupones promocionales</h5>
                         <div class="table-responsive">
-                            <table class="table table-striped mb-5">
+                            <table class="table table-striped mb-5 text-center">
                                 <thead class="table-primary">
                                     <tr>
                                         <th>Código</th>
@@ -501,7 +501,7 @@
 
                         <h5 class="fw-semibold mb-3">Cupones de fidelización</h5>
                         <div class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-striped text-center">
                                 <thead class="table-primary">
                                     <tr>
                                         <th>Código</th>
@@ -512,22 +512,48 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:if="${#lists.isEmpty(cuponesPersonales)}">
-                                        <td colspan="5" class="text-muted fst-italic text-center">No hay cupones de
-                                            fidelización</td>
+                                    <tr th:if="${#lists.isEmpty(cuponesPromocionales)}">
+                                        <td colspan="5" class="text-muted fst-italic text-center">No hay cupones
+                                            promocionales activos</td>
                                     </tr>
-                                    <tr th:each="cupon : ${cuponesPersonales}">
-                                        <td>
-                                            <p th:text="${cupon.codigo}"></p>
-                                        </td>
-                                        <td th:text="${cupon.usuario.username}"></td>
-                                        <td th:text="${cupon.descuento} + '%'"></td>
-                                        <td>
-                                            <span th:if="${cupon.usado}" class="badge bg-secondary">Usado</span>
-                                            <span th:if="${!cupon.usado}" class="badge bg-success">Disponible</span>
-                                        </td>
-                                        <td th:text="${#temporals.format(cupon.fechaExpiracion, 'dd/MM/yyyy')}"></td>
-                                    </tr>
+                                    <th:block th:each="cupon : ${cuponesPromocionales}">
+                                        <tr>
+                                            <td>
+                                                <p th:text="${cupon.codigo}"></p>
+                                            </td>
+                                            <td th:text="${cupon.descuento} + '%'"></td>
+                                            <td
+                                                th:text="${cupon.usoActual} + ' / ' + (${cupon.usoMaximo != null ? cupon.usoMaximo : '∞'})">
+                                            </td>
+                                            <td th:text="${#temporals.format(cupon.fechaExpiracion, 'dd/MM/yyyy')}">
+                                            </td>
+                                            <td>
+                                                <a th:href="@{/panelAdmin(tab='cupones', borrarCupon=${cupon.id})}"
+                                                    class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i> Borrar
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${param.borrarCupon != null and param.borrarCupon[0] == #strings.toString(cupon.id)}"
+                                            class="table-danger align-middle">
+                                            <td colspan="5" class="p-3">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <i
+                                                            class="bi bi-exclamation-triangle-fill text-danger me-2 fs-5"></i>
+                                                        <span>¿Eliminar el cupón <strong
+                                                                th:text="${cupon.codigo}"></strong>?</span>
+                                                    </div>
+                                                    <div>
+                                                        <a th:href="@{/panelAdmin(tab='cupones')}"
+                                                            class="btn btn-sm btn-secondary me-2">Cancelar</a>
+                                                        <a th:href="@{/borrarCupon/{id}(id=${cupon.id})}"
+                                                            class="btn btn-sm btn-danger fw-bold">Eliminar</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </th:block>
                                 </tbody>
                             </table>
                         </div>

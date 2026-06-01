@@ -28,7 +28,7 @@ public class AsignacionService extends ServiciosBaseImpl<Asignacion, AsignacionP
                 .reserva(reserva)
                 .pista(pista)
                 .usaLuz(usaLuz)
-                .cantRaquetas(cantRaquetas)
+                .cantPalas(cantRaquetas)
                 .precio(precioTotal)
                 .observaciones("Reserva de Dam Padel en la web.")
                 .build();

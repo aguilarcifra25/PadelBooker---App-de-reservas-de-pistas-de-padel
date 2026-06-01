@@ -55,10 +55,10 @@ public class ControladorGlobalExcepciones {
     }
 	
 	@ExceptionHandler(ExcepcionPistaOcupada.class)
-    public String handlePistaOcupada(ExcepcionPistaOcupada ePistaOcupada, Model model) {
+    public String handlePistaOcupada(ExcepcionPistaOcupada ePistaOcupada, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
 		       
         model.addAttribute("errorMensaje", ePistaOcupada.getMessage());
-        model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
+        model.addAttribute("listaUsuarios", usuarioService.buscarTodosMenosAdminYLogeado(uLogueado.getUsername()));
 	    model.addAttribute("listaPistas", pistaService.buscarTodos());
 	    model.addAttribute("listaReservas", reservaService.buscarTodos());
 	    model.addAttribute("cuponesPromocionales", cuponService.buscarPromocionalesActivos());
@@ -121,6 +121,12 @@ public class ControladorGlobalExcepciones {
 			return "admin/panelAdmin";
 			
 		} else {
+			
+			Usuario uActual = usuarioService.buscarPorNombre(uLogueado.getUsername()).get();
+	        
+	        model.addAttribute("usuario", uActual);
+	        model.addAttribute("listaReservas", reservaService.buscarPorUsuario(uActual));
+	        model.addAttribute("cupones", cuponService.buscarCuponesPersonalesDisponibles(uActual));
 						
 			return "perfil";
 			
@@ -148,6 +154,12 @@ public class ControladorGlobalExcepciones {
 			
 		} else {
 			
+			Usuario uActual = usuarioService.buscarPorNombre(uLogueado.getUsername()).get();
+	        
+	        model.addAttribute("usuario", uActual);
+	        model.addAttribute("listaReservas", reservaService.buscarPorUsuario(uActual));
+	        model.addAttribute("cupones", cuponService.buscarCuponesPersonalesDisponibles(uActual));
+			
 			return "perfil";
 			
 		}		
@@ -159,8 +171,13 @@ public class ControladorGlobalExcepciones {
 	public String handleEdicionOtroUser(ExcepcionEdicionOtroUser eOtroUser, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
 				
 		model.addAttribute("errorMensaje", eOtroUser.getMessage());
-		model.addAttribute("usuario", usuarioService.buscarPorNombre(uLogueado.getUsername()).get());
 		
+		Usuario uActual = usuarioService.buscarPorNombre(uLogueado.getUsername()).get();
+        
+        model.addAttribute("usuario", uActual);
+        model.addAttribute("listaReservas", reservaService.buscarPorUsuario(uActual));
+        model.addAttribute("cupones", cuponService.buscarCuponesPersonalesDisponibles(uActual));
+        
 		return "perfil";
 				
 	}	
@@ -217,9 +234,33 @@ public class ControladorGlobalExcepciones {
 	public String handleExcepcionEdicionPropioAdmin(ExcepcionEdicionPropioAdmin e, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
 				
 		model.addAttribute("errorMensaje", e.getMessage());
-		model.addAttribute("usuario", usuarioService.buscarPorNombre(uLogueado.getUsername()).get());
 		
+		Usuario uActual = usuarioService.buscarPorNombre(uLogueado.getUsername()).get();
+        
+        model.addAttribute("usuario", uActual);
+        model.addAttribute("listaReservas", reservaService.buscarPorUsuario(uActual));
+        model.addAttribute("cupones", cuponService.buscarCuponesPersonalesDisponibles(uActual));
+        
 		return "perfil";
+				
+	}
+	
+	
+	@ExceptionHandler(ExcepcionCuponAsignado.class)
+	public String handleExcepcionCuponAsignado(ExcepcionCuponAsignado e, Model model, @AuthenticationPrincipal UserDetails uLogueado) {
+				
+		model.addAttribute("errorMensaje", e.getMessage());
+		model.addAttribute("listaUsuarios", usuarioService.buscarTodos());
+		model.addAttribute("listaPistas", pistaService.buscarTodos());
+		model.addAttribute("listaReservas", reservaService.buscarTodos());
+		model.addAttribute("cuponesPromocionales", cuponService.buscarPromocionalesActivos());
+	    model.addAttribute("cuponesPersonales", cuponService.buscarTodos().stream()
+	            		.filter(c -> c.getUsuario() != null)
+	            		.toList());
+	    model.addAttribute("usuariosActivos", usuarioService.contarUsuariosNormales(RolUsuario.USER));	    
+	    model.addAttribute("pistaMasUsada", asignacionService.buscarPistaMasReservada());
+	    
+		return "admin/panelAdmin";
 				
 	}
 	

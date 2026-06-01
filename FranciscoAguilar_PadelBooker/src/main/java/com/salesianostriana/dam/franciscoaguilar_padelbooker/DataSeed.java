@@ -165,7 +165,7 @@ public class DataSeed {
 	    
 	    Asignacion a1 = Asignacion.builder()
 	                    .asignacionPK(new AsignacionPK())                        
-	                    .cantRaquetas(0)
+	                    .cantPalas(0)
 	                    .usaLuz(false)
 	                    .precio(r1.getPrecioTotal())
 	                    .observaciones("")
