@@ -356,7 +356,7 @@
                                             </td>
 
                                             <td
-                                                th:text="${not #lists.isEmpty(reserva.asignaciones) ? reserva.asignaciones[0].cantRaquetas : 0}">
+                                                th:text="${not #lists.isEmpty(reserva.asignaciones) ? reserva.asignaciones[0].cantPalas : 0}">
                                             </td>
                                             <td
                                                 th:text="${not #lists.isEmpty(reserva.asignaciones) ? (reserva.asignaciones[0].usaLuz ? 'Sí' : 'No') : 'No'}">
@@ -512,48 +512,22 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:if="${#lists.isEmpty(cuponesPromocionales)}">
-                                        <td colspan="5" class="text-muted fst-italic text-center">No hay cupones
-                                            promocionales activos</td>
+                                    <tr th:if="${#lists.isEmpty(cuponesPersonales)}">
+                                        <td colspan="5" class="text-muted fst-italic text-center">No hay cupones de
+                                            fidelización</td>
                                     </tr>
-                                    <th:block th:each="cupon : ${cuponesPromocionales}">
-                                        <tr>
-                                            <td>
-                                                <p th:text="${cupon.codigo}"></p>
-                                            </td>
-                                            <td th:text="${cupon.descuento} + '%'"></td>
-                                            <td
-                                                th:text="${cupon.usoActual} + ' / ' + (${cupon.usoMaximo != null ? cupon.usoMaximo : '∞'})">
-                                            </td>
-                                            <td th:text="${#temporals.format(cupon.fechaExpiracion, 'dd/MM/yyyy')}">
-                                            </td>
-                                            <td>
-                                                <a th:href="@{/panelAdmin(tab='cupones', borrarCupon=${cupon.id})}"
-                                                    class="btn btn-sm btn-outline-danger">
-                                                    <i class="bi bi-trash"></i> Borrar
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr th:if="${param.borrarCupon != null and param.borrarCupon[0] == #strings.toString(cupon.id)}"
-                                            class="table-danger align-middle">
-                                            <td colspan="5" class="p-3">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <i
-                                                            class="bi bi-exclamation-triangle-fill text-danger me-2 fs-5"></i>
-                                                        <span>¿Eliminar el cupón <strong
-                                                                th:text="${cupon.codigo}"></strong>?</span>
-                                                    </div>
-                                                    <div>
-                                                        <a th:href="@{/panelAdmin(tab='cupones')}"
-                                                            class="btn btn-sm btn-secondary me-2">Cancelar</a>
-                                                        <a th:href="@{/borrarCupon/{id}(id=${cupon.id})}"
-                                                            class="btn btn-sm btn-danger fw-bold">Eliminar</a>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </th:block>
+                                    <tr th:each="cupon : ${cuponesPersonales}">
+                                        <td>
+                                            <p th:text="${cupon.codigo}"></p>
+                                        </td>
+                                        <td th:text="${cupon.usuario.username}"></td>
+                                        <td th:text="${cupon.descuento} + '%'"></td>
+                                        <td>
+                                            <span th:if="${cupon.usado}" class="badge bg-secondary">Usado</span>
+                                            <span th:if="${!cupon.usado}" class="badge bg-success">Disponible</span>
+                                        </td>
+                                        <td th:text="${#temporals.format(cupon.fechaExpiracion, 'dd/MM/yyyy')}"></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
