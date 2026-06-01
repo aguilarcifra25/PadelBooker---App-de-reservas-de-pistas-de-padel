@@ -295,8 +295,10 @@ public class ControllerAdmin {
 	        
 	    }
 		
-		if (!uLogueado.getAuthorities().stream()
-	            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+		
+		
+		
+		if (uLogueado != null && usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.USER)) {
 			
 	        u.setRolUsuario(RolUsuario.USER);
 	        

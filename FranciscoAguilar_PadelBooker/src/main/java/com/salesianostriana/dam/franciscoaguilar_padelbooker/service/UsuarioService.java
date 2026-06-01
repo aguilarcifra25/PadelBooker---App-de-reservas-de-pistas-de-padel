@@ -94,7 +94,7 @@ public class UsuarioService extends ServiciosBaseImpl<Usuario, Long, UsuarioRepo
 	
 	public boolean comprobarEmailEnOtro (String email, Long id) {
 		
-		return usuarioRepository.existsByUsernameAndIdNot(email, id);
+		return usuarioRepository.existsByEmailAndIdNot(email, id);
 		
 	}
 }
