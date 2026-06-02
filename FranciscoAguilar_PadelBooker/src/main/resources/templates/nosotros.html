@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club DamPadel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
+    <link rel="stylesheet" href="../static/css/nosotros.css" th:href="@{/css/nosotros.css}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <div th:replace="~{fragments/base :: header}"></div>
+
+    <main>
+
+        <section class="py-5 bg-light">
+            <div class="container py-5">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-7">
+                        <span class="badge bg-primary mb-3 px-3 py-2 rounded-pill text-uppercase fw-bold">Nuestra
+                            Historia</span>
+                        <h1 class="display-3 fw-bolder mb-4 text-gradient">El pádel de primer nivel, más cerca de ti
+                        </h1>
+                        <p class="lead mb-4 text-muted">
+                            En <strong>DamPadel</strong> nacimos con un propósito claro: derribar distancias para que
+                            disfrutes de tu pasión sin salir de tu entorno. Nos mueve el inconformismo; por eso,
+                            trabajamos día a día para ofrecerte instalaciones de máxima calidad, una comunidad vibrante
+                            y experiencias que van mucho más allá del juego.
+                        </p>
+                        <div class="row g-4">
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-primary fs-4 me-2"></i>
+                                    <span class="fw-semibold text-dark">Calidad Premium</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-primary fs-4 me-2"></i>
+                                    <span class="fw-semibold text-dark">Comunidad Activa</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <img src="../static/img/fotoNosotros.png" th:src="@{/img/fotoNosotros.png}"
+                            alt="Nuestras instalaciones" class="img-fluid rounded-5 shadow-lg w-100">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-5">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold display-5">Nuestros Valores</h2>
+                    <p class="text-muted">La filosofía que compartimos dentro y fuera de la pista</p>
+                </div>
+                <div class="row g-4 justify-content-center">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm p-4 text-center">
+                            <div class="mx-auto mb-3 bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 70px; height: 70px;">
+                                <i class="bi bi-trophy fs-1 text-primary"></i>
+                            </div>
+                            <h4 class="fw-bold">Calidad Premium</h4>
+                            <p>Nos autoexigimos el máximo nivel para ofrecerte las mejores
+                                pistas, iluminación de última generación y un mantenimiento diario impecable.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm p-4 text-center">
+                            <div class="mx-auto mb-3 bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 70px; height: 70px;">
+                                <i class="bi bi-people fs-1 text-primary"></i>
+                            </div>
+                            <h4 class="fw-bold">Comunidad</h4>
+                            <p>El pádel se juega de cuatro en cuatro. Fomentamos el compañerismo,
+                                el juego limpio y un ambiente social único donde hacer nuevos amigos y rivales.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm p-4 text-center">
+                            <div class="mx-auto mb-3 bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 70px; height: 70px;">
+                                <i class="bi bi-fire fs-1 text-primary"></i>
+                            </div>
+                            <h4 class="fw-bold">Pasión por el Juego</h4>
+                            <p>Amamos este deporte tanto como tú. Vivimos cada punto con
+                                intensidad y trabajamos para que disfrutes de tu mejor nivel en cada partido.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-5 bg-light">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+
+                        <div class="text-center mb-5">
+                            <h2 class="display-5 fw-bold text-dark">Nuestra Galería</h2>
+                            <p class="lead text-muted">Fotos completas de nuestro equipo e instalaciones</p>
+                        </div>
+
+                        <div id="carouselNosotros" class="carousel slide shadow-lg rounded-5 overflow-hidden"
+                            data-bs-ride="carousel">
+
+                            <div class="carousel-indicators">
+                                <button type="button" data-bs-target="#carouselNosotros" data-bs-slide-to="0"
+                                    class="active"></button>
+                                <button type="button" data-bs-target="#carouselNosotros" data-bs-slide-to="1"></button>
+                                <button type="button" data-bs-target="#carouselNosotros" data-bs-slide-to="2"></button>
+                            </div>
+
+                            <div class="carousel-inner bg-dark">
+
+                                <div class="carousel-item active" data-bs-interval="4000">
+                                    <div class="ratio ratio-16x9">
+                                        <img src="../static/img/carruselEquipo.png" th:src="@{/img/carruselEquipo.png}"
+                                            class="d-block w-100 object-fit-contain" alt="Equipo">
+                                    </div>
+                                    <div class="carousel-caption d-none d-md-block px-4">
+                                        <div
+                                            class="bg-dark bg-opacity-75 rounded-pill py-2 px-4 d-inline-block border border-secondary shadow">
+                                            <p class="mb-0 fw-semibold text-white small">Nuestro equipo</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="carousel-item" data-bs-interval="4000">
+                                    <div class="ratio ratio-16x9">
+                                        <img src="../static/img/carruselInstalaciones.png"
+                                            th:src="@{/img/carruselInstalaciones.png}"
+                                            class=" d-block w-100 object-fit-contain" alt="Oficinas">
+                                    </div>
+                                    <div class="carousel-caption d-none d-md-block px-4">
+                                        <div
+                                            class="bg-dark bg-opacity-75 rounded-pill py-2 px-4 d-inline-block border border-secondary shadow">
+                                            <p class="mb-0 fw-semibold text-white small">Nuestras instalaciones en
+                                                Sevilla</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="carousel-item" data-bs-interval="4000">
+                                    <div class="ratio ratio-16x9">
+                                        <img src="../static/img/carruselComunidad.png"
+                                            th:src="@{/img/carruselComunidad.png}"
+                                            class="d-block w-100 object-fit-contain" alt="Comunidad">
+                                    </div>
+                                    <div class="carousel-caption d-none d-md-block px-4">
+                                        <div
+                                            class="bg-dark bg-opacity-75 rounded-pill py-2 px-4 d-inline-block border border-secondary shadow">
+                                            <p class="mb-0 fw-semibold text-white small">Trabajando en comunidad</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselNosotros"
+                                data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon p-3 bg-primary rounded-circle"
+                                    aria-hidden="true"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselNosotros"
+                                data-bs-slide="next">
+                                <span class="carousel-control-next-icon p-3 bg-primary rounded-circle"
+                                    aria-hidden="true"></span>
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pt-5 pb-5 mt-5 bg-white" id="contacto">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+
+                        <div class="text-center mb-5">
+                            <h2 class="display-5 fw-bold text-dark">Contacto</h2>
+                            <p class="lead text-muted">Estamos a tu disposición para lo que necesites</p>
+                        </div>
+
+                        <div class="row g-4 text-center">
+
+                            <div class="col-md-4 tarjetaInfo">
+                                <div class="p-4 bg-light rounded-4 h-100 shadow-lg">
+                                    <div class="mx-auto mb-3 bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 60px; height: 60px;">
+                                        <i class="bi bi-telephone fs-3 text-primary"></i>
+                                    </div>
+                                    <p class="text-muted mb-1 small fw-bold text-uppercase tracking-wider">Llámanos</p>
+                                    <span class="text-dark fw-semibold fs-5">+34 987 654 321</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 tarjetaInfo">
+                                <div class="p-4 bg-light rounded-4 h-100 shadow-lg">
+                                    <div class="mx-auto mb-3 bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 60px; height: 60px;">
+                                        <i class="bi bi-envelope fs-3 text-primary"></i>
+                                    </div>
+                                    <p class="text-muted mb-1 small fw-bold text-uppercase tracking-wider">Escríbenos
+                                    </p>
+                                    <span class="text-dark fw-semibold fs-5">info@dampadel.es</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 tarjetaInfo">
+                                <div class="p-4 bg-light rounded-4 h-100 shadow-lg">
+                                    <div class="mx-auto mb-3 bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 60px; height: 60px;">
+                                        <i class="bi bi-geo-alt fs-3 text-primary"></i>
+                                    </div>
+                                    <p class="text-muted mb-1 small fw-bold text-uppercase tracking-wider">Encuéntranos
+                                    </p>
+                                    <address class="text-dark fw-semibold mb-0 fs-6 lh-sm">
+                                        C. Condes de Bustillo,<br>41010 Sevilla
+                                    </address>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+
+</body>
+
+</html>

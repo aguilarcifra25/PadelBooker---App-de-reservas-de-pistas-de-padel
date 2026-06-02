@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club DamPadel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <div th:replace="~{fragments/base :: header}"></div>
+
+    <main>
+
+        <div class="container my-5 p-3 mx-auto card shadow-lg bg-secondary">
+
+            <form th:action="@{/crearPista/submit}" th:object="${pista}" method="post">
+
+                <div class="row">
+
+                    <div class="col-12 col-md-4">
+                        <label for="tipo" class="form-label">Tipo de pista*</label>
+                        <select id="tipo" class="form-select" th:field="*{tipo}" th:errorclass="is-invalid">
+                            <option value="Indoor">Indoor</option>
+                            <option value="Outdoor">Outdoor</option>
+                            <option value="Frontón">Frontón</option>
+                            <option value="Mini 1vs1">Mini 1vs1</option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label for="suelo" class="form-label">Tipo de suelo*</label>
+                        <select id="suelo" class="form-select" th:field="*{suelo}" th:errorclass="is-invalid">
+                            <option value="Césped artificial">Césped artificial</option>
+                            <option value="Cemento poroso">Cemento poroso</option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('suelo')}" th:errors="*{suelo}"></div>
+                    </div>
+
+                </div>
+
+                <div class="row my-5">
+
+                    <div class="col-12 col-md-2">
+                        <label for="precioHora" class="form-label">Precio por hora*</label>
+                        <input type="number" step="0.01" min="5" th:field="*{precioHora}" placeholder="Mínimo 5"
+                            id="precioHora" class="form-control" th:errorclass="is-invalid" required />
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('precioHora')}"
+                            th:errors="*{precioHora}"></div>
+                    </div>
+
+                    <div class="col-12 col-md-10">
+                        <label for="imagen" class="form-label">Imagen</label>
+                        <input type="url" placeholder="Pega aquí la URL de la imagen" th:field="*{imagen}"
+                            th:errorclass="is-invalid" id="imagen" class="form-control" />
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('imagen')}" th:errors="*{imagen}">
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a th:href="@{/panelAdmin(tab='pistas')}" class="btn btn-outline-danger">Cancelar</a>
+                    <button type="submit" class="btn btn-success">Crear pista</button>
+                </div>
+
+            </form>
+
+        </div>
+
+
+
+    </main>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+
+</body>
+
+</html>

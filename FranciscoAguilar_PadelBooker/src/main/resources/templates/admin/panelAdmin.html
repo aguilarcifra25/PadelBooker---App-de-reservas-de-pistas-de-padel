@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club DamPadel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <div th:replace="~{fragments/base :: header}"></div>
+
+    <main class="container-fluid">
+        <div class="row">
+
+            <nav class="col-12 col-md-2 border-md-end p-3 mt-3">
+
+                <h5 class="text-center mb-4 fw-bold">Panel de Control</h5>
+
+                <div class="list-group list-group-flush">
+
+                    <button class="list-group-item list-group-item-action border rounded" data-bs-toggle="list"
+                        data-bs-target="#seccion-usuarios"
+                        th:classappend="${param.tab == null or param.tab[0] == 'usuarios'} ? 'active' : ''">
+                        Gestión de usuarios
+                    </button>
+
+                    <button class="list-group-item list-group-item-action border rounded my-2" data-bs-toggle="list"
+                        data-bs-target="#seccion-pistas"
+                        th:classappend="${param.tab != null and param.tab[0] == 'pistas'} ? 'active' : ''">
+                        Gestión de pistas
+                    </button>
+
+                    <button class="list-group-item list-group-item-action border rounded" data-bs-toggle="list"
+                        data-bs-target="#seccion-reservas"
+                        th:classappend="${param.tab != null and param.tab[0] == 'reservas'} ? 'active' : ''">
+                        Gestión de reservas
+                    </button>
+
+                    <button class="list-group-item list-group-item-action border rounded my-2" data-bs-toggle="list"
+                        data-bs-target="#seccion-cupones"
+                        th:classappend="${param.tab != null and param.tab[0] == 'cupones'} ? 'active' : ''">
+                        Gestión de cupones
+                    </button>
+
+                    <button class="list-group-item list-group-item-action border rounded " data-bs-toggle="list"
+                        data-bs-target="#estadisticas"> Estadísticas
+                    </button>
+
+                </div>
+
+                <section class="container">
+                    <div th:if="${errorMensaje}" class="mx-auto">
+                        <p class="bg-danger text-white text-center p-3 mt-3 fw-bolder rounded">
+                            <i class="bi bi-x-circle me-2 fs-5"></i>
+                            <span class="fs-5" th:text="${errorMensaje}"></span>
+                        </p>
+                    </div>
+                </section>
+
+            </nav>
+
+            <div class="col-12 col-md-10 px-md-4 mb-5 tab-content">
+
+                <section class="tab-pane fade" id="seccion-usuarios"
+                    th:classappend="${param.tab == null or param.tab[0] == 'usuarios'} ? 'show active' : ''">
+
+                    <div class="container mt-4">
+
+                        <a th:href="@{/crearUsuario}" class="btn btn-outline-primary my-3">Crear nuevo usuario</a>
+
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+
+                                <form method="get" th:action="@{/panelAdmin}" class="row g-3 align-items-end mb-4">
+                                    <input type="hidden" name="tab" value="usuarios" />
+
+                                    <div class="col-12 col-md-4">
+                                        <label class="form-label fw-semibold">Buscar por Nombre</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                            <input type="text" class="form-control" name="nombreFiltrarUsuario"
+                                                placeholder="Nombre de usuario...">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-4">
+                                        <label class="form-label fw-semibold">Buscar por Email</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                            <input type="text" class="form-control" name="emailFiltrarUsuario"
+                                                placeholder="Correo electrónico...">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-2">
+                                        <label class="form-label fw-semibold">Rol</label>
+                                        <select class="form-select" name="rolFiltrarUsuario">
+                                            <option value="">Todos</option>
+                                            <option value="USER"> USER</option>
+                                            <option value="ADMIN"> ADMIN</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-12 col-md-2 d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary flex-grow-1">
+                                            <i class="bi bi-funnel-fill"></i> Filtrar
+                                        </button>
+                                        <a th:href="@{/panelAdmin(tab='usuarios')}" class="btn btn-outline-secondary">
+                                            Limpiar
+                                        </a>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped text-center">
+                                <thead class="table-primary ">
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Teléfono</th>
+                                        <th>Rol</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <th:block th:each="usuario : ${listaUsuarios}">
+                                        <tr>
+                                            <td th:text="${usuario.id}"></td>
+                                            <td th:text="${usuario.username}"></td>
+                                            <td th:text="${usuario.email}"></td>
+                                            <td th:text="${usuario.telefono}"></td>
+                                            <td th:text="${usuario.rolUsuario}"></td>
+                                            <td>
+                                                <a th:href="@{/editarUsuario/{id}(id=${usuario.id})}" class=" btn btn-sm
+                                                btn-outline-primary"><i class="bi bi-pencil-square me-1"></i>Editar</a>
+                                                |
+                                                <a th:href="@{/panelAdmin(borrarUsuario=${usuario.id})}"
+                                                    class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash me-1"></i> Borrar
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${param.borrarUsuario != null and param.borrarUsuario[0] == #strings.toString(usuario.id)}"
+                                            class="table-danger align-middle">
+                                            <td colspan="6" class="p-3">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <i
+                                                            class="bi bi-exclamation-triangle-fill text-danger me-2 fs-5"></i>
+                                                        <span>¿Estás seguro de que deseas eliminar al usuario <strong
+                                                                th:text="${usuario.username}"></strong>? Esta acción es
+                                                            irreversible.</span>
+                                                    </div>
+                                                    <div>
+                                                        <a th:href="@{/panelAdmin}"
+                                                            class="btn btn-sm btn-secondary me-2">Cancelar</a>
+                                                        <a th:href="@{/borrarUsuario/{id}(id=${usuario.id})}"
+                                                            class="btn btn-sm btn-danger fw-bold">Eliminar</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </th:block>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </section>
+
+                <section class="tab-pane fade" id="seccion-pistas"
+                    th:classappend="${param.tab != null and param.tab[0] == 'pistas'} ? 'show active' : ''">
+
+                    <div class="container mt-4">
+
+                        <a th:href="@{/crearPista}" class="btn btn-outline-primary my-3">Añadir nueva pista</a>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped text-center">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>Número</th>
+                                        <th>Tipo</th>
+                                        <th>Suelo</th>
+                                        <th>Precio/Hora</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <th:block th:each="pista : ${listaPistas}">
+                                        <tr>
+                                            <td th:text="${pista.numero}"></td>
+                                            <td th:text="${pista.tipo}"></td>
+                                            <td th:text="${pista.suelo}"></td>
+                                            <td th:text="${pista.precioHora}"></td>
+                                            <td>
+                                                <a th:href="@{/editarPista/{numero}(numero=${pista.numero})}" class=" btn btn-sm
+                                                btn-outline-primary"><i class="bi bi-pencil-square me-1"></i>Editar</a>
+                                                |
+                                                <a th:href="@{/panelAdmin(tab='pistas', borrarPista=${pista.numero})}"
+                                                    class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash me-1"></i> Borrar
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${param.borrarPista != null and param.borrarPista[0] == #strings.toString(pista.numero)}"
+                                            class="table-danger align-middle">
+                                            <td colspan="5" class="p-3">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <i
+                                                            class="bi bi-exclamation-triangle-fill text-danger me-2 fs-5"></i>
+                                                        <span>¿Estás seguro de que deseas eliminar la pista <strong
+                                                                th:text="${pista.numero}"></strong>? Esta acción es
+                                                            irreversible.</span>
+                                                    </div>
+                                                    <div>
+                                                        <a th:href="@{/panelAdmin(tab='pistas')}"
+                                                            class="btn btn-sm btn-secondary me-2">Cancelar</a>
+                                                        <a th:href="@{/borrarPista/{numero}(numero=${pista.numero})}"
+                                                            class="btn btn-sm btn-danger fw-bold">Eliminar</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </th:block>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </section>
+
+                <section class="tab-pane fade" id="seccion-reservas"
+                    th:classappend="${param.tab != null and param.tab[0] == 'reservas'} ? 'show active' : ''">
+
+                    <div class="container mt-4">
+
+                        <a th:href="@{/crearReserva}" class="btn btn-outline-primary my-3">Añadir nueva reserva</a>
+
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <form th:action="@{/panelAdmin}" method="get" class="row g-3 align-items-end">
+                                    <input type="hidden" name="tab" value="reservas" />
+
+                                    <div class="col-12 col-md-3">
+                                        <label for="filtroUsuario" class="form-label fw-semibold">Buscar por
+                                            Usuario</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                            <input type="text" class="form-control" name="usuarioFiltrarReserva"
+                                                placeholder="Nombre de usuario...">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-3">
+                                        <label for="filtroFecha" class="form-label fw-semibold">Filtrar por
+                                            Fecha</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                                            <input type="date" class="form-control" name="fechaFiltrarReserva">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-3">
+                                        <label for="filtroHoraEntrada" class="form-label fw-semibold">Hora de
+                                            Entrada</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                            <select name="horaEntradaFiltrarReserva" class="form-select fs-6">
+                                                <option value="">Cualquier hora</option>
+                                                <option value="08:00">08:00</option>
+                                                <option value="08:30">08:30</option>
+                                                <option value="09:00">09:00</option>
+                                                <option value="09:30">09:30</option>
+                                                <option value="10:00">10:00</option>
+                                                <option value="10:30">10:30</option>
+                                                <option value="11:00">11:00</option>
+                                                <option value="11:30">11:30</option>
+                                                <option value="12:00">12:00</option>
+                                                <option value="12:30">12:30</option>
+                                                <option value="13:00">13:00</option>
+                                                <option value="13:30">13:30</option>
+                                                <option value="14:00">14:00</option>
+                                                <option value="14:30">14:30</option>
+                                                <option value="15:00">15:00</option>
+                                                <option value="15:30">15:30</option>
+                                                <option value="16:00">16:00</option>
+                                                <option value="16:30">16:30</option>
+                                                <option value="17:00">17:00</option>
+                                                <option value="17:30">17:30</option>
+                                                <option value="18:00">18:00</option>
+                                                <option value="18:30">18:30</option>
+                                                <option value="19:00">19:00</option>
+                                                <option value="19:30">19:30</option>
+                                                <option value="20:00">20:00</option>
+                                                <option value="20:30">20:30</option>
+                                                <option value="21:00">21:00</option>
+                                                <option value="21:30">21:30</option>
+                                                <option value="22:00">22:00</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-3 d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary flex-grow-1">
+                                            <i class="bi bi-funnel-fill"></i> Filtrar
+                                        </button>
+                                        <a th:href="@{/panelAdmin(tab='reservas')}" class="btn btn-outline-secondary">
+                                            Limpiar
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table text-center">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Usuario</th>
+                                        <th>Fecha</th>
+                                        <th>Hora entrada</th>
+                                        <th>Hora salida</th>
+                                        <th>Pistas</th>
+                                        <th>Palas</th>
+                                        <th>¿Usa Luz?</th>
+                                        <th>Precio</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <th:block th:each="reserva : ${listaReservas}">
+                                        <tr>
+                                            <td th:text="${reserva.codigo}"></td>
+                                            <td th:text="${reserva.usuario.username}"></td>
+                                            <td th:text="${#temporals.format(reserva.fecha, 'dd/MM/yyyy')}"></td>
+                                            <td th:text="${reserva.horaEntrada}"></td>
+                                            <td th:text="${reserva.horaSalida}"></td>
+
+                                            <td>
+                                                <span th:each="asig : ${reserva.asignaciones}"
+                                                    th:text="${asig.pista.numero + ' '}"></span>
+                                            </td>
+
+                                            <td
+                                                th:text="${not #lists.isEmpty(reserva.asignaciones) ? reserva.asignaciones[0].cantPalas : 0}">
+                                            </td>
+                                            <td
+                                                th:text="${not #lists.isEmpty(reserva.asignaciones) ? (reserva.asignaciones[0].usaLuz ? 'Sí' : 'No') : 'No'}">
+                                            </td>
+
+                                            <td th:text="${reserva.precioTotal} + '€'"></td>
+                                            <td>
+                                                <a th:href="@{/panelAdmin(tab='reservas', verObservaciones=${reserva.codigo})}"
+                                                    class="btn btn-sm btn-outline-info">
+                                                    <i class="bi bi-eye me-1"></i> Obs.
+                                                </a>
+                                                |
+                                                <a th:href="@{/editarReserva/{codigo}(codigo=${reserva.codigo})}" class=" btn btn-sm
+                                                btn-outline-primary"><i class="bi bi-pencil-square me-1"></i>Editar</a>
+                                                |
+                                                <a th:href="@{/panelAdmin(tab='reservas', borrarReserva=${reserva.codigo})}"
+                                                    class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash me-1"></i> Borrar
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        <tr th:if="${param.verObservaciones != null and param.verObservaciones[0] == #strings.toString(reserva.codigo)}"
+                                            class="table-info align-middle">
+                                            <td colspan="10" class="p-3">
+                                                <div class="d-flex justify-content-between align-items-center" th:with="obs=${not #lists.isEmpty(reserva.asignaciones) ? reserva.asignaciones[0].observaciones : null},
+                                                           tieneContenido=${obs != null and #strings.trim(obs) != ''}">
+                                                    <div>
+                                                        <i class="bi bi-info-circle-fill text-info me-2 fs-5"></i>
+                                                        <strong>Observaciones de la reserva:</strong>
+                                                        <p th:if="${tieneContenido}" class="mb-0 mt-2 ps-3"
+                                                            th:text="${obs}"></p>
+                                                        <div th:if="${!tieneContenido}" class="mt-2 ps-3">
+                                                            <span class="text-muted fst-italic">Sin observaciones para
+                                                                esta
+                                                                reserva.</span>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <a th:href="@{/panelAdmin(tab='reservas')}"
+                                                            class="btn btn-sm btn-secondary">Cerrar</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+
+                                        <tr th:if="${param.borrarReserva != null and param.borrarReserva[0] == #strings.toString(reserva.codigo)}"
+                                            class="table-danger align-middle">
+                                            <td colspan="10" class="p-3">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <i
+                                                            class="bi bi-exclamation-triangle-fill text-danger me-2 fs-5"></i>
+                                                        <span>¿Estás seguro de que deseas eliminar la reserva con código
+                                                            <strong th:text="${reserva.codigo}"></strong>? Esta acción
+                                                            es
+                                                            irreversible.</span>
+                                                    </div>
+                                                    <div>
+                                                        <a th:href="@{/panelAdmin(tab='reservas')}"
+                                                            class="btn btn-sm btn-secondary me-2">Cancelar</a>
+                                                        <a th:href="@{/borrarReserva/{codigo}(codigo=${reserva.codigo})}"
+                                                            class="btn btn-sm btn-danger fw-bold">Eliminar</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                    </th:block>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </section>
+
+                <section class="tab-pane fade" id="seccion-cupones"
+                    th:classappend="${param.tab != null and param.tab[0] == 'cupones'} ? 'show active' : ''">
+
+                    <div class="container mt-4">
+
+                        <div class="d-flex justify-content-between align-items-center my-3">
+                            <a th:href="@{/crearCuponPromo}" class="btn btn-outline-primary"> Crear cupón </a>
+                        </div>
+
+                        <h5 class="fw-semibold mt-4 mb-3">Cupones promocionales</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped mb-5 text-center">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Descuento</th>
+                                        <th>Usos</th>
+                                        <th>Expira</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(cuponesPromocionales)}">
+                                        <td colspan="5" class="text-muted fst-italic text-center">No hay cupones
+                                            promocionales activos</td>
+                                    </tr>
+                                    <tr th:each="cupon : ${cuponesPromocionales}">
+                                        <td>
+                                            <p th:text="${cupon.codigo}"></p>
+                                        </td>
+                                        <td th:text="${cupon.descuento} + '%'"></td>
+                                        <td
+                                            th:text="${cupon.usoActual} + ' / ' + (${cupon.usoMaximo != null ? cupon.usoMaximo : '∞'})">
+                                        </td>
+                                        <td th:text="${#temporals.format(cupon.fechaExpiracion, 'dd/MM/yyyy')}"></td>
+                                        <td>
+                                            <a th:href="@{/panelAdmin(tab='cupones', borrarCupon=${cupon.id})}"
+                                                class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i> Borrar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${param.borrarCupon != null and param.borrarCupon[0] == #strings.toString(cupon.id)}"
+                                        th:each="cupon : ${cuponesPromocionales}" class="table-danger align-middle">
+                                        <td colspan="5" class="p-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i
+                                                        class="bi bi-exclamation-triangle-fill text-danger me-2 fs-5"></i>
+                                                    <span>¿Eliminar el cupón <strong
+                                                            th:text="${cupon.codigo}"></strong>?</span>
+                                                </div>
+                                                <div>
+                                                    <a th:href="@{/panelAdmin(tab='cupones')}"
+                                                        class="btn btn-sm btn-secondary me-2">Cancelar</a>
+                                                    <a th:href="@{/borrarCupon/{id}(id=${cupon.id})}"
+                                                        class="btn btn-sm btn-danger fw-bold">Eliminar</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h5 class="fw-semibold mb-3">Cupones de fidelización</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped text-center">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Usuario</th>
+                                        <th>Descuento</th>
+                                        <th>Estado</th>
+                                        <th>Expira</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(cuponesPersonales)}">
+                                        <td colspan="5" class="text-muted fst-italic text-center">No hay cupones de
+                                            fidelización</td>
+                                    </tr>
+                                    <tr th:each="cupon : ${cuponesPersonales}">
+                                        <td>
+                                            <p th:text="${cupon.codigo}"></p>
+                                        </td>
+                                        <td th:text="${cupon.usuario.username}"></td>
+                                        <td th:text="${cupon.descuento} + '%'"></td>
+                                        <td>
+                                            <span th:if="${cupon.usado}" class="badge bg-secondary">Usado</span>
+                                            <span th:if="${!cupon.usado}" class="badge bg-success">Disponible</span>
+                                        </td>
+                                        <td th:text="${#temporals.format(cupon.fechaExpiracion, 'dd/MM/yyyy')}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </section>
+
+                <section class="tab-pane fade" id="estadisticas">
+
+                    <div class="container mt-4">
+                        <div class="row mx-auto">
+
+                            <div class="card col-12 col-md-5 me-md-5 mb-3">
+                                <p class="card-img-top display-4 text-center pt-5" th:text="${usuariosActivos}"></p>
+                                <div class="card-body">
+                                    <h4 class="card-title text-center py-3">Usuarios activos</h4>
+                                </div>
+                            </div>
+
+                            <div class="card col-12 col-md-5 mb-3">
+                                <p class="card-img-top display-4 text-center pt-5"
+                                    th:if="${not #lists.isEmpty(pistaMasUsada)}"
+                                    th:text="|Pista ${pistaMasUsada[0].tipo} ${#numbers.formatInteger(pistaMasUsada[0].numero, 2)}|">
+                                </p>
+                                <p class="card-img-top display-4 text-center pt-5"
+                                    th:if="${#lists.isEmpty(pistaMasUsada)}">Sin reservas
+                                </p>
+                                <div class="card-body py-3">
+                                    <h4 class="card-title text-center py-3">Pista más usada</h4>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+
+</body>
+
+</html>

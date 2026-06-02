@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club DamPadel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="../static/css/base.css" th:href="@{/css/base.css}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/precioDinamico.js}" defer></script>
+    <script th:inline="javascript">
+        const reservasOcupadas = [[${ reservasOcupadas }]];
+    </script>
+    <script th:src="@{/js/controlHorasEditar.js}" defer></script>
+
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <div th:replace="~{fragments/base :: header}"></div>
+
+    <main class="mt-5">
+
+        <div class="container my-5 p-3 mx-auto card shadow-lg bg-secondary" id="contenedorReserva"
+            th:data-precio-base="${reserva.asignaciones != null and !reserva.asignaciones.isEmpty() ? reserva.asignaciones[0].pista.precioHora : 0.0}"
+            th:data-precio-luz="${reservaService != null ? reservaService.precioLuzHora : 4.5}"
+            th:data-precio-raqueta="${reservaService != null ? reservaService.precioRaqueta : 2.0}">
+
+            <form th:action="@{/editarReserva/submit}" th:object="${reserva}" method="post">
+
+                <input type="hidden" th:field="*{codigo}" />
+                <input type="hidden" th:field="*{usuario.id}" th:if="*{usuario != null}" />
+                <input type="hidden" name="pistaNumero" th:value="${pistaNumero}" />
+                <input type="hidden" name="porcentaje" th:value="${porcentaje}" />
+
+                <div class="row mb-3">
+                    <div class="col-3">
+                        <label for="fecha" class="form-label fw-bold">Fecha de reserva</label>
+                        <input type="date" class="form-control form-control-lg fs-6"
+                            th:min="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" th:field="*{fecha}" required />
+                    </div>
+
+                    <div class="col-2">
+                        <label for="horaEntrada" class="form-label small fw-bold mb-2">Hora de entrada:</label>
+                        <select id="horaEntrada" name="horaEntrada" class="form-select form-select-lg fs-6" required>
+                            <option value="" disabled hidden>--:--</option>
+                            <option th:each="hora : ${#strings.arraySplit('08:00,08:30,09:00,09:30,10:00,10:30,11:00,11:30,12:00,12:30,
+                                    13:00,13:30,14:00,14:30,15:00,15:30,16:00,16:30,17:00,17:30,18:00,18:30,19:00,19:30,20:00,20:30,21:00,
+                                    21:30,22:00', ',')}" th:value="${hora}" th:text="${hora}"
+                                th:selected="${reserva.horaEntrada != null and #strings.toString(reserva.horaEntrada).substring(0,5) == hora}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-2">
+                        <label for="horaSalida" class="form-label small fw-bold mb-2">Hora de salida:</label>
+                        <select id="horaSalida" name="horaSalida" class="form-select form-select-lg fs-6" required>
+                            <option value="" disabled hidden>--:--</option>
+                            <option th:each="hora : ${#strings.arraySplit('08:30,09:00,09:30,10:00,10:30,11:00,11:30,12:00,12:30,
+                                    13:00,13:30,14:00,14:30,15:00,15:30,16:00,16:30,17:00,17:30,18:00,18:30,19:00,19:30,20:00,20:30,21:00,
+                                    21:30,22:00,22:30', ',')}" th:value="${hora}" th:text="${hora}"
+                                th:selected="${reserva.horaSalida != null and #strings.toString(reserva.horaSalida).substring(0,5) == hora}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-2 mb-3">
+                        <label for="cantRaquetas" class="form-label small fw-bold mb-2">Cantidad de palas</label>
+                        <input type="number" id="cantRaquetas" name="cantRaquetas" class="form-control" min="0" max="4"
+                            th:value="${reserva.asignaciones != null and !reserva.asignaciones.isEmpty() ? reserva.asignaciones[0].cantPalas : 0}"
+                            required
+                            onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 109" />
+                    </div>
+                    <div class="col-3 d-flex align-items-center mt-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="usaLuz" name="usaLuz" value="true"
+                                th:checked="${reserva.asignaciones != null and !reserva.asignaciones.isEmpty() ? reserva.asignaciones[0].usaLuz : false}" />
+                            <label class="form-check-label fw-bold small" for="usaLuz">¿Usa luz?</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="seccionDesglose" class="bg-light rounded p-3 mb-4 border border-light-subtle">
+
+                    <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span>Duración total:</span>
+                        <span id="txtDuracion" class="fw-bold">0 horas</span>
+                    </div>
+
+                    <div id="filaExtraLuz" class="d-flex justify-content-between small text-muted mb-1 d-none">
+                        <span>Suplemento Luz:</span>
+                        <span id="txtPrecioLuz" class="fw-bold">0.00€</span>
+                    </div>
+
+                    <div id="filaExtraPalas" class="d-flex justify-content-between small text-muted mb-2 d-none">
+                        <span>Alquiler Palas:</span>
+                        <span id="txtPrecioPalas" class="fw-bold">0.00€</span>
+                    </div>
+
+                    <div
+                        class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary-subtle">
+                        <span class="fw-bold text-dark fs-5">**Precio Total:</span>
+                        <span id="precioDinamico" class="fw-bold text-primary fs-3">0.00€</span>
+                    </div>
+
+                </div>
+
+                <div>
+                    <span class="fw-bold text-dark small">**Si uso un cupón verá el precio real tras aplicar
+                        cambios</span>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a th:href="@{/panelAdmin(tab='reservas')}" class="btn btn-outline-danger"
+                        sec:authorize="hasRole('ADMIN')">Cancelar</a>
+                    <a th:href="@{/perfil}" class="btn btn-outline-danger" sec:authorize="hasRole('USER')">Cancelar</a>
+                    <button type="submit" class="btn btn-success">Guardar cambios</button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+
+</body>
+
+</html>

@@ -1,0 +1,37 @@
+.cajaReserva {
+
+    transition: transform 0.3s ease;
+
+}
+
+.cajaReserva:hover {
+
+    transform: translateY(-7px);
+
+}
+
+#botonSeccionFinal {
+
+    transition: transform 0.3s ease;
+}
+
+#botonSeccionFinal:hover {
+
+    transform: scale(1.1);
+
+}
+
+.card img {
+
+    transition: transform 0.7s ease;
+
+    object-fit: cover;
+
+
+}
+
+.card img:hover {
+
+    transform: scale(1.1);
+
+}
