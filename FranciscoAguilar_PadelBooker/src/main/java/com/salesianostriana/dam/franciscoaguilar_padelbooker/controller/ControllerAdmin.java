@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,6 +44,7 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.Excepci
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Asignacion;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.AsignacionPK;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Cupon;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.HistorialCupones;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Pista;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Reserva;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
@@ -157,6 +159,19 @@ public class ControllerAdmin {
 	    }
 	    
 					
+	    List<HistorialCupones> historialCompleto = historialCuponesService.buscarTodos();
+
+	    List<HistorialCupones> historialUsuario = historialCompleto.stream()
+	        .filter(historial -> historial.getUsuario() != null && historial.getUsuario().getId().equals(uBorrar.get().getId()))
+	        .collect(Collectors.toList());
+	    			
+	    for (HistorialCupones historialCupones : historialUsuario) {
+			
+	    	historialCuponesService.borrar(historialCupones);
+	    	
+		}
+	    
+	    
 		usuarioService.borrar(uBorrar.get());
 					
 		
