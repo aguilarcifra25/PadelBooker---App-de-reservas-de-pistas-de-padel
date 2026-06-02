@@ -9,10 +9,12 @@ import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.HistorialCupo
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.model.Usuario;
 
 @Repository
-public interface HistorialCuponesRepo extends JpaRepository<HistorialCupones, Long> {
+public interface HistorialCuponesRepository extends JpaRepository<HistorialCupones, Long> {
 
     boolean existsByUsuarioAndCodigoCupon(Usuario usuario, String codigoCupon);
     
     Optional<HistorialCupones> findByUsuarioAndCodigoCupon(Usuario usuario, String codigoCupon);
+    
+    boolean existsByCodigoCupon(String codigoCupon);
     
 }

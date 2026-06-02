@@ -142,7 +142,7 @@
                     </div>
 
                     <div class="col-12 col-md-2">
-                        <label for="cantRaquetas" class="form-label">Raquetas (0-4):</label>
+                        <label for="cantRaquetas" class="form-label">Palas (0-4):</label>
                         <input type="number" id="cantRaquetas" name="cantRaquetas" class="form-control" min="0" max="4"
                             value="0" required
                             onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 109" />
@@ -166,7 +166,7 @@
 
 
                 <div class="d-flex justify-content-end gap-2 mt-4">
-                    <a th:href="@{/panelAdmin}" class="btn btn-outline-danger">Cancelar</a>
+                    <a th:href="@{/panelAdmin(tab='reservas')}" class="btn btn-outline-danger">Cancelar</a>
                     <button type="submit" class="btn btn-success"> Confirmar y guardar reserva </button>
                 </div>
 

@@ -335,7 +335,7 @@
                                         <th>Hora entrada</th>
                                         <th>Hora salida</th>
                                         <th>Pistas</th>
-                                        <th>Raquetas</th>
+                                        <th>Palas</th>
                                         <th>¿Usa Luz?</th>
                                         <th>Precio</th>
                                         <th>Opciones</th>
@@ -356,7 +356,7 @@
                                             </td>
 
                                             <td
-                                                th:text="${not #lists.isEmpty(reserva.asignaciones) ? reserva.asignaciones[0].cantRaquetas : 0}">
+                                                th:text="${not #lists.isEmpty(reserva.asignaciones) ? reserva.asignaciones[0].cantPalas : 0}">
                                             </td>
                                             <td
                                                 th:text="${not #lists.isEmpty(reserva.asignaciones) ? (reserva.asignaciones[0].usaLuz ? 'Sí' : 'No') : 'No'}">

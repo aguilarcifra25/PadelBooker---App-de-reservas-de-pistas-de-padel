@@ -26,9 +26,9 @@ public class Asignacion {
 	
 	private boolean usaLuz;
 	
-	@Min(value = 0, message = "La cantidad de raquetas no puede ser un número negativo")
+	@Min(value = 0, message = "La cantidad de palas no puede ser un número negativo")
     @Max(value = 4, message = "No se pueden alquilar más de 4 raquetas por pista")
-    private int cantRaquetas;
+    private int cantPalas;
 		
 	@PositiveOrZero(message = "El precio de la asignación de la pista debe ser cero o positivo")
     private double precio;

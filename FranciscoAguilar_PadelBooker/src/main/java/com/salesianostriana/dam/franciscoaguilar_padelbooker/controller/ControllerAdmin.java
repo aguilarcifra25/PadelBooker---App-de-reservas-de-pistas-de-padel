@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionBorrarAdmin;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionCrearCupon;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionCupon;
+import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionCuponAsignado;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionEmailRepetido;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionOtroUser;
 import com.salesianostriana.dam.franciscoaguilar_padelbooker.excepciones.ExcepcionEdicionPropioAdmin;
@@ -247,7 +248,33 @@ public class ControllerAdmin {
 	    
 	    u.setPassword(encoder.encode(u.getPassword()));
 	    
+	    if (u.getTelefono().equals("")) {
+	    	
+	    	u.setTelefono(null);
+	    	
+	    }
+	    
 	    usuarioService.editar(u);
+	    
+	    
+	    if (!usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.ADMIN)) {
+	        
+	        UserDetails nuevoUsuarioAutenticado = org.springframework.security.core.userdetails.User
+	                .withUsername(u.getUsername())
+	                .password(u.getPassword())
+	                .authorities(uLogueado.getAuthorities())
+	                .build();
+
+	        org.springframework.security.core.Authentication nuevaAutenticacion = 
+	                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+	                        nuevoUsuarioAutenticado, 
+	                        u.getPassword(), 
+	                        uLogueado.getAuthorities()
+	                );
+	        
+	        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(nuevaAutenticacion);
+	    }
+	    
 	    
 	    if (usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.ADMIN)) {
 	    	
@@ -394,7 +421,7 @@ public class ControllerAdmin {
 		}
 		
 		boolean asignada = asignacionService.buscarTodos().stream()
-										.anyMatch(a -> a.getPista() == pBorrar.get());
+                .anyMatch(a -> a.getPista().getNumero().equals(pBorrar.get().getNumero()));
 		
 		if (asignada) {
 			
@@ -443,7 +470,7 @@ public class ControllerAdmin {
         @RequestParam("horaInicio") @NotNull LocalTime horaEntrada,
         @RequestParam("horaFin") @NotNull LocalTime horaSalida,
         @RequestParam("numeros") List<Long> numeros,
-        @RequestParam("cantRaquetas") int cantRaquetas,
+        @RequestParam("cantRaquetas") int cantPalas,
         @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
         @RequestParam(value = "observaciones", required = false) String observaciones,
         @RequestParam("usuarioId") @NotNull Long usuarioId,
@@ -458,6 +485,8 @@ public class ControllerAdmin {
 		
 		double precioTotal = 0.0;
 		double precioPista;
+		
+		Optional<Usuario> uOpt = usuarioService.buscarPorId(usuarioId);
 		
 	    if (horaEntrada.isBefore(LocalTime.now()) && fecha.isEqual(LocalDate.now())) {
 	    	
@@ -479,8 +508,14 @@ public class ControllerAdmin {
 	            
 	        }
 	    }
-	
-	   
+	    
+	    
+	    if (uOpt.isEmpty()) {
+	    	
+	    	return "redirect:/panelAdmin";
+	    	
+	    }
+	    
 	    u = usuarioService.buscarPorId(usuarioId).get();
 	
 	    r = Reserva.builder()
@@ -493,7 +528,7 @@ public class ControllerAdmin {
 	            .build();
 	
 	    
-	    precioTotal += reservaService.calcularPrecioPalas(cantRaquetas);
+	    precioTotal += reservaService.calcularPrecioPalas(cantPalas);
 	
 	    
 	    // -- Guarda cada asignacion con las pista en la misma reserva --
@@ -501,7 +536,7 @@ public class ControllerAdmin {
 	
 	        p = pistaService.buscarPorId(numero).get();
 	
-	        precioPista = reservaService.calcularPrecioTotal(horaEntrada, horaSalida, cantRaquetas, p.getPrecioHora(), usaLuz);
+	        precioPista = reservaService.calcularPrecioTotal(horaEntrada, horaSalida, 0, p.getPrecioHora(), usaLuz);
 	        
 	        precioTotal += precioPista;
 	
@@ -511,7 +546,7 @@ public class ControllerAdmin {
 	        a = Asignacion.builder()
 	                .asignacionPK(aPK)
 	                .usaLuz(usaLuz)
-	                .cantRaquetas(cantRaquetas)
+	                .cantPalas(cantPalas)
 	                .precio(precioPista)
 	                .observaciones(observaciones)
 	                .build();
@@ -601,7 +636,7 @@ public class ControllerAdmin {
 	public String procesarEdicionReserva(
 	        @ModelAttribute("reserva") Reserva r,
 	        @RequestParam(value = "usaLuz", defaultValue = "false") boolean usaLuz,
-	        @RequestParam("cantRaquetas") @Min(0) @Max(4) int cantRaquetas,
+	        @RequestParam("cantRaquetas") @Min(0) @Max(4) int cantPalas,
 	        @RequestParam(value = "porcentaje", defaultValue = "0.0") double porcentaje,
 	        @AuthenticationPrincipal UserDetails uLogueado) {
 
@@ -652,13 +687,13 @@ public class ControllerAdmin {
 	    
 	    for (Asignacion a : reservaExistente.getAsignaciones()) {
 	    	
-	        a.setUsaLuz(usaLuz);
-	        a.setCantRaquetas(cantRaquetas);
+	    	a.setUsaLuz(usaLuz);
+	        a.setCantPalas(cantPalas);
 
 	        precioPista = reservaService.calcularPrecioTotal(
 	                reservaExistente.getHoraEntrada(), 
 	                reservaExistente.getHoraSalida(),
-	                cantRaquetas, 
+	                0,
 	                a.getPista().getPrecioHora(), 
 	                usaLuz
 	        );
@@ -666,6 +701,8 @@ public class ControllerAdmin {
 	        a.setPrecio(precioPista);
 	        precioTotal += precioPista;
 	    }
+	    
+	    precioTotal += reservaService.calcularPrecioPalas(cantPalas);
 
 	    if (porcentaje > 0) {
 	    	  	        
@@ -701,6 +738,15 @@ public class ControllerAdmin {
 	public String borrarReserva(@PathVariable("codigo") long codigo, @AuthenticationPrincipal UserDetails uLogueado) {
 		
 		Optional<Reserva> rBorrar = reservaService.buscarPorId(codigo);	
+		
+		
+		if (rBorrar.isPresent() && usuarioService.comprobarRol(uLogueado.getUsername(), RolUsuario.USER) 
+				&& !rBorrar.get().getUsuario().getUsername().equals(uLogueado.getUsername())) {
+			
+			return "home";
+			
+		}
+			
 		
 		if (rBorrar.isPresent()) {
 			
@@ -771,13 +817,22 @@ public class ControllerAdmin {
 
 	    Optional<Cupon> c = cuponService.buscarPorId(id);
 
+	    if (c.isPresent() &&  historialCuponesService.cuponEnReserva(c.get().getCodigo())) {
+	    	
+	    	throw new ExcepcionCuponAsignado("No se puede borrar un cupón que ya ha sido usado.");
+	    	
+	    }
+	    
+	    
 	    if (c.isPresent()) {
 	    	
 	        cuponService.borrar(c.get());
 	        
-	    }
+	    }   
+	       
 
 	    return "redirect:/panelAdmin?tab=cupones";
+	    
 	}
 	
 	
